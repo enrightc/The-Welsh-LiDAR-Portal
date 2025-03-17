@@ -11,10 +11,12 @@ import {
     LayersControl,
   } from 'react-leaflet'
 
+import 'leaflet-loading';
+
 const Map = () => {
   return (
     <div style={{ height: "100vh", marginTop: "64px" }}>
-      <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true}>
+      <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
 
         <LayersControl position="topright">
           
@@ -41,7 +43,6 @@ const Map = () => {
               layers="geonode:wales_lidar_dsm_1m_hillshade_cog"
               format="image/png"
               transparent={true}
-              opacity={1}
               attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
             />
           </LayersControl.Overlay>
