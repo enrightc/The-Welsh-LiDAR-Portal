@@ -53,6 +53,40 @@ const Map = () => {
             />
           </LayersControl.Overlay>
 
+          {/* WMS LiDAR DSM Multi-directinonal Hillshade Layer */}
+          <LayersControl.Overlay name="LiDAR DSM Multi-directional Hillshade">
+            <WMSTileLayer
+                url="https://datamap.gov.wales/geoserver/ows?"
+                layers="geonode:wales_lidar_dsm_1m_hillshade_multi_cog"
+                format="image/png"
+                transparent={true}
+                tileSize={1024}  // ✅ Increase tile size for better clarity
+                version="1.1.1"  // ✅ Try version 1.1.1 if 1.3.0 is not working well
+                maxZoom={18}  // ✅ Allows for higher resolution zoom levels
+                minZoom={6}  // ✅ Ensures tiles load at lower zoom levels
+                opacity={1}  // ✅ Make sure the layer is fully visible
+                detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
+                attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
+            />
+          </LayersControl.Overlay>
+
+          {/* Cadw Scheduled Monuments */}
+          <LayersControl.Overlay name="Scheduled Monuments">
+            <WMSTileLayer
+                url="https://datamap.gov.wales/geoserver/ows?" 
+                layers="inspire-wg:Cadw_SAM"
+                format="image/png"
+                transparent={true}
+                tileSize={1024}  // ✅ Increase tile size for better clarity
+                version="1.1.1"  // ✅ Try version 1.1.1 if 1.3.0 is not working well
+                maxZoom={18}  // ✅ Allows for higher resolution zoom levels
+                minZoom={6}  // ✅ Ensures tiles load at lower zoom levels
+                opacity={1}  // ✅ Make sure the layer is fully visible
+                detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
+                attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
+            />
+          </LayersControl.Overlay>
+
         </LayersControl>
 
       </MapContainer>
