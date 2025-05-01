@@ -16,16 +16,18 @@ import lidarMain from '../Components/Assets/lidar-main.webp'
 const Home = () => {
   return (
     
+    // HERO: Move to own component if adding more content to homepage.
     <div style={{ 
       position: "relative",
       width: "100%",
     }}>
       <img src={lidarMain} 
-          style= {{ 
-              height: "100vh",
-              width: "100%",
-              objectFit: "cover",
-              minWidth: "100vw"
+           alt="LiDAR background"
+          style={{ 
+            height: "100vh",
+            width: "100%",
+            objectFit: "cover",
+            minWidth: "100vw"
           }}
       />
 
@@ -35,7 +37,6 @@ const Home = () => {
         {/* Title and Buttons */}
         <Box sx= {{
           position: "absolute",
-          zIndex: "100",
           top: "150px",
           textAlign: "center",
           justifyContent: "center",
@@ -81,7 +82,7 @@ const Home = () => {
             textAlign: "center",
             justifyContent: "center",
           }}>
-            <Button variant="" sx= {{
+            <Button sx= {{
               color: "black",
               border: "none",
               fontSize: { xs: '0.8rem', md: '1rem' },
@@ -91,9 +92,8 @@ const Home = () => {
               Start Exploring
             </Button>
 
-            <Button variant="" sx= {{
+            <Button sx= {{
               color: "#27FAE3",
-              border: "none",
               fontSize: { xs: '0.8rem', md: '1rem' },
               borderRadius: "5px",
               backgroundColor: "transparent",
