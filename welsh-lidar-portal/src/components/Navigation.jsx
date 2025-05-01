@@ -43,7 +43,12 @@ function Navigation() {
   };
 
   return (
-    <AppBar position="fixed" sx={{ width: "100%", top: 0, left: 0 }}>
+    <AppBar position="fixed" sx={{ 
+      width: "100%", 
+      top: 0, 
+      left: 0, 
+      backgroundColor: "#1F2827",
+    }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Desktop Logo */}
@@ -61,6 +66,7 @@ function Navigation() {
               letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
+              paddingRight: "65px",
             }}
           >
             The Welsh LiDAR Portal
@@ -120,7 +126,7 @@ function Navigation() {
                 key={page.name} // ✅ Fixed key
                 component={Link} // ✅ Use React Router's <Link>
                 to={page.path} // ✅ Navigate correctly
-                sx={{ my: 2, color: "white", display: "block" }}
+                sx={{ my: 2, color: "white", display: "block", px: 4}}
               >
                 {page.name} {/* ✅ Ensure only "name" is displayed */}
               </Button>
