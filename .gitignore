@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+.env.production
+.env.development
+.cache/
+*.cache
+.vite/
