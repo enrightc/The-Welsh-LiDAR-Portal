@@ -1,5 +1,9 @@
 # The Welsh LiDAR Portal
 
+Backend Repository [here](https://github.com/enrightc/welsh-lidar-portal-backend)
+
+---
+
 **Explore. Discover. Record.**  
 A community-powered platform for discovering and recording archaeological features in Wales using LiDAR data.
 
@@ -102,40 +106,66 @@ The Welsh LiDAR Portal is designed to be inclusive and accessible for everyone �
 
 ---
 
-## 👥 User Stories
+## STRUCTURE
 
-### As a general user:
+### 👥 User Stories
+
+#### As a general user:
 
 - **1.1** I want to quickly understand what The Welsh LiDAR Portal is and how it benefits people like me.
 - **1.2** I want to navigate the website easily so I can find the information and tools I need without frustration.
 - **1.3** I want the website to work smoothly on all devices, including phones and tablets.
 
-### As a visitor without an account:
+#### As a visitor without an account:
 
 - **2.1** I want to understand the purpose of the website as soon as I land on the homepage.
 - **2.2** I want to browse the map and view archaeological discoveries made through LiDAR analysis in Wales.
 - **2.3** I want to search and filter discoveries by things like location, feature type, or time period.
 - **2.4** I want the option to register for an account so I can start recording my own findings.
 
-### As a registered user:
+#### As a registered user:
 
 - **3.1** I want to securely log into my account to access my profile and saved discoveries.
 - **3.2** I want to submit new archaeological features I’ve discovered, using either points or polygons on the map.
 - **3.3** I want to edit or delete discoveries I’ve submitted if I need to update or correct them.
 - **3.4** I want to log out of my account easily when I’m finished using the site.
 
-### As an administrator:
+#### As an administrator:
 
 - **4.1** I want to manage the database of archaeological discoveries — including the ability to add, edit, or remove entries to maintain data quality.
 
 ---
+
+## SKELETON
+
+## Wireframes
+
+<details>
+  <summary>Home</summary>
+  <img src="/Users/charlie/Documents/GitHub/The-Welsh-LiDAR-Portal/frontend/Readme docs/images/wireframe/Home Page.png" alt="Home page">
+</details>
+
+<details>
+  <summary>About Page</summary>
+  <img src="/Users/charlie/Documents/GitHub/The-Welsh-LiDAR-Portal/frontend/Readme docs/images/wireframe/about.png" alt="about page">
+</details>
+
+<details>
+  <summary>Explored (not signed in)</summary>
+  <img src="/Users/charlie/Documents/GitHub/The-Welsh-LiDAR-Portal/frontend/Readme docs/images/wireframe/Explore Page (Signed out user).png" alt="Explore (Not signed in)">
+</details>
+
+<details>
+  <summary>Explore (Signed in)</summary>
+  <img src="/Users/charlie/Documents/GitHub/The-Welsh-LiDAR-Portal/frontend/Readme docs/images/wireframe/Explore Page (Signed in user).png" alt="Explore (Sign in)">
+</details>
 
 ## 🚧 Project Status
 
 - [x] Basic project scaffold
 - [x] Frontend setup
 - [x] Map layers integration (LiDAR)
-- [ ] Backend setup
+- [x] Backend setup
 - [ ] Connecting Django and React
 - [ ] PostgreSQL/PostGIS setup
 - [ ] User authentication and profile system
