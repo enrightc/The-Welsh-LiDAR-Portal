@@ -13,4 +13,6 @@ Thumbs.db
 .env.development
 .cache/
 *.cache
-.vite/
+.vite/backend/
+db.sqlite3
+myvenv/
