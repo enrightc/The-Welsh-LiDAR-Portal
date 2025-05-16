@@ -13,6 +13,14 @@ import {
 
 import 'leaflet-loading';
 
+// Fetches all records from the Django backend API at /api/records/
+// Converts the response to JSON and logs the data to the browser console
+function records() {
+  fetch('http://127.0.0.1:8000/api/records/').then((response) => response.json()).then(data=>console.log(data))
+}
+
+records();
+
 const Map = () => {
   return (
     <div style={{ height: "100vh", marginTop: "64px" }}>
