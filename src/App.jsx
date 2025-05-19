@@ -6,6 +6,7 @@ import Navigation from "./components/Navigation"; // Import the Navigation compo
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Map from "./pages/Map";
+import Testing from "./components/Testing"; // Import the Testing component
 
 // the main App component
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/map" element={<Map />} />
+        <Route path="/testing" element={<Testing />} />
       </Routes>
     </>
   );

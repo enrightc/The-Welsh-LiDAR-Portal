@@ -1,5 +1,5 @@
 import React from 'react' // Import React library
-import Navigation from "../Components/Navigation";
+import Navigation from "../components/Navigation";
 
 // MUI Imports
 import Typography from '@mui/material/Typography';
@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import './home.css';
 
 // Assets
-import lidarMain from '../Components/Assets/lidar-main.webp'
+import lidarMain from '../components/Assets/lidar-main.webp'
 
 // Define the Home component (Functional Component)
 const Home = () => {

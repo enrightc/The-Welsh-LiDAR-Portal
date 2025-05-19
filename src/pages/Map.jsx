@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import Axios from 'axios'; // Import Axios for making HTTP requests
 
 // React Leaflet
 import {
@@ -16,7 +17,13 @@ import 'leaflet-loading';
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
 function records() {
-  fetch('http://127.0.0.1:8000/api/records/').then((response) => response.json()).then(data=>console.log(data))
+  // fetch('http://127.0.0.1:8000/api/records/').then((response) => response.json()).then(data=>console.log(data))
+
+  async function GetAllRecords() {
+    const response = await Axios.get('http://127.0.0.1:8000/api/records/')
+    console.log(response.data);
+  }
+  GetAllRecords();
 }
 
 records();
