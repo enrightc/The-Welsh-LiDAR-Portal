@@ -18,17 +18,23 @@ import 'leaflet-loading';
 // Converts the response to JSON and logs the data to the browser console
 function records() {
   // fetch('http://127.0.0.1:8000/api/records/').then((response) => response.json()).then(data=>console.log(data))
-
-  async function GetAllRecords() {
-    const response = await Axios.get('http://127.0.0.1:8000/api/records/')
-    console.log(response.data);
-  }
-  GetAllRecords();
 }
-
 records();
 
 const Map = () => {
+
+  const [allRecords, setAllRecords] = useState([]); // State to hold all records
+  useEffect(() => {
+    async function GetAllRecords() {
+      const response = await Axios.get('http://127.0.0.1:8000/api/records/')
+      // console.log(response.data);
+      setAllRecords(response.data);
+    }
+    GetAllRecords();
+  }, [])
+
+  console.log(allRecords);
+
   return (
     <div style={{ height: "100vh", marginTop: "64px" }}>
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
