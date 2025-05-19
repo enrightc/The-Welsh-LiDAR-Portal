@@ -23,17 +23,36 @@ records();
 
 const Map = () => {
 
-  const [allRecords, setAllRecords] = useState([]); // State to hold all records
+  // Use the useState hook to create a state variable called allRecords
+  // It starts as an empty array []
+  // setAllRecords is the function used to update the state later
+  const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
+
+  // useEffect runs code when the component first loads (mounts)
+  // The empty array [] means "only run this once"
   useEffect(() => {
+
+    // Define an async function to fetch the records
     async function GetAllRecords() {
-      const response = await Axios.get('http://127.0.0.1:8000/api/records/')
-      // console.log(response.data);
+      // Make a GET request to our Django backend to fetch the records
+      const response = await Axios.get('http://127.0.0.1:8000/api/records/');
+
+      // The response will have a .data property containing the actual records
+      // save those into allRecords state
       setAllRecords(response.data);
     }
+
+    // Call the function we just defined
     GetAllRecords();
-  }, [])
+
+  }, []); // ← This empty array makes sure it runs only once when the component loads
 
   console.log(allRecords);
+
+  // (Use `allRecords` to show markers or data on the map below)
+
+  const [latitude, setLatitude] = useState(51.650722593831645);
+  const [longitude, setLongitude] = useState(-3.98132717072927);
 
   return (
     <div style={{ height: "100vh", marginTop: "64px" }}>
@@ -110,6 +129,20 @@ const Map = () => {
 
         </LayersControl>
 
+        {/* Map markers for each record */}
+        {/* <Marker position={[latitude, longitude ]}></Marker> */}
+        {allRecords.map((record) => (
+          <React.Fragment key={record.id}>
+            {/* Display Marker */}
+            <Marker key={record.id}  position={[record.location.coordinates[0], record.location.coordinates[1]]}>
+              <Popup>
+                {record.title} <br />
+                {record.description} <br />
+              </Popup>
+            </Marker>
+          </React.Fragment>
+        ))}
+      
       </MapContainer>
     </div>
     )
