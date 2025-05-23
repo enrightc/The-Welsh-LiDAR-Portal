@@ -41,11 +41,13 @@ const Map = () => {
   // useEffect runs code when the component first loads (mounts)
   // The empty array [] means "only run this once"
   useEffect(() => {
+    const source = Axios.CancelToken.source(); // Create a cancel token for Axios requests
     // Define an async function to fetch the records
     async function GetAllRecords() {
       // Make a GET request to our Django backend to fetch the records
       try {
-        const response = await Axios.get('http://127.0.0.1:8000/api/records/');
+        const response = await Axios.get('http://127.0.0.1:8000/api/records/', {cancelToken: source.token});
+        // If the request is successful, the response will contain the data
 
         // The response will have a .data property containing the actual records
         // save those into allRecords state
@@ -57,7 +59,11 @@ const Map = () => {
   }
     // Call the function we just defined
     GetAllRecords();
-    
+    return () => {
+      // Cleanup function to run when the component unmounts
+      // This is where you can cancel any ongoing requests or clean up resources
+      source.cancel(); // Cancel the Axios request if the component unmounts
+    }
 
   }, []); // ← This empty array makes sure it runs only once when the component loads
   
