@@ -10,9 +10,13 @@ import {
     Marker,
     Popup,
     LayersControl,
+    FeatureGroup
   } from 'react-leaflet'
-
+import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-loading';
+
+// React Leaflet Draw
+import { EditControl } from "react-leaflet-draw"
 
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
@@ -59,6 +63,26 @@ const Map = () => {
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
 
         <LayersControl position="topright">
+
+        <FeatureGroup>
+          <EditControl
+            position="topright"
+            draw={{
+              polygon: true,
+              polyline: true,
+              rectangle: true,
+              circle: true,
+              marker: true,
+              circlemarker: false,
+            }}
+            onCreated={(e) => {
+              const layer = e.layer;
+              const coords = layer.getLatLngs();
+              console.log("Polygon drawn:", coords);
+              // You can store these in state or send to your Django backend
+            }}
+          />
+        </FeatureGroup>
           
           {/* Default OpenStreetMap Layer */}
           <LayersControl.BaseLayer checked name="OpenStreetMap">
