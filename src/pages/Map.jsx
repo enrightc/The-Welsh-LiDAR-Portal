@@ -18,6 +18,11 @@ import 'leaflet-loading';
 // React Leaflet Draw
 import { EditControl } from "react-leaflet-draw"
 
+// MUI Imports
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
 function records() {
@@ -31,33 +36,52 @@ const Map = () => {
   // It starts as an empty array []
   // setAllRecords is the function used to update the state later
   const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
+  const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
 
   // useEffect runs code when the component first loads (mounts)
   // The empty array [] means "only run this once"
   useEffect(() => {
-
     // Define an async function to fetch the records
     async function GetAllRecords() {
       // Make a GET request to our Django backend to fetch the records
-      const response = await Axios.get('http://127.0.0.1:8000/api/records/');
+      try {
+        const response = await Axios.get('http://127.0.0.1:8000/api/records/');
 
-      // The response will have a .data property containing the actual records
-      // save those into allRecords state
-      setAllRecords(response.data);
+        // The response will have a .data property containing the actual records
+        // save those into allRecords state
+        setAllRecords(response.data);
+        setDataIsLoading(false); // Set loading to false after data is fetched
+      } catch (error) {
+        console.log("Error fetching records:", error.response);
     }
-
+  }
     // Call the function we just defined
     GetAllRecords();
+    
 
   }, []); // ← This empty array makes sure it runs only once when the component loads
-
-  console.log(allRecords);
-
-  // (Use `allRecords` to show markers or data on the map below)
-
-  const [latitude, setLatitude] = useState(51.650722593831645);
-  const [longitude, setLongitude] = useState(-3.98132717072927);
-
+  
+  if (dataIsLoading === false) {
+    console.log(allRecords[0].location); // Log the records to the console for debugging
+  }
+  
+  // If data is still loading, show a loading message
+  if (dataIsLoading === true) {
+    return (
+      <Grid 
+        container 
+        justifyContent="center" 
+        alignItems="center" 
+        style={{ height: "100vh", width: "100vw" }}
+        // Set width: "100vw" to make sure the Grid takes up the full screen width,
+        // so the loading spinner can be perfectly centered horizontally
+      >
+        <CircularProgress />
+      </Grid>
+    )
+  }
+  // If data is loaded, show the map
+  // The MapContainer component is the main map component
   return (
     <div style={{ height: "100vh", marginTop: "64px" }}>
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
