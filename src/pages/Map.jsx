@@ -89,7 +89,7 @@ const Map = () => {
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
-    <div style={{ height: "100vh", marginTop: "64px" }}>
+    <div style={{ height: "100vh", marginTop: "70px" }}>
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
 
         <LayersControl position="topright">
