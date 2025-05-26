@@ -31,9 +31,6 @@ const Home = () => {
           }}
       />
 
-      {/* Top Navigation Bar */}
-      <Navigation />
-
         {/* Title and Buttons */}
         <Box sx= {{
           position: "absolute",

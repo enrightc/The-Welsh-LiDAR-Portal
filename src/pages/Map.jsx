@@ -89,10 +89,8 @@ const Map = () => {
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
-    <div style={{ height: "100vh", marginTop: "70px" }}>
+    <div style={{ height: "calc(100vh - 68.5px)", width: "100vw ",positiom: "relative", overflow: "hidden" }}>
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
-
-        <LayersControl position="topright">
 
         <FeatureGroup>
           <EditControl
@@ -113,6 +111,8 @@ const Map = () => {
             }}
           />
         </FeatureGroup>
+
+        <LayersControl position="topright">
           
           {/* Default OpenStreetMap Layer */}
           <LayersControl.BaseLayer checked name="OpenStreetMap">

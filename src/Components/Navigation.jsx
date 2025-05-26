@@ -43,7 +43,7 @@ function Navigation() {
   };
 
   return (
-    <AppBar position="fixed" sx={{ 
+    <AppBar position="static" sx={{ 
       width: "100%", 
       top: 0, 
       left: 0, 
