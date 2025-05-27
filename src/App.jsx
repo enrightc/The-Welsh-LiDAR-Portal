@@ -10,8 +10,6 @@ import Testing from "./components/Testing"; // Import the Testing component
 import Register from "./pages/Register"; 
 import Login from "./pages/Login"; 
 
-
-
 // the main App component
 function App() {
   return (

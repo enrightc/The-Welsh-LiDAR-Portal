@@ -92,27 +92,28 @@ const Map = () => {
     <div style={{ height: "calc(100vh - 68.5px)", width: "100vw ",positiom: "relative", overflow: "hidden" }}>
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
 
-        <FeatureGroup>
-          <EditControl
-            position="topright"
-            draw={{
-              polygon: true,
-              polyline: true,
-              rectangle: true,
-              circle: true,
-              marker: true,
-              circlemarker: false,
-            }}
-            onCreated={(e) => {
-              const layer = e.layer;
-              const coords = layer.getLatLngs();
-              console.log("Polygon drawn:", coords);
-              // You can store these in state or send to your Django backend
-            }}
-          />
-        </FeatureGroup>
+      <LayersControl position="topright">
+      <FeatureGroup>
+        <EditControl
+          position="topright"
+          draw={{
+            polygon: true,
+            polyline: true,
+            rectangle: true,
+            circle: true,
+            marker: true,
+            circlemarker: false,
+          }}
+          onCreated={(e) => {
+            const layer = e.layer;
+            const coords = layer.getLatLngs();
+            console.log("Polygon drawn:", coords);
+            // You can store these in state or send to your Django backend
+          }}
+        />
+      </FeatureGroup>
 
-        <LayersControl position="topright">
+        
           
           {/* Default OpenStreetMap Layer */}
           <LayersControl.BaseLayer checked name="OpenStreetMap">

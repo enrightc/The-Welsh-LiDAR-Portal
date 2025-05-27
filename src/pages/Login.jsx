@@ -23,23 +23,23 @@ function Login() {
     >
       <form>
         <Grid container direction="column" spacing={3} >
-          <Grid item>
+          <Grid>
             <Typography variant="h4" align="center">
               Login to your Account
             </Typography>
           </Grid>
 
-          <Grid item>
+          <Grid>
             <TextField id="username" fullWidth label="Username" variant="outlined" />
           </Grid>
 
 
-          <Grid item>
+          <Grid>
             <TextField id="password" fullWidth label="Password" variant="outlined" type="password" />
           </Grid>
 
 
-          <Grid item>
+          <Grid>
             <Button variant="contained" xs={8}
                 style={{
                     marginLeft: 'auto',
@@ -55,7 +55,7 @@ function Login() {
                 type="submit">Login</Button>
           </Grid>
 
-          <Grid item>
+          <Grid>
             <Typography variant="small" align="center">
               Dont have an account yet?{" "}
               <span
