@@ -6,7 +6,7 @@ import Navigation from "./components/Navigation"; // Import the Navigation compo
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Map from "./pages/Map";
-import Testing from "./components/Testing"; // Import the Testing component
+import Testing from "./pages/Testing"; // Import the Testing component
 import Register from "./pages/Register"; 
 import Login from "./pages/Login"; 
 

@@ -1,6 +1,7 @@
 import React, {use, useEffect, useState} from 'react'
 import Axios from 'axios';  // Import Axios for making HTTP requests
 import { useNavigate } from "react-router-dom";
+import {useImmerReducer} from "use-immer"; // Import useImmerReducer for state management
 
 // MUI Imports
 import Typography from '@mui/material/Typography';
@@ -9,21 +10,45 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 function Register() {
   const navigate = useNavigate()
-  const [sendRequest, setSendRequest] = useState(false); // State to control when to send the request
   
-  const [usernameValue, setUsernameValue] = useState("") // State to hold the username input value
-  const [emailValue, setEmailValue] = useState("") // State to hold the email input value
-  const [passwordValue, setPasswordValue] = useState("") // State to hold the password input value
-  const [password2Value, setPassword2Value] = useState("") // State to hold the password2 input value
+  const initialstate = {
+      usernameValue: "",
+      emailValue: "",
+      passwordValue: "",
+      password2Value: "",
+      sendRequest: 0, // State to control when to send the request
+    };
   
+    function ReducerFunction(draft, action){
+      switch (action.type){
+        case "catchUsernameChange":
+          draft.usernameValue = action.usernameChosen; // Update usernameValue in the state
+          break;
+        case "catchEmailChange":
+          draft.emailValue = action.emailChosen; 
+          break;
+        case "catchPasswordChange":
+          draft.passwordValue = action.passwordChosen; 
+          break;
+        case "catchPassword2Change":
+          draft.password2Value = action.password2Chosen; 
+          break;
+        case "changeSendRequest":
+          draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
+          break; // This action will trigger the useEffect to send the request
+      }
+    }
+  
+    const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
+
   // Handles the form submission event:
   // - Prevents the default page reload behaviour
-  // - Triggers the `useEffect` hook by setting `sendRequest` to true,
+  // - Triggers the `useEffect` hook by incrementing sendRequest
   //   which then sends the registration request to the backend
   function FormSubmit(e){
     e.preventDefault() // prevents the default form submission behavior/page reload
     console.log("Form submitted");
-    setSendRequest(true); // Set sendRequest to true to trigger the useEffect
+    dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
   }
 
   // useEffect hook to handle the registration API call:
@@ -31,7 +56,7 @@ function Register() {
   // - If the request is successful, the backend returns a response with the created user data
   // - Includes a cleanup function that cancels the request if the component unmounts before completion
   useEffect(() => {
-    if (sendRequest) {
+    if (state.sendRequest) {
       const source = Axios.CancelToken.source(); // Create a cancel token for Axios requests
     
     async function SignUp() {
@@ -42,10 +67,10 @@ function Register() {
         const response = await Axios.post(
           'http://localhost:8000/api-auth-djoser/users/', 
           {
-            username: usernameValue,
-            email: emailValue,
-            password: passwordValue,
-            re_password: password2Value,
+            username: state.usernameValue,
+            email: state.emailValue,
+            password: state.passwordValue,
+            re_password: state.password2Value,
           }, 
           {
             cancelToken: source.token // Attach the cancel token so it cancel the request if the component unmounts
@@ -54,6 +79,8 @@ function Register() {
         // If the request is successful, the response will contain the data
 
         console.log(response)
+        navigate("/"); // Redirect to the home page after successful registration
+        
       } catch (error) {
         if (error.response) {
           console.log("Server responded with:", error.response.status, error.response.data);
@@ -70,7 +97,7 @@ function Register() {
       source.cancel(); // Cancel the Axios request if the component unmounts
     };
   }
-}, [sendRequest]); // ← This empty array makes sure it runs only once when the component loads
+}, [state.sendRequest]); // ← This empty array makes sure it runs only once when the component loads
 
   return (
     <div
@@ -98,12 +125,20 @@ function Register() {
               fullWidth 
               label="Username" 
               variant="outlined"
-              value={usernameValue}
+              value={state.usernameValue}
               // When the user types in the input field, onChange function runs.
-              // It takes the current value from the input (e.target.value)
-              // and updates the 'usernameValue' state with it.
-              // This keeps the input field in sync with the state (a controlled component).
-              onChange = {(e)=>setUsernameValue(e.target.value)} 
+              // When the user types in the Username input:
+              // 1. Grab the new value (e.target.value)
+              // 2. Send it to the reducer using dispatch()
+              // 3. The reducer updates 'usernameValue' in the state
+              // This keeps the input in sync with the app state (a controlled input)
+              onChange = {(e)=> 
+                // When the user types in the Confirm Password input, do the following:
+                dispatch({
+                  type: "catchUsernameChange", // Action that tells the reducer what to update
+                  usernameChosen: e.target.value // This is the new value from the input field
+                })
+              } 
             /> 
           </Grid>
 
@@ -113,8 +148,9 @@ function Register() {
               fullWidth 
               label="Email" 
               variant="outlined"
-              value={emailValue}
-              onChange = {(e)=>setEmailValue(e.target.value)}
+              value={state.emailValue}
+              onChange = {(e)=> 
+                dispatch({type: "catchEmailChange", emailChosen: e.target.value})} 
             />
           </Grid>
 
@@ -125,8 +161,8 @@ function Register() {
               label="Password" 
               variant="outlined" 
               type="password"
-              value={passwordValue}
-              onChange = {(e)=>setPasswordValue(e.target.value)}
+              value={state.passwordValue}
+              onChange = {(e)=> dispatch({type: "catchPasswordChange", passwordChosen: e.target.value})} 
             />
           </Grid>
 
@@ -137,8 +173,8 @@ function Register() {
               label="Confirm Password" 
               variant="outlined" 
               type="password"
-              value={password2Value}
-              onChange = {(e)=>setPassword2Value(e.target.value)} 
+              value={state.password2Value}
+              onChange = {(e)=> dispatch({type: "catchPassword2Change", password2Chosen: e.target.value})} 
             />
           </Grid>
 
