@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {use, useEffect, useState} from 'react'
 import Axios from 'axios';  // Import Axios for making HTTP requests
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +10,11 @@ import Button from '@mui/material/Button';
 function Register() {
   const navigate = useNavigate()
   const [sendRequest, setSendRequest] = useState(false); // State to control when to send the request
+  
+  const [usernameValue, setUsernameValue] = useState("") // State to hold the username input value
+  const [emailValue, setEmailValue] = useState("") // State to hold the email input value
+  const [passwordValue, setPasswordValue] = useState("") // State to hold the password input value
+  const [password2Value, setPassword2Value] = useState("") // State to hold the password2 input value
   
   // Handles the form submission event:
   // - Prevents the default page reload behaviour
@@ -37,10 +42,10 @@ function Register() {
         const response = await Axios.post(
           'http://localhost:8000/api-auth-djoser/users/', 
           {
-            username: 'testinguser',
-            email: 'testinguser@gmail.com',
-            password: 'mypass123',
-            re_password: 'mypass123',
+            username: usernameValue,
+            email: emailValue,
+            password: passwordValue,
+            re_password: password2Value,
           }, 
           {
             cancelToken: source.token // Attach the cancel token so it cancel the request if the component unmounts
@@ -88,39 +93,78 @@ function Register() {
           </Grid>
 
           <Grid>
-            <TextField id="username" fullWidth label="Username" variant="outlined" />
+            <TextField 
+              id="username" 
+              fullWidth 
+              label="Username" 
+              variant="outlined"
+              value={usernameValue}
+              // When the user types in the input field, onChange function runs.
+              // It takes the current value from the input (e.target.value)
+              // and updates the 'usernameValue' state with it.
+              // This keeps the input field in sync with the state (a controlled component).
+              onChange = {(e)=>setUsernameValue(e.target.value)} 
+            /> 
           </Grid>
 
           <Grid>
-            <TextField id="email" fullWidth label="Email" variant="outlined" />
+            <TextField 
+              id="email" 
+              fullWidth 
+              label="Email" 
+              variant="outlined"
+              value={emailValue}
+              onChange = {(e)=>setEmailValue(e.target.value)}
+            />
           </Grid>
 
           <Grid>
-            <TextField id="password" fullWidth label="Password" variant="outlined" type="password" />
+            <TextField 
+              id="password" 
+              fullWidth 
+              label="Password" 
+              variant="outlined" 
+              type="password"
+              value={passwordValue}
+              onChange = {(e)=>setPasswordValue(e.target.value)}
+            />
           </Grid>
 
           <Grid>
-            <TextField id="password2 "fullWidth label="Confirm Password" variant="outlined" type="password" />
+            <TextField 
+              id="password2" 
+              fullWidth 
+              label="Confirm Password" 
+              variant="outlined" 
+              type="password"
+              value={password2Value}
+              onChange = {(e)=>setPassword2Value(e.target.value)} 
+            />
           </Grid>
 
           <Grid>
-            <Button variant="contained" xs={8}
-                style={{
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                }}
-                sx= {{
-                    color: "black",
-                    border: "none",
-                    fontSize: { xs: '0.8rem', md: '1rem' },
-                    borderRadius: "5px",
-                    backgroundColor: "#FFD034",
-                  }} 
-                type="submit">Register</Button>
+            <Button 
+              variant="contained" 
+              xs={8}
+              style={{
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+              }}
+              sx= {{
+                  color: "black",
+                  border: "none",
+                  fontSize: { xs: '0.8rem', md: '1rem' },
+                  borderRadius: "5px",
+                  backgroundColor: "#FFD034",
+                }} 
+              type="submit">Register
+            </Button>
           </Grid>
 
           <Grid>
-            <Typography variant="small" align="center">
+            <Typography 
+            variant="small" 
+            align="center">
               Already have an account? {" "}
               <span
                 onClick={() => navigate("/login")} 
