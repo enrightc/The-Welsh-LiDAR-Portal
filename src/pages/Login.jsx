@@ -16,6 +16,7 @@ function Login() {
           usernameValue: "",
           passwordValue: "",
           sendRequest: 0, // State to control when to send the request
+          token: "", // Token to store the authentication token
         };
       
         function ReducerFunction(draft, action){
@@ -29,6 +30,9 @@ function Login() {
             case "changeSendRequest":
               draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
               break; // This action will trigger the useEffect to send the request
+            case "catchToken":
+            draft.token = action.tokenValue // Update the token in the state
+            break; // This action will update the token state when the request is successful
           }
         }
       
@@ -70,6 +74,7 @@ function Login() {
         // If the request is successful, the response will contain the data
 
         console.log(response)
+        dispatch({type: 'catchToken', tokenValue: response.data.auth_token}) // Dispatch an action to update the token in the state
         // navigate("/"); // Redirect to the home page after successful registration
         
       } catch (error) {
@@ -89,6 +94,50 @@ function Login() {
     };
   }
 }, [state.sendRequest]); // ← This empty array makes sure it runs only once when the component loads
+
+    // Get user information from the backend after successful login
+    // - When `state.token` becomes available, it triggers a POST request to the backend to log in the user
+    useEffect(() => {
+        if (state.token !== "") {
+        const source = Axios.CancelToken.source(); // Create a cancel token for Axios requests
+        
+        async function GetUserInfo() {
+        // Define an async function to register a new user by sending a POST request to the backend
+        
+        try {
+            // Make a get request to  Django backend to get user information
+            const response = await Axios.get(
+                'http://localhost:8000/api-auth-djoser/users/me/', 
+                {
+                  headers: {
+                    Authorization: `Token ${state.token}`,
+                  },
+                  cancelToken: source.token,
+                }
+              );
+            
+            // If the request is successful, the response will contain the data
+
+            console.log(response)
+            // navigate("/"); // Redirect to the home page after successful registration
+            
+        } catch (error) {
+            if (error.response) {
+            console.log("Server responded with:", error.response.status, error.response.data);
+            } else {
+            console.log("Error:", error.message);
+            }
+        }
+        }
+        // Call the function we just defined
+        GetUserInfo();
+        return () => {
+        // Cleanup function to run when the component unmounts
+        // This is where you can cancel any ongoing requests or clean up resources
+        source.cancel(); // Cancel the Axios request if the component unmounts
+        };
+    }
+    }, [state.token]); // ← This empty array makes sure it runs only once when the component loads
 
   return (
     <div
