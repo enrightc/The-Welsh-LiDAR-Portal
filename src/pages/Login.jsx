@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react'
+import React, {useEffect, useContext, useState} from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 import { useNavigate } from "react-router-dom";
 import { useImmerReducer } from 'use-immer';
@@ -15,6 +15,8 @@ import StateContext from '../Contexts/StateContext';
 
 function Login() {
     const navigate = useNavigate()
+
+    const [loginComplete, setLoginComplete] = useState(false);  // State to track if login is complete
 
     const GlobalDispatch = useContext(DispatchContext); // Get the dispatch function from the context
 
@@ -89,7 +91,7 @@ function Login() {
             type: 'catchToken', 
             tokenValue: response.data.auth_token
         }); // Dispatch an action to update the global token in the context
-        navigate("/"); // Redirect to the home page after successful registration
+       // navigate("/"); // Redirect to the home page after successful registration
         
       } catch (error) {
         if (error.response) {
@@ -135,8 +137,11 @@ function Login() {
             console.log(response)
             GlobalDispatch({
                 type: 'catchUserInfo', 
-                usernameInfo: response.data.username, emailInfo: response.data.email, IdInfo: response.data.id}); // Dispatch an action to update the username in the state
-            // navigate("/"); // Redirect to the home page after successful registration
+                usernameInfo: response.data.username, emailInfo: response.data.email, 
+                IdInfo: response.data.id
+            }); // Dispatch an action to update the username in the state
+            setLoginComplete(true); // Set this after dispatch
+            navigate("/"); // Redirect to the home page after successful registration
             
         } catch (error) {
             if (error.response) {

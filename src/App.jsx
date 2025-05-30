@@ -22,7 +22,6 @@ function App() {
     userEmail: "",
     userId: "",
     userToken: "", // Token to store the authentication token
-    globalMessage: "Hello, this message can be used by any child component",
   };
       
   function ReducerFunction(draft, action){

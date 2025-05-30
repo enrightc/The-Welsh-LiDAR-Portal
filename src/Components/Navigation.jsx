@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom"; // ✅ Use React Router for navigation
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -13,6 +13,11 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
+
+// Contexts
+import StateContext from "../Contexts/StateContext"; // Import the StateContext for accessing global state
+import { Global } from "@emotion/react";
+
 
 const pages = [
   { name: "Home", path: "/" },
@@ -41,6 +46,14 @@ function Navigation() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  
+  const GlobalState = useContext(StateContext); // Access global state
+  // This will allow you to access user information from the global state
+
+
+useEffect(() => {
+  console.log("GlobalState in Navigation:", GlobalState);
+}, [GlobalState]);
 
   return (
     <AppBar position="static" sx={{ 
@@ -140,13 +153,24 @@ function Navigation() {
                 <Avatar alt="User" src="/static/images/avatar/2.jpg" />
               </IconButton> */}
               
-              <Button 
-                color="inherit"
-                variant="outlined"
-                onClick={handleOpenUserMenu}
-                sx={{ textTransform: 'none' }}>
-                Hello, sign in
-              </Button>
+              {GlobalState.userUsername !== "" ?
+                <Button 
+                  color="inherit"
+                  variant="outlined"
+                  onClick={handleOpenUserMenu}
+                  sx={{ textTransform: 'none' }}>
+                  Hello, {GlobalState.userUsername}
+                </Button> :
+
+                <Button 
+                  color="inherit"
+                  variant="outlined"
+                  onClick={handleOpenUserMenu}
+                  sx={{ textTransform: 'none' }}>
+                  Hello, sign in
+                </Button>
+              }
+              
             </Tooltip>
             <Menu
               anchorEl={anchorElUser}
