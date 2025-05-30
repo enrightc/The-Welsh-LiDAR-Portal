@@ -25,8 +25,6 @@ const pages = [
   { name: "Map", path: "/map" },
 ];
 
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
-
 function Navigation() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -155,23 +153,44 @@ useEffect(() => {
               
               {GlobalState.userUsername !== "" ?
                 <Button 
-                  color="inherit"
-                  variant="outlined"
-                  onClick={handleOpenUserMenu}
-                  sx={{ textTransform: 'none' }}>
-                  Hello, {GlobalState.userUsername}
+                color="inherit"
+                variant="outlined"
+                onClick={handleOpenUserMenu}
+                sx={{ 
+                  textTransform: 'none',
+                  alignItems: 'flex-start', // ensures left alignment within the button
+                }}>
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                    <Typography sx={{ fontWeight: 500 }}>
+                      Hello, {GlobalState.userUsername}
+                    </Typography>
+                    <Typography sx={{ fontSize: "0.8rem", color: "grey.400" }}>
+                      Accounts & Settings
+                    </Typography>
+                  </Box>
                 </Button> :
 
                 <Button 
-                  color="inherit"
-                  variant="outlined"
-                  onClick={handleOpenUserMenu}
-                  sx={{ textTransform: 'none' }}>
-                  Hello, sign in
+                color="inherit"
+                variant="outlined"
+                onClick={handleOpenUserMenu}
+                sx={{ 
+                  textTransform: 'none',
+                  alignItems: 'flex-start', // ensures left alignment within the button
+                }}>
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                    <Typography sx={{ fontWeight: 500 }}>
+                      Hello, sign in
+                    </Typography>
+                    <Typography sx={{ fontSize: "0.8rem", color: "grey.400" }}>
+                      Accounts & Settings
+                    </Typography>
+                  </Box>
                 </Button>
               }
               
             </Tooltip>
+            
             <Menu
               anchorEl={anchorElUser}
               open={Boolean(anchorElUser)}
@@ -180,11 +199,33 @@ useEffect(() => {
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               sx={{ mt: "45px" }}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              {GlobalState.userUsername !== "" ? (
+                // Logged-in menu
+                <>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">Profile</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">Account</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">Dashboard</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">Logout</Typography>
+                  </MenuItem>
+                </>
+              ) : (
+                // Logged-out menu
+                <>
+                  <MenuItem onClick={handleCloseUserMenu} component={Link} to="/login">
+                    <Typography textAlign="center">Login</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu} component={Link} to="/register">
+                    <Typography textAlign="center">Register</Typography>
+                  </MenuItem>
+                </>
+              )}
             </Menu>
           </Box>
         </Toolbar>
