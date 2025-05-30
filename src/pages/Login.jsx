@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useContext} from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 import { useNavigate } from "react-router-dom";
 import { useImmerReducer } from 'use-immer';
@@ -9,8 +9,16 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
+// Contexts
+import DispatchContext from '../Contexts/DispatchContext'; // Import the DispatchContext for state management
+import StateContext from '../Contexts/StateContext'; 
+
 function Login() {
     const navigate = useNavigate()
+
+    const GlobalDispatch = useContext(DispatchContext); // Get the dispatch function from the context
+
+    const GlobalState = useContext(StateContext);
 
     const initialstate = {
           usernameValue: "",
@@ -74,8 +82,14 @@ function Login() {
         // If the request is successful, the response will contain the data
 
         console.log(response)
-        dispatch({type: 'catchToken', tokenValue: response.data.auth_token}) // Dispatch an action to update the token in the state
-        // navigate("/"); // Redirect to the home page after successful registration
+        dispatch({
+            type: 'catchToken', 
+            tokenValue: response.data.auth_token}); // Dispatch an action to update the token in the state
+        GlobalDispatch({
+            type: 'catchToken', 
+            tokenValue: response.data.auth_token
+        }); // Dispatch an action to update the global token in the context
+        navigate("/"); // Redirect to the home page after successful registration
         
       } catch (error) {
         if (error.response) {
@@ -119,6 +133,9 @@ function Login() {
             // If the request is successful, the response will contain the data
 
             console.log(response)
+            GlobalDispatch({
+                type: 'catchUserInfo', 
+                usernameInfo: response.data.username, emailInfo: response.data.email, IdInfo: response.data.id}); // Dispatch an action to update the username in the state
             // navigate("/"); // Redirect to the home page after successful registration
             
         } catch (error) {

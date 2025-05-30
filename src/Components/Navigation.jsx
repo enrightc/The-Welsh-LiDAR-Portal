@@ -139,6 +139,7 @@ function Navigation() {
               {/* <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="User" src="/static/images/avatar/2.jpg" />
               </IconButton> */}
+              
               <Button 
                 color="inherit"
                 variant="outlined"
