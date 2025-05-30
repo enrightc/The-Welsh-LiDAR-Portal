@@ -93,28 +93,6 @@ const Map = () => {
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
 
       <LayersControl position="topright">
-      <FeatureGroup>
-        <EditControl
-          position="topright"
-          draw={{
-            polygon: true,
-            polyline: true,
-            rectangle: true,
-            circle: true,
-            marker: true,
-            circlemarker: false,
-          }}
-          onCreated={(e) => {
-            const layer = e.layer;
-            const coords = layer.getLatLngs();
-            console.log("Polygon drawn:", coords);
-            // You can store these in state or send to your Django backend
-          }}
-        />
-      </FeatureGroup>
-
-        
-          
           {/* Default OpenStreetMap Layer */}
           <LayersControl.BaseLayer checked name="OpenStreetMap">
             <TileLayer
@@ -183,6 +161,26 @@ const Map = () => {
           </LayersControl.Overlay>
 
         </LayersControl>
+
+        <FeatureGroup>
+        <EditControl
+          position="topright"
+          draw={{
+            polygon: true,
+            polyline: true,
+            rectangle: true,
+            circle: true,
+            marker: true,
+            circlemarker: false,
+          }}
+          onCreated={(e) => {
+            const layer = e.layer;
+            const coords = layer.getLatLngs();
+            console.log("Polygon drawn:", coords);
+            // You can store these in state or send to your Django backend
+          }}
+        />
+      </FeatureGroup>
 
         {/* Map markers for each record */}
         {/* <Marker position={[latitude, longitude ]}></Marker> */}

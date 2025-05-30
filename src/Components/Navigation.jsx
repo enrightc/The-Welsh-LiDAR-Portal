@@ -136,9 +136,16 @@ function Navigation() {
           {/* User Profile Menu */}
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              {/* <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="User" src="/static/images/avatar/2.jpg" />
-              </IconButton>
+              </IconButton> */}
+              <Button 
+                color="inherit"
+                variant="outlined"
+                onClick={handleOpenUserMenu}
+                sx={{ textTransform: 'none' }}>
+                Hello, sign in
+              </Button>
             </Tooltip>
             <Menu
               anchorEl={anchorElUser}
