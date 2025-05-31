@@ -2,6 +2,7 @@
 import { Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation"; // Import the Navigation component
 import { useImmerReducer } from "use-immer";
+import React, { useEffect } from "react"; // Import React and useEffect for side effects
 
 // Import the pages that will be displayed
 import Home from "./pages/Home";
@@ -18,10 +19,12 @@ import StateContext from "./Contexts/StateContext";
 // the main App component
 function App() {
   const initialstate = {
-    userUsername: "",
-    userEmail: "",
-    userId: "",
-    userToken: "", // Token to store the authentication token
+    userUsername: localStorage.getItem("theUserUsername"), // Retrieve username from localStorage or set to empty string
+    userEmail: localStorage.getItem("theUserEmail"),  
+    userId: localStorage.getItem("theUserId"),  
+    userToken: localStorage.getItem("theUserToken"), 
+    userIsLoggedIn: localStorage.getItem('theUserUsername') ? true : false, // State to track if the user is logged in
+    // userIsAdmin: false, // State to track if the user is an admin
   };
       
   function ReducerFunction(draft, action){
@@ -29,16 +32,25 @@ function App() {
       case "catchToken":
         draft.userToken = action.tokenValue; // Update the token in the state
         break; // This action will update the token state when the request is successful
-      case "catchUserInfo":
+      case "userSignsIn":
         draft.userUsername = action.usernameInfo; // Update username in the state
         draft.userEmail = action.emailInfo; // Update email in the state
         draft.userId = action.IdInfo; // Update user ID in the state
+        draft.userIsLoggedIn = true; // Set userIsLoggedIn to true
         break; // This action will update the user information in the state
     }
   }
 
   const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
 
+useEffect(() => {
+  if (state.userIsLoggedIn) {
+    localStorage.setItem("theUserUsername", state.userUsername);
+    localStorage.setItem("theUserEmail", state.userEmail);
+    localStorage.setItem("theUserId", state.userId);
+    localStorage.setItem("theUserToken", state.userToken);        
+  }
+}, [state.userIsLoggedIn]);
 
   return (
     <>

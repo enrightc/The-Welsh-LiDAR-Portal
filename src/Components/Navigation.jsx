@@ -151,16 +151,26 @@ useEffect(() => {
                 <Avatar alt="User" src="/static/images/avatar/2.jpg" />
               </IconButton> */}
               
-              {GlobalState.userUsername !== "" ?
+              {GlobalState.userIsLoggedIn ?
                 <Button 
-                color="inherit"
-                variant="outlined"
-                onClick={handleOpenUserMenu}
-                sx={{ 
-                  textTransform: 'none',
-                  alignItems: 'flex-start', // ensures left alignment within the button
-                }}>
-                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                  color="inherit"
+                  variant="outlined"
+                  onClick={handleOpenUserMenu}
+                  sx={{ 
+                    textTransform: 'none',
+                    alignItems: 'flex-start', // ensures left alignment within the button
+                    borderWidth: '1px',        // Make the border thinner
+                    borderColor: '#BDBDBD',    // Optional: softer colour than pure black
+                    '&:hover': {
+                      borderWidth: '1.5px',    // Optional: slightly thicker on hover, or just keep as 1px
+                      borderColor: '#757575',  // Optional: slightly darker on hover
+                    },
+                  }}
+                >
+                  <Box sx={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "flex-start" }}>
                     <Typography sx={{ fontWeight: 500 }}>
                       Hello, {GlobalState.userUsername}
                     </Typography>
@@ -171,14 +181,25 @@ useEffect(() => {
                 </Button> :
 
                 <Button 
-                color="inherit"
-                variant="outlined"
-                onClick={handleOpenUserMenu}
-                sx={{ 
-                  textTransform: 'none',
-                  alignItems: 'flex-start', // ensures left alignment within the button
-                }}>
-                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                  color="inherit"
+                  variant="outlined" 
+                  onClick={handleOpenUserMenu}
+                  sx={{ 
+                    textTransform: 'none',
+                    alignItems: 'flex-start', // ensures left alignment within the button
+                    borderWidth: '1px',        // Make the border thinner
+                      borderColor: '#BDBDBD',    // Optional: softer colour than pure black
+                      '&:hover': {
+                        borderWidth: '1.5px',    // Optional: slightly thicker on hover, or just keep as 1px
+                        borderColor: '#757575',  // Optional: slightly darker on hover
+                      },
+                  }}
+                >
+                  <Box sx={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "flex-start",
+                  }}>
                     <Typography sx={{ fontWeight: 500 }}>
                       Hello, sign in
                     </Typography>
@@ -199,7 +220,7 @@ useEffect(() => {
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               sx={{ mt: "45px" }}
             >
-              {GlobalState.userUsername !== "" ? (
+              {GlobalState.userIsLoggedIn ? (
                 // Logged-in menu
                 <>
                   <MenuItem onClick={handleCloseUserMenu}>

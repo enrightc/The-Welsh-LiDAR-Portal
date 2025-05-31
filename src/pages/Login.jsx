@@ -136,7 +136,7 @@ function Login() {
 
             console.log(response)
             GlobalDispatch({
-                type: 'catchUserInfo', 
+                type: 'userSignsIn', 
                 usernameInfo: response.data.username, emailInfo: response.data.email, 
                 IdInfo: response.data.id
             }); // Dispatch an action to update the username in the state
