@@ -1,5 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
+import Axios from "axios";
 import { Link } from "react-router-dom"; // ✅ Use React Router for navigation
+import { useNavigate } from "react-router-dom";
+// MUI Imports
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -16,7 +19,9 @@ import AdbIcon from "@mui/icons-material/Adb";
 
 // Contexts
 import StateContext from "../Contexts/StateContext"; // Import the StateContext for accessing global state
+import DispatchContext from "../Contexts/DispatchContext";
 import { Global } from "@emotion/react";
+
 
 
 const pages = [
@@ -25,7 +30,9 @@ const pages = [
   { name: "Map", path: "/map" },
 ];
 
+
 function Navigation() {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -47,11 +54,32 @@ function Navigation() {
   
   const GlobalState = useContext(StateContext); // Access global state
   // This will allow you to access user information from the global state
+  const GlobalDispatch = useContext(DispatchContext); // Access global dispatch function
+  // This will allow you to dispatch actions to update the global state
 
-
-useEffect(() => {
-  console.log("GlobalState in Navigation:", GlobalState);
-}, [GlobalState]);
+  async function handleLogout() {
+    // Clear user data from localStorage
+    setAnchorElUser(null);
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      try {
+        const response = await Axios.post(
+          'http://localhost:8000/api-auth-djoser/token/logout/', 
+          GlobalState.userToken,
+          { 
+            headers: {
+              Authorization: `Token ${GlobalState.userToken}`,
+            }
+          }
+        );
+          console.log(response);
+          GlobalDispatch({ type: "Logout" }); // Dispatch action to update global state
+          navigate("/"); // Redirect to home page after logout
+      } catch (e) {
+        console.log(e.response);
+        }
+    }
+  }
 
   return (
     <AppBar position="static" sx={{ 
@@ -232,16 +260,22 @@ useEffect(() => {
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography textAlign="center">Dashboard</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={handleLogout}>
                     <Typography textAlign="center">Logout</Typography>
                   </MenuItem>
                 </>
               ) : (
                 // Logged-out menu
                 <>
-                  <MenuItem onClick={handleCloseUserMenu} component={Link} to="/login">
+                  <MenuItem 
+                    onClick={
+                      handleCloseUserMenu} 
+                      component={Link} 
+                      to="/login"
+                  >
                     <Typography textAlign="center">Login</Typography>
                   </MenuItem>
+
                   <MenuItem onClick={handleCloseUserMenu} component={Link} to="/register">
                     <Typography textAlign="center">Register</Typography>
                   </MenuItem>

@@ -38,6 +38,8 @@ function App() {
         draft.userId = action.IdInfo; // Update user ID in the state
         draft.userIsLoggedIn = true; // Set userIsLoggedIn to true
         break; // This action will update the user information in the state
+      case "Logout":
+        draft.userIsLoggedIn = false; // Set userIsLoggedIn to false
     }
   }
 
@@ -49,6 +51,12 @@ useEffect(() => {
     localStorage.setItem("theUserEmail", state.userEmail);
     localStorage.setItem("theUserId", state.userId);
     localStorage.setItem("theUserToken", state.userToken);        
+  }
+  else {
+    localStorage.removeItem("theUserUsername");
+    localStorage.removeItem("theUserEmail");
+    localStorage.removeItem("theUserId");
+    localStorage.removeItem("theUserToken");
   }
 }, [state.userIsLoggedIn]);
 
