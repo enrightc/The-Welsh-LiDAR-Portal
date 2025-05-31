@@ -68,7 +68,7 @@ const Map = () => {
   }, []); // ← This empty array makes sure it runs only once when the component loads
   
   if (dataIsLoading === false) {
-    console.log(allRecords[0].location); // Log the records to the console for debugging
+    console.log(allRecords[0]); // Log the records to the console for debugging
   }
   
   // If data is still loading, show a loading message
@@ -187,7 +187,13 @@ const Map = () => {
         {allRecords.map((record) => (
           <React.Fragment key={record.id}>
             {/* Display Marker */}
-            <Marker key={record.id}  position={[record.location.coordinates[0], record.location.coordinates[1]]}>
+            <Marker 
+              key={record.id}  
+              position={[
+                record.latitude, 
+                record.longitude
+              ]}
+            >
               <Popup>
                 {record.title} <br />
                 {record.description} <br />
