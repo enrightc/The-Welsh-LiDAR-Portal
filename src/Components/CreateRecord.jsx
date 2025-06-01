@@ -109,7 +109,6 @@ export default function CreateRecord() {
         // picture3Value: "",
         // picture4Value: "",
         // picture5Value: "",
-        
       };
     
       function ReducerFunction(draft, action){

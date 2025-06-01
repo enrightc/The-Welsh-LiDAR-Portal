@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
-import CreateRecord from '../Components/CreateRecord'; // adjust the path if needed
+import CreateRecord from '../Components/CreateRecord'; // Import the CreateRecord component for creating new records
+
+import DraggableMarker from '../Components/DraggableMarker';
+// Import the DraggableMarker component for draggable markers on the map
 
 // React Leaflet
 import {
@@ -25,6 +28,9 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 
+
+
+
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
 function records() {
@@ -40,6 +46,8 @@ const Map = () => {
   const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
   const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
 
+  const [markerPosition, setMarkerPosition] = useState([52.1307, -3.7837]); // Initial position for the draggable marker
+  
   // useEffect runs code when the component first loads (mounts)
   // The empty array [] means "only run this once"
   useEffect(() => {
@@ -88,15 +96,23 @@ const Map = () => {
       </Grid>
     )
   }
+ 
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
     <div style={{ height: "calc(100vh - 68.5px)", width: "100vw ",positiom: "relative", overflow: "hidden" }}>
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
 
-        {/* CreateRecord button & drawer */}
+      {/* CreateRecord button & drawer */}
       <CreateRecord />
 
+      {/* DraggableMarker button & drawer */}
+      <DraggableMarker
+        position={markerPosition}
+        onDragEnd={newPosition => setMarkerPosition(newPosition)}
+      />
+
+      {/* LayersControl for switching between map layers */}
       <LayersControl position="topright">
           {/* Default OpenStreetMap Layer */}
           <LayersControl.BaseLayer checked name="OpenStreetMap">
