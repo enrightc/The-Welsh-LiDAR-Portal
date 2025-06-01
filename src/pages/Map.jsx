@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
 import CreateRecord from '../Components/CreateRecord'; // Import the CreateRecord component for creating new records
-
-import DraggableMarker from '../Components/DraggableMarker';
-// Import the DraggableMarker component for draggable markers on the map
 
 // React Leaflet
 import {
@@ -28,6 +25,9 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 
+import StateContext from "../Contexts/StateContext";
+import DispatchContext from "../Contexts/DispatchContext";
+
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
 function records() {
@@ -36,14 +36,40 @@ function records() {
 records();
 
 const Map = () => {
+  // 1. Get global state and dispatch from context
+  const state = React.useContext(StateContext);
+  const dispatch = React.useContext(DispatchContext);
+
+  // 2. Get marker position from global state
+  const markerPosition = [
+    Number(state.markerPosition.latitudeValue),
+    Number(state.markerPosition.longitudeValue),
+  ];
+
+  // 3. Create a ref for the marker
+  const markerRef = useRef(null);
+
+  // 4. Set up event handlers for the marker
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker) {
+          const { lat, lng } = marker.getLatLng();
+          // Update global state with new position
+          dispatch({ type: "catchLatitudeChange", latitudeChosen: lat });
+          dispatch({ type: "catchLongitudeChange", longitudeChosen: lng });
+        }
+      },
+    }),
+    [dispatch] // Make sure to add dispatch as a dependency
+  );
 
   // Use the useState hook to create a state variable called allRecords
   // It starts as an empty array []
   // setAllRecords is the function used to update the state later
   const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
   const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
-
-  const [markerPosition, setMarkerPosition] = useState([52.1307, -3.7837]); // Initial position for the draggable marker
 
   // useEffect runs code when the component first loads (mounts)
   // The empty array [] means "only run this once"
@@ -120,18 +146,12 @@ const Map = () => {
 
       
       {/* DraggableMarker */}
-      <DraggableMarker
-      // Use the markerPosition state as the position prop for your DraggableMarker
-      // The following are props passed to the DraggableMarker component:
-      // - position: The current position of the marker (from markerPosition state)
-      // - onDragEnd: A function to update the markerPosition when the marker is moved
+      <Marker
+        draggable
+        eventHandlers={eventHandlers}
         position={markerPosition}
-        onDragEnd={newPos => {
-          setMarkerPosition(newPos); // updates both lat/lng
-          // setLatitude(newPos[0]);
-          // setLongitude(newPos[1]);
-        }}
-      />
+        ref={markerRef}>
+      </Marker>
 
       {/* LayersControl for switching between map layers */}
       <LayersControl position="topright">

@@ -131,12 +131,12 @@ export default function CreateRecord() {
             case "catchPeriodChange":
             draft.periodValue = action.periodChosen;
             break;
-            case "catchLatitudeChange":
-            draft.latitudeValue = action.latitudeChosen;
-            break;
-            case "catchLongitudeChange":
-            draft.longitudeValue = action.longitudeChosen;          
-            break;
+            // case "catchLatitudeChange":
+            // draft.latitudeValue = action.latitudeChosen;
+            // break;
+            // case "catchLongitudeChange":
+            // draft.longitudeValue = action.longitudeChosen;          
+            // break;
             // case "picture1Change":
             // draft.picture1Value = action.picture1Chosen;
             // break;

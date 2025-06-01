@@ -23,12 +23,12 @@ function DraggableMarker({ position, onDragEnd }) {
       }), [onDragEnd]);
 
   return (
-        <Marker
-                draggable
-                eventHandlers={eventHandlers}
-                position={position}
-                ref={markerRef}>
-              </Marker>
+    <Marker
+        draggable
+        eventHandlers={eventHandlers}
+        position={position}
+        ref={markerRef}>
+    </Marker>
   )
 }
 
