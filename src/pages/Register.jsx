@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+
 function Register() {
   const navigate = useNavigate()
   
@@ -80,7 +81,7 @@ function Register() {
 
         console.log(response)
         navigate("/"); // Redirect to the home page after successful registration
-        
+
       } catch (error) {
         if (error.response) {
           console.log("Server responded with:", error.response.status, error.response.data);

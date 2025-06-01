@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
+import CreateRecord from '../Components/CreateRecord'; // adjust the path if needed
+
 // React Leaflet
 import {
     MapContainer,
@@ -91,6 +93,9 @@ const Map = () => {
   return (
     <div style={{ height: "calc(100vh - 68.5px)", width: "100vw ",positiom: "relative", overflow: "hidden" }}>
       <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
+
+        {/* CreateRecord button & drawer */}
+      <CreateRecord />
 
       <LayersControl position="topright">
           {/* Default OpenStreetMap Layer */}
