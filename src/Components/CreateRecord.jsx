@@ -3,6 +3,8 @@ import * as React from 'react';
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
 
+import StateContext from '../Contexts/StateContext';
+
 // MUI imports
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -94,6 +96,8 @@ export default function CreateRecord() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate()
 
+  // Get global state, specfically for lat/lng of marker
+  const globalState = React.useContext(StateContext);
 
     const initialstate = {
         titleValue: "",
@@ -102,8 +106,6 @@ export default function CreateRecord() {
         siteValue: "",
         monumentValue: "",
         periodValue: "",
-        latitudeValue: "",
-        longitudeValue: "",
         // picture1Value: "",
         // picture2Value: "",
         // picture3Value: "",
@@ -349,7 +351,8 @@ export default function CreateRecord() {
                             fullWidth 
                             label="Latitude" 
                             variant="outlined"
-                            value={state.latitudeValue}
+                            InputProps={{ readOnly: true }}
+                            value={globalState.markerPosition.latitudeValue}
                             onChange = {(e)=> 
                                 dispatch({
                                 type: "catchLatitudeChange", latitudeChosen: e.target.value})} 
@@ -363,7 +366,8 @@ export default function CreateRecord() {
                             fullWidth 
                             label="Longitude" 
                             variant="outlined"
-                            value={state.longitudeValue}
+                            InputProps={{ readOnly: true }}
+                            value={globalState.markerPosition.longitudeValue}
                             onChange = {(e)=> 
                                 dispatch({
                                 type: "catchLongitudeChange", longitudeChosen: e.target.value})} 
