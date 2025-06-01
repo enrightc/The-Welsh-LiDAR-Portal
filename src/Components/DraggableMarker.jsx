@@ -1,12 +1,14 @@
 
 import React from 'react'
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { Marker } from 'react-leaflet';
 
-
-
-
 function DraggableMarker({ position, onDragEnd }) {
+
+    useEffect(() => {
+        console.log('Marker position:', position);
+    }, [position]);
+
 
     // source: https://react-leaflet.js.org/docs/example-draggable-marker
     const markerRef = useRef(null)

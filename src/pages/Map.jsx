@@ -28,9 +28,6 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 
-
-
-
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
 function records() {
@@ -47,7 +44,7 @@ const Map = () => {
   const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
 
   const [markerPosition, setMarkerPosition] = useState([52.1307, -3.7837]); // Initial position for the draggable marker
-  
+
   // useEffect runs code when the component first loads (mounts)
   // The empty array [] means "only run this once"
   useEffect(() => {
@@ -100,16 +97,40 @@ const Map = () => {
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
-    <div style={{ height: "calc(100vh - 68.5px)", width: "100vw ",positiom: "relative", overflow: "hidden" }}>
-      <MapContainer center={[52.1307, -3.7837]} zoom={8.5} scrollWheelZoom={true} loadingControl={true}>
+    <div 
+      style={{ 
+        height: "calc(100vh - 68.5px)", 
+        width: "100vw ", 
+        position: "relative", 
+        overflow: "hidden" 
+      }}
+    >
+      <MapContainer 
+        center={[
+          52.1307, 
+          -3.7837
+        ]} 
+        zoom={8.5} 
+        scrollWheelZoom={true} 
+        loadingControl={true}
+      >
 
-      {/* CreateRecord button & drawer */}
+      {/* CreateRecord */}
       <CreateRecord />
 
-      {/* DraggableMarker button & drawer */}
+      
+      {/* DraggableMarker */}
       <DraggableMarker
+      // Use the markerPosition state as the position prop for your DraggableMarker
+      // The following are props passed to the DraggableMarker component:
+      // - position: The current position of the marker (from markerPosition state)
+      // - onDragEnd: A function to update the markerPosition when the marker is moved
         position={markerPosition}
-        onDragEnd={newPosition => setMarkerPosition(newPosition)}
+        onDragEnd={newPos => {
+          setMarkerPosition(newPos); // updates both lat/lng
+          // setLatitude(newPos[0]);
+          // setLongitude(newPos[1]);
+        }}
       />
 
       {/* LayersControl for switching between map layers */}
