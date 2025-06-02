@@ -16,6 +16,8 @@ import Login from "./pages/Login";
 import DispatchContext from "./Contexts/DispatchContext";
 import StateContext from "./Contexts/StateContext";
 
+import './App.css';
+
 // the main App component
 function App() {
   const initialstate = {

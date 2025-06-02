@@ -1,3 +1,5 @@
+
+
 import * as React from 'react';
 
 import { useNavigate } from "react-router-dom";
@@ -165,36 +167,9 @@ export default function CreateRecord() {
     // dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
   }
 
-  const toggleDrawer = (newOpen) => () => {
-    setOpen(newOpen);
-  };
 
   return (
     <div>
-        <Button 
-            onClick={toggleDrawer(true)}
-            style={{
-                position: 'fixed',  // or 'absolute', but 'fixed' is best for staying visible
-                bottom: 24,
-                left: 24,
-                zIndex: 3000,       // Make this higher than your map's z-index
-                backgroundColor: '#1976d2',
-                color: 'white',
-            }}
-        >
-            Create Record
-        </Button>
-
-        <Drawer 
-            open={open} 
-            onClose={toggleDrawer(false)}
-            PaperProps={{
-                style: {
-                  top: 70, // Height of your navbar in px
-                  height: 'calc(100% - 70px)', // Take up the rest of the screen
-                }
-              }}       
-        >
             <div
                 style={{
                     width: '400px',
@@ -208,7 +183,11 @@ export default function CreateRecord() {
                     
                         {/* Heading */}
                         <Grid>
-                            <Typography variant="h4" align="center">
+                            <Typography 
+                                variant="h4" 
+                                align="center"
+                                color="black"
+                            >
                             Submit a new record
                             </Typography>
                         </Grid>
@@ -258,11 +237,11 @@ export default function CreateRecord() {
                         {/* Description */}
                         <Grid>
                             <TextField 
-                            id="PRN" 
+                            id="description" 
                             fullWidth 
-                            label="PRN (if known)" 
+                            label="Description" 
                             variant="outlined"
-                            value={state.prnValue}
+                            value={state.Value}
                             onChange = {(e)=> 
                                 
                                 dispatch({
@@ -397,7 +376,7 @@ export default function CreateRecord() {
                     </Grid>
                 </form>
             </div>
-        </Drawer>
+        
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
 import CreateRecord from '../Components/CreateRecord'; // Import the CreateRecord component for creating new records
-
+import Sidebar from '../Components/Sidebar';
 // React Leaflet
 import {
     MapContainer,
@@ -36,6 +36,9 @@ function records() {
 records();
 
 const Map = () => {
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
   // 1. Get global state and dispatch from context
   const state = React.useContext(StateContext);
   const dispatch = React.useContext(DispatchContext);
@@ -119,19 +122,47 @@ const Map = () => {
       </Grid>
     )
   }
- 
+
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
-    <div 
-      style={{ 
-        height: "calc(100vh - 68.5px)", 
-        width: "100vw ", 
-        position: "relative", 
-        overflow: "hidden" 
+    <div
+      style={{
+        display: "flex",
+        height: "calc(100vh - 68.5px)",
+        width: "100vw",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <MapContainer 
+      {/* Sidebar: appears on the left, pushes map content over */}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Main content (map), shrinks when sidebar is open */}
+      <div style={{ flex: 1, position: "relative" }}>
+        {/* Show menu button only when sidebar is closed */}
+        {!sidebarOpen && (
+          <button
+            onClick={() => setSidebarOpen(true)}
+            style={{
+              position: "absolute",
+              bottom: 20,
+              left: 20,
+              zIndex: 10,
+              background: "#1976d2",
+              color: "#fff",
+              border: "none",
+              borderRadius: 4,
+              padding: "10px 20px",
+              fontSize: 18,
+              cursor: "pointer",
+            }}
+          >
+            Create Record
+          </button>
+        )}
+      
+      <MapContainer
         center={[
           52.1307, 
           -3.7837
@@ -141,10 +172,6 @@ const Map = () => {
         loadingControl={true}
       >
 
-      {/* CreateRecord */}
-      <CreateRecord />
-
-      
       {/* DraggableMarker */}
       <Marker
         draggable
@@ -265,6 +292,8 @@ const Map = () => {
         ))}
       
       </MapContainer>
+      
+    </div>
     </div>
     )
 }
