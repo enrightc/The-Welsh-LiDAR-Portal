@@ -37,8 +37,13 @@ records();
 
 const Map = () => {
 
+  // *Sidebar*
+  // State variable to control whether the sidebar is open or closed.
+  // 'sidebarOpen' is true if the sidebar is open, false if it is closed.
+  // Use 'setSidebarOpen' to change its value (for example, to open or close the sidebar).
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
+  // *Draggable Marker*
   // 1. Get global state and dispatch from context
   const state = React.useContext(StateContext);
   const dispatch = React.useContext(DispatchContext);
@@ -135,6 +140,7 @@ const Map = () => {
         overflow: "hidden",
       }}
     >
+      {/* Sidebar */}
       {/* Sidebar: appears on the left, pushes map content over */}
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

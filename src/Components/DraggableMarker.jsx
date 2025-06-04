@@ -5,11 +5,6 @@ import { Marker } from 'react-leaflet';
 
 function DraggableMarker({ position, onDragEnd }) {
 
-    useEffect(() => {
-        console.log('Marker position:', position);
-    }, [position]);
-
-
     // source: https://react-leaflet.js.org/docs/example-draggable-marker
     const markerRef = useRef(null)
     const eventHandlers = useMemo(() => ({

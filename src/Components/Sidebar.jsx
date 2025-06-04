@@ -6,7 +6,8 @@ export default function Sidebar({ open, onClose }) {
   return (
     <div
       style={{
-        width: open ? 500 : 0,
+        width: open ? "45vw" : 0,
+        maxWidth: 500,
         transition: "width 0.3s",
         overflow: "hidden",
         background: "white",
