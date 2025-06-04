@@ -109,7 +109,7 @@ const Map = () => {
   }, []); // ← This empty array makes sure it runs only once when the component loads
   
   if (dataIsLoading === false) {
-    console.log(allRecords[0]); // Log the records to the console for debugging
+    console.log(allRecords); // Log the records to the console for debugging
   }
   
   // If data is still loading, show a loading message
@@ -290,6 +290,13 @@ const Map = () => {
               ]}
             >
               <Popup>
+                {record.picture1 && (
+                  <img
+                    src={record.picture1}
+                    alt={record.title}
+                    style={{ height: "14rem", width: "18rem", marginBottom: "0.5rem" }}
+                  />
+                )}
                 {record.title} <br />
                 {record.description} <br />
               </Popup>

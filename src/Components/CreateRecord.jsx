@@ -29,6 +29,7 @@ const siteOptions = [
     { value: 'bank', label: 'Bank' },
     { value: 'ditch', label: 'Ditch' },
     { value: 'other', label: 'Other' },
+    { value: 'unknown', label: 'Unknown' },
   ];
 
 const monumentOptions = {
@@ -75,7 +76,7 @@ industrial: [
 pit: [
     { value: 'quarry_pit', label: 'Quarry pit' },
     { value: 'extraction_pit', label: 'Extraction pit' },
-    { value: 'ditch_pit', label: 'Ditch pit' },
+
 ],
 bank: [
     { value: 'boundary_bank', label: 'Boundary bank' },
@@ -93,6 +94,9 @@ other: [
     { value: 'structure', label: 'Structure (undefined)' },
     { value: 'other', label: 'Other' },
 ],
+unknown: [
+    { value: 'unknown', label: 'Unknown' },
+],
 };
 
 const periodOptions = [
@@ -106,11 +110,11 @@ const periodOptions = [
     { value: 'unknown', label: 'Unknown' },
   ];
 
-const confidenceOptions = [
-{ value: 'certain', label: 'Certain' },
-{ value: 'probable', label: 'Probable' },
-{ value: 'possible', label: 'Possible' },
-];
+// const confidenceOptions = [
+// { value: 'certain', label: 'Certain' },
+// { value: 'probable', label: 'Probable' },
+// { value: 'possible', label: 'Possible' },
+// ];
 
 export default function CreateRecord() {
     const [open, setOpen] = React.useState(false);
@@ -312,10 +316,9 @@ export default function CreateRecord() {
                         variant="outlined"
                         value={state.prnValue}
                         onChange = {(e)=> 
-                            
                             dispatch({
-                            type: "catchTitleChange", 
-                            titleChosen: e.target.value 
+                            type: "catchPrnChange", 
+                            prnChosen: e.target.value 
                             })
                         } 
                         /> 
@@ -331,11 +334,10 @@ export default function CreateRecord() {
                         multiline
                         rows="3"
                         value={state.Value}
-                        onChange = {(e)=> 
-                            
+                        onChange = {(e)=>     
                             dispatch({
-                            type: "catchTitleChange", 
-                            titleChosen: e.target.value 
+                            type: "catchdescriptionChange", 
+                            descriptionChosen: e.target.value 
                             })
                         } 
                         /> 
