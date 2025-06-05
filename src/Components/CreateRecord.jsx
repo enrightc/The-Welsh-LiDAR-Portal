@@ -1,12 +1,12 @@
 
 import * as React from 'react';
 
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
 
-import StateContext from '../Contexts/StateContext';
+import Axios from 'axios'; // Import Axios for making HTTP requests
 
 // MUI imports
 import Box from '@mui/material/Box';
@@ -16,6 +16,9 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+
+// Contexts
+import StateContext from '../Contexts/StateContext';
 
 const siteOptions = [
     { value: '', label: '' },
@@ -119,9 +122,27 @@ const periodOptions = [
 export default function CreateRecord() {
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate()
+    const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
 
-    // Get global state, specfically for lat/lng of marker
-    const globalState = React.useContext(StateContext);
+    useEffect(() => {
+        if (
+          GlobalState.markerPosition &&
+          typeof GlobalState.markerPosition.latitudeValue !== "undefined" &&
+          typeof GlobalState.markerPosition.longitudeValue !== "undefined"
+        ) {
+          dispatch({
+            type: "catchLatitudeChange",
+            latitudeChosen: GlobalState.markerPosition.latitudeValue
+          });
+          dispatch({
+            type: "catchLongitudeChange",
+            longitudeChosen: GlobalState.markerPosition.longitudeValue
+          });
+        }
+      }, [
+        GlobalState.markerPosition.latitudeValue,
+        GlobalState.markerPosition.longitudeValue
+      ]);
 
     const initialstate = {
         titleValue: "",
@@ -138,58 +159,62 @@ export default function CreateRecord() {
         picture4Value: "",
         picture5Value: "",
         uploadedPictures: [],
+        sendRequest: 0,
     };
     
     function ReducerFunction(draft, action){
         switch (action.type){
             case "catchTitleChange":
-            draft.titleValue = action.titleChosen; // Update usernameValue in the state
-            break;
+                draft.titleValue = action.titleChosen; // Update usernameValue in the state
+                break;
             case "catchPrnChange":
-            draft.prnValue = action.prnChosen;
-            break;
+                draft.prnValue = action.prnChosen;
+                break;
             case "catchDescriptionChange":
-            draft.descriptionValue = action.descriptionChosen;
+                draft.descriptionValue = action.descriptionChosen;
             break;
             case "catchSiteChange":
-            draft.siteValue = action.siteChosen;
-            break;
+                draft.siteValue = action.siteChosen;
+                break;
             case "catchMonumentChange":
-            draft.monumentValue = action.monumentChosen;
-            break;
+                draft.monumentValue = action.monumentChosen;
+                break;
             case "catchPeriodChange":
-            draft.periodValue = action.periodChosen;
-            break;
+                draft.periodValue = action.periodChosen;
+                break;
             // case "catchConfidenceChange":
-            // draft.confidenceValue = action.confidenceChosen;
-            // break;
+                // draft.confidenceValue = action.confidenceChosen;
+                // break;
             // case "catchEvidenceChange":
-            // draft.evidenceValue = action.evidenceChosen;
-            // break;
-            // case "catchLatitudeChange":
-            // draft.latitudeValue = action.latitudeChosen;
-            // break;
-            // case "catchLongitudeChange":
-            // draft.longitudeValue = action.longitudeChosen;          
-            // break;
+                // draft.evidenceValue = action.evidenceChosen;
+                // break;
+            case "catchLatitudeChange":
+                draft.latitudeValue = action.latitudeChosen;
+                break;
+            case "catchLongitudeChange":
+                draft.longitudeValue = action.longitudeChosen;          
+                break;
             case "picture1Change":
-            draft.picture1Value = action.picture1Chosen;
-            break;
+                draft.picture1Value = action.picture1Chosen;
+                break;
             case "picture2Change":
-            draft.picture2Value = action.picture2Chosen;
-            break;
+                draft.picture2Value = action.picture2Chosen;
+                break;
             case "picture3Change":
-            draft.picture3Value = action.picture3Chosen;
-            break;
+                draft.picture3Value = action.picture3Chosen;
+                break;
             case "picture4Change":
-            draft.picture4Value = action.picture4Chosen;
-            break;
+                draft.picture4Value = action.picture4Chosen;
+                break;
             case "picture5Change":
-            draft.picture5Value = action.picture5Chosen;
-            break;
+                draft.picture5Value = action.picture5Chosen;
+                break;
             case "catchUploadedPictures":
-            draft.uploadedPictures = action.picturesChosen;
-            break;
+                draft.uploadedPictures = Array.from(action.picturesChosen);
+                break;
+            case "changeSendRequest":
+                draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
+                break; // This action will trigger the useEffect to send the request
         }
     }
     
@@ -247,10 +272,60 @@ export default function CreateRecord() {
     }, [state.uploadedPictures[4]]);
 
     function FormSubmit(e){
-    e.preventDefault() // prevents the default form submission behavior/page reload
-    console.log("Form submitted");
-    // dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
+        e.preventDefault() // prevents the default form submission behavior/page reload
+        console.log("Form submitted");
+        dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
     }
+
+    useEffect(()=>{
+        if (state.sendRequest){
+            async function AddRecord(){
+                console.log([
+                    state.titleValue, state.descriptionValue, state.prnValue,
+                    state.siteValue, state.monumentValue, state.periodValue,
+                    state.latitudeValue, state.longitudeValue, state.picture1Value,
+                    state.picture2Value, state.picture3Value, state.picture4Value, state.picture5Value,
+                    GlobalState.userId
+                  ]);
+                const formData = new FormData();
+                    formData.append(
+                        "title", state.titleValue);
+                    formData.append(
+                        "description", state.descriptionValue);
+                    formData.append(
+                        "PRN", state.prnValue);
+                    formData.append(
+                        "site_type", state.siteValue);
+                    formData.append(
+                        "monument", state.monumentValue);
+                    formData.append(
+                        "period", state.periodValue);
+                    formData.append(
+                        "latitude", state.latitudeValue);
+                    formData.append(
+                        "longitude", state.longitudeValue);
+                    formData.append(
+                        "picture1", state.picture1Value);
+                    formData.append(
+                        "picture2", state.picture2Value);
+                    formData.append(
+                        "picture3", state.picture3Value);
+                    formData.append(
+                        "picture4", state.picture4Value);
+                    formData.append(
+                        "picture5", state.picture5Value);
+                    formData.append(
+                        "recorded_by", GlobalState.userId);
+                try {
+                    const response = await Axios.post('http://localhost:8000/api/records/create/', formData);
+                    console.log(response)
+                } catch(e){
+                    console.log(e.response)
+                }
+            }
+            AddRecord()
+        }
+    }), [state.sendRequest] // watch for changes in state.sendRequest
 
 
     return (
@@ -333,10 +408,10 @@ export default function CreateRecord() {
                         variant="outlined"
                         multiline
                         rows="3"
-                        value={state.Value}
+                        value={state.descriptionValue}
                         onChange = {(e)=>     
                             dispatch({
-                            type: "catchdescriptionChange", 
+                            type: "catchDescriptionChange", 
                             descriptionChosen: e.target.value 
                             })
                         } 
@@ -471,7 +546,7 @@ export default function CreateRecord() {
                         label="Latitude" 
                         variant="outlined"
                         InputProps={{ readOnly: true }}
-                        value={globalState.markerPosition.latitudeValue}
+                        value={GlobalState.markerPosition.latitudeValue}
                         onChange = {(e)=> 
                             dispatch({
                             type: "catchLatitudeChange", latitudeChosen: e.target.value})} 
@@ -486,7 +561,7 @@ export default function CreateRecord() {
                         label="Longitude" 
                         variant="outlined"
                         InputProps={{ readOnly: true }}
-                        value={globalState.markerPosition.longitudeValue}
+                        value={GlobalState.markerPosition.longitudeValue}
                         onChange = {(e)=> 
                             dispatch({
                             type: "catchLongitudeChange", longitudeChosen: e.target.value})} 

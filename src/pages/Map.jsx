@@ -79,6 +79,7 @@ const Map = () => {
   const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
   const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
 
+  const [reloadFlag, setReloadFlag] = useState(0);
   // useEffect runs code when the component first loads (mounts)
   // The empty array [] means "only run this once"
   useEffect(() => {
@@ -106,7 +107,7 @@ const Map = () => {
       source.cancel(); // Cancel the Axios request if the component unmounts
     }
 
-  }, []); // ← This empty array makes sure it runs only once when the component loads
+  }, [reloadFlag]); // <-- refetch whenever reloadFlag changes
   
   if (dataIsLoading === false) {
     console.log(allRecords); // Log the records to the console for debugging
