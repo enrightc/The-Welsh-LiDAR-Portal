@@ -12,7 +12,8 @@ import {
     Marker,
     Popup,
     LayersControl,
-    FeatureGroup
+    FeatureGroup,
+    Polygon
   } from 'react-leaflet'
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-loading';
@@ -79,7 +80,9 @@ const Map = () => {
   const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
   const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
 
-  const [reloadFlag, setReloadFlag] = useState(0);
+  const [polygonDrawn, setPolygonDrawn] = useState(false);  // state to track if polygon has been drawn.
+
+
   // useEffect runs code when the component first loads (mounts)
   // The empty array [] means "only run this once"
   useEffect(() => {
@@ -107,7 +110,7 @@ const Map = () => {
       source.cancel(); // Cancel the Axios request if the component unmounts
     }
 
-  }, [reloadFlag]); // <-- refetch whenever reloadFlag changes
+  }, []);  
   
   if (dataIsLoading === false) {
     console.log(allRecords); // Log the records to the console for debugging
@@ -135,6 +138,7 @@ const Map = () => {
       const latlngs = layer.getLatLngs()[0].map((latlng) => [latlng.lat, latlng.lng]);
       dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: latlngs });
       console.log("Polygon Coordinates:", latlngs);
+      setPolygonDrawn(true); // Set flag so user can't draw more
     }
   };
 
@@ -189,12 +193,12 @@ const Map = () => {
       >
 
       {/* DraggableMarker */}
-      <Marker
+      {/* <Marker
         draggable
         eventHandlers={eventHandlers}
         position={markerPosition}
         ref={markerRef}>
-      </Marker>
+      </Marker> */}
 
       {/* LayersControl for switching between map layers */}
       <LayersControl position="topright">
@@ -271,11 +275,11 @@ const Map = () => {
         <EditControl
           position="topright"
           draw={{
-            polygon: true,
-            polyline: true,
-            rectangle: true,
-            circle: true,
-            marker: true,
+            polygon: !polygonDrawn, // Only allow polygon if one hasn't been drawn yet
+            polyline: false,
+            rectangle: false,
+            circle: false,
+            marker: false,
             circlemarker: false,
           }}
           // onCreated={(e) => {
@@ -285,6 +289,11 @@ const Map = () => {
           //   // You can store these in state or send to your Django backend
           // }}
           onCreated={handleDrawCreate}
+          onDeleted={(e) => {
+            // If the polygon is deleted, allow drawing again
+            setPolygonDrawn(false);
+            dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: [] });
+          }}
         />
       </FeatureGroup>
 
@@ -293,7 +302,7 @@ const Map = () => {
         {allRecords.map((record) => (
           <React.Fragment key={record.id}>
             {/* Display Marker */}
-            <Marker 
+            {/* <Marker 
               key={record.id}  
               position={[
                 record.latitude, 
@@ -308,10 +317,33 @@ const Map = () => {
                     style={{ height: "14rem", width: "18rem", marginBottom: "0.5rem" }}
                   />
                 )}
+                {record.recorded_by} <br />
                 {record.title} <br />
                 {record.description} <br />
               </Popup>
-            </Marker>
+            </Marker> */}
+            {/* Display Polygon if it exists */}
+            {Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
+                    <Polygon
+                      positions={record.polygonCoordinate} // Pass polygon coordinates
+                      pathOptions={{ color: "blue", fillOpacity: 0.5 }} // Styling
+                      
+                    >
+                      <Popup>
+                        {record.picture1 && (
+                          <img
+                            src={record.picture1}
+                            alt={record.title}
+                            style={{ height: "14rem", width: "18rem", marginBottom: "0.5rem" }}
+                          />
+                        )}
+                        {record.recorded_by} <br />
+                        {record.title} <br />
+                        {record.description} <br />
+                      </Popup>
+                    </Polygon>
+                    
+                  )}
           </React.Fragment>
         ))}
       
