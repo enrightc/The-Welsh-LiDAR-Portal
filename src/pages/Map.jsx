@@ -129,6 +129,15 @@ const Map = () => {
     )
   }
 
+  const handleDrawCreate = (e) => {
+    const { layerType, layer } = e;
+    if (layerType === "polygon") {
+      const latlngs = layer.getLatLngs()[0].map((latlng) => [latlng.lat, latlng.lng]);
+      dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: latlngs });
+      console.log("Polygon Coordinates:", latlngs);
+    }
+  };
+
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
@@ -269,12 +278,13 @@ const Map = () => {
             marker: true,
             circlemarker: false,
           }}
-          onCreated={(e) => {
-            const layer = e.layer;
-            const coords = layer.getLatLngs();
-            console.log("Polygon drawn:", coords);
-            // You can store these in state or send to your Django backend
-          }}
+          // onCreated={(e) => {
+          //   const layer = e.layer;
+          //   const coords = layer.getLatLngs();
+          //   console.log("Polygon drawn:", coords);
+          //   // You can store these in state or send to your Django backend
+          // }}
+          onCreated={handleDrawCreate}
         />
       </FeatureGroup>
 

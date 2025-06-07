@@ -30,7 +30,8 @@ function App() {
     markerPosition: {
       latitudeValue: "52.1307",    
       longitudeValue: "-3.7837", 
-    }  
+    },  
+    polygonValue: [],
   };
       
   function ReducerFunction(draft, action){
@@ -52,6 +53,9 @@ function App() {
         break;
       case "catchLongitudeChange":
         draft.markerPosition.longitudeValue = action.longitudeChosen;
+        break;
+      case 'catchPolygonCoordinateChange':
+        draft.polygonValue = action.polygonChosen;
         break;
     }
   }

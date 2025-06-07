@@ -220,6 +220,8 @@ export default function CreateRecord() {
     
     const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
 
+   
+
     // Catching picture fields
     // This effect runs every time the first uploaded picture changes.
     useEffect(() => {
@@ -316,6 +318,7 @@ export default function CreateRecord() {
                         "picture5", state.picture5Value);
                     formData.append(
                         "recorded_by", GlobalState.userId);
+                    formData.append("polygonCoordinate", JSON.stringify(GlobalState.polygonValue));  
                 try {
                     const response = await Axios.post('http://localhost:8000/api/records/create/', formData);
                     console.log(response)
@@ -635,6 +638,20 @@ export default function CreateRecord() {
                         type="submit">Submit
                         </Button>
                     </Grid>
+
+                    {/* display capatured coords in the form */}  
+                <Grid item container style={{ marginTop: "2rem" }}>
+                    <TextField
+                        id="polygon"
+                        label="Polygon Coordinates"
+                        variant="standard"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        value={JSON.stringify(GlobalState.polygonValue)}
+                        InputProps={{ readOnly: true }}
+                    />
+                </Grid>
 
                 </Grid>
             </form>
