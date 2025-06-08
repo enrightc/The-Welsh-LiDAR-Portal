@@ -29,6 +29,8 @@ import Grid from '@mui/material/Grid';
 import StateContext from "../Contexts/StateContext";
 import DispatchContext from "../Contexts/DispatchContext";
 
+import { GeoJSON } from "react-leaflet";
+
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
 function records() {
@@ -37,6 +39,8 @@ function records() {
 records();
 
 const Map = () => {
+  
+  const [scheduledMonuments, setScheduledMonuments] = useState(null);
 
   // *Sidebar*
   // State variable to control whether the sidebar is open or closed.
@@ -111,10 +115,16 @@ const Map = () => {
     }
 
   }, []);  
-  
-  if (dataIsLoading === false) {
-    console.log(allRecords); // Log the records to the console for debugging
-  }
+
+  useEffect(() => {
+    fetch("/data/scheduled_monuments.geojson")
+      .then(res => res.json())
+      .then(data => {
+        setScheduledMonuments(data);
+        console.log('Scheduled Monuments:', data); // <-- Now it will log the actual data!
+      })
+      .catch(err => console.error("Error loading Scheduled Monuments GeoJSON:", err));
+  }, []);
   
   // If data is still loading, show a loading message
   if (dataIsLoading === true) {
@@ -142,6 +152,7 @@ const Map = () => {
     }
   };
 
+  
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
@@ -253,7 +264,7 @@ const Map = () => {
           </LayersControl.Overlay>
 
           {/* Cadw Scheduled Monuments */}
-          <LayersControl.Overlay name="Scheduled Monuments">
+          {/* <LayersControl.Overlay name="Scheduled Monuments">
             <WMSTileLayer
                 url="https://datamap.gov.wales/geoserver/ows?" 
                 layers="inspire-wg:Cadw_SAM"
@@ -267,6 +278,26 @@ const Map = () => {
                 detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
                 attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
             />
+          </LayersControl.Overlay> */}
+          <LayersControl.Overlay name="Scheduled Monuments">
+            {scheduledMonuments && (
+              <GeoJSON
+                data={scheduledMonuments}
+                style={{
+                  color: "#e60000",      // super bright red outline
+                  weight: 3,
+                  fillColor: "#ffe100",  // super bright yellow fill
+                  fillOpacity: 0.6,
+                }}
+                onEachFeature={(feature, layer) => {
+                  if (feature.properties) {
+                    layer.bindPopup(
+                      `<strong>${feature.properties.Name || feature.properties.name || "Scheduled Monument"}</strong>`
+                    );
+                  }
+                }}
+              />
+            )}
           </LayersControl.Overlay>
 
         </LayersControl>
