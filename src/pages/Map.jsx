@@ -97,36 +97,24 @@ const Map = () => {
     dispatch({ type: "catchPolygonCoordinateChange", polygonChosen: [] }); // Clear global polygon
   }
 
-
-  // useEffect runs code when the component first loads (mounts)
-  // The empty array [] means "only run this once"
-  useEffect(() => {
-    const source = Axios.CancelToken.source(); // Create a cancel token for Axios requests
-    // Define an async function to fetch the records
-    async function GetAllRecords() {
-      // Make a GET request to our Django backend to fetch the records
-      try {
-        const response = await Axios.get('http://127.0.0.1:8000/api/records/', {cancelToken: source.token});
-        // If the request is successful, the response will contain the data
-
-        // The response will have a .data property containing the actual records
-        // save those into allRecords state
-        setAllRecords(response.data);
-        setDataIsLoading(false); // Set loading to false after data is fetched
-      } catch (error) {
-        console.log("Error fetching records:", error.response);
-    }
+  // a function to fetch records from your backend
+  const fetchRecords = async () => {
+  try {
+    const response = await Axios.get('http://127.0.0.1:8000/api/records/');
+    setAllRecords(response.data);
+    setDataIsLoading(false);
+  } catch (error) {
+    console.log("Error fetching records:", error.response);
   }
-    // Call the function we just defined
-    GetAllRecords();
-    return () => {
-      // Cleanup function to run when the component unmounts
-      // This is where you can cancel any ongoing requests or clean up resources
-      source.cancel(); // Cancel the Axios request if the component unmounts
-    }
+};
 
-  }, []);  
+// This effect runs only once when the component first mounts
+useEffect(() => {
+  fetchRecords();
+}, []);
 
+  // Function to fetch Scheduled Monuments GeoJSON data
+  // This effect runs only once when the component first mounts
   useEffect(() => {
     fetch("/data/scheduled_monuments.geojson")
       .then(res => res.json())
@@ -182,7 +170,12 @@ const Map = () => {
       {/* The Sidebar component is imported from the Components folder */}
       {/* It takes 'open' and 'onClose' props to control its visibility */}
       {/* 'resetPolygon' prop is passed to reset polygon drawing state */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} resetPolygon={resetPolygon} />
+      <Sidebar 
+        open={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        resetPolygon={resetPolygon}
+        fetchRecords={fetchRecords}
+        />
 
 
       {/* Main content (map), shrinks when sidebar is open */}

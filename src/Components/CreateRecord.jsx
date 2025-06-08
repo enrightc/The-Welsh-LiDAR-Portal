@@ -122,7 +122,7 @@ const periodOptions = [
 // { value: 'possible', label: 'Possible' },
 // ];
 
-export default function CreateRecord({ resetPolygon }) {
+export default function CreateRecord({ resetPolygon, fetchRecords }) {
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate()
     const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
@@ -366,7 +366,8 @@ export default function CreateRecord({ resetPolygon }) {
                     console.log(response)
                     dispatch({ type: "resetForm" }); // <--- Reset form
                     resetPolygon(); // Reset the polygon in the parent component
-console.log("Called resetPolygon from CreateRecord!");
+                    console.log("Called resetPolygon from CreateRecord!");
+                    fetchRecords(); // Fetch the updated records after adding a new one
                 } catch(e){
                     console.log(e.response)
                 }
