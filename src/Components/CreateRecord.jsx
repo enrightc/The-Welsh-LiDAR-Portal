@@ -20,6 +20,9 @@ import MenuItem from '@mui/material/MenuItem';
 // Contexts
 import StateContext from '../Contexts/StateContext';
 
+// Components
+import Snackbar from './MySnackbar.jsx';
+
 const siteOptions = [
     { value: '', label: '' },
     { value: 'enclosure', label: 'Enclosure' },
@@ -119,30 +122,47 @@ const periodOptions = [
 // { value: 'possible', label: 'Possible' },
 // ];
 
-export default function CreateRecord() {
+export default function CreateRecord({ resetPolygon }) {
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate()
     const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
 
-    useEffect(() => {
-        if (
-          GlobalState.markerPosition &&
-          typeof GlobalState.markerPosition.latitudeValue !== "undefined" &&
-          typeof GlobalState.markerPosition.longitudeValue !== "undefined"
-        ) {
-          dispatch({
-            type: "catchLatitudeChange",
-            latitudeChosen: GlobalState.markerPosition.latitudeValue
-          });
-          dispatch({
-            type: "catchLongitudeChange",
-            longitudeChosen: GlobalState.markerPosition.longitudeValue
-          });
-        }
-      }, [
-        GlobalState.markerPosition.latitudeValue,
-        GlobalState.markerPosition.longitudeValue
-      ]);
+    // Snackbar state
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);  // State to control the Snackbar visibility. snackbarOpen is false by default, meaning the Snackbar is hidden at first. setSnackbarOpen is a function that lets you change this value (to show or hide the Snackbar).
+
+    const [errors, setErrors] = React.useState({});
+
+    // Function to Open the Snackbar:
+    const handleSnackbarOpen = () => setSnackbarOpen(true);  // When you call handleSnackbarOpen(), it sets snackbarOpen to true. This will open the snackbar.
+    // Function to Close the Snackbar:
+    
+    // This function is called when the Snackbar is closed, either by clicking away or by clicking the close button.
+    // It checks if the reason for closing is 'clickaway' (meaning the user clicked outside the Snackbar), and if so, it does nothing. Otherwise, it sets snackbarOpen to false, which hides the Snackbar.
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') return;
+        setSnackbarOpen(false);
+    };
+
+
+    // useEffect(() => {
+    //     if (
+    //       GlobalState.markerPosition &&
+    //       typeof GlobalState.markerPosition.latitudeValue !== "undefined" &&
+    //       typeof GlobalState.markerPosition.longitudeValue !== "undefined"
+    //     ) {
+    //       dispatch({
+    //         type: "catchLatitudeChange",
+    //         latitudeChosen: GlobalState.markerPosition.latitudeValue
+    //       });
+    //       dispatch({
+    //         type: "catchLongitudeChange",
+    //         longitudeChosen: GlobalState.markerPosition.longitudeValue
+    //       });
+    //     }
+    //   }, [
+    //     GlobalState.markerPosition.latitudeValue,
+    //     GlobalState.markerPosition.longitudeValue
+    //   ]);
 
     const initialstate = {
         titleValue: "",
@@ -188,12 +208,12 @@ export default function CreateRecord() {
             // case "catchEvidenceChange":
                 // draft.evidenceValue = action.evidenceChosen;
                 // break;
-            case "catchLatitudeChange":
-                draft.latitudeValue = action.latitudeChosen;
-                break;
-            case "catchLongitudeChange":
-                draft.longitudeValue = action.longitudeChosen;          
-                break;
+            // case "catchLatitudeChange":
+            //     draft.latitudeValue = action.latitudeChosen;
+            //     break;
+            // case "catchLongitudeChange":
+            //     draft.longitudeValue = action.longitudeChosen;          
+            //     break;
             case "picture1Change":
                 draft.picture1Value = action.picture1Chosen;
                 break;
@@ -215,6 +235,9 @@ export default function CreateRecord() {
             case "changeSendRequest":
                 draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
                 break; // This action will trigger the useEffect to send the request
+                case "resetForm":
+                    return initialstate; // Resets all fields to their initial values
+                    break;
         }
     }
     
@@ -274,9 +297,28 @@ export default function CreateRecord() {
     }, [state.uploadedPictures[4]]);
 
     function FormSubmit(e){
-        e.preventDefault() // prevents the default form submission behavior/page reload
-        console.log("Form submitted");
-        dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
+        e.preventDefault(); // Stop default form submission
+    
+        let newErrors = {};
+    
+        if (!state.titleValue.trim()) newErrors.title = "Title is required";
+        if (!state.descriptionValue.trim()) newErrors.description = "Description is required";
+        if (!state.siteValue) newErrors.site = "Site type is required";
+        if (!state.monumentValue) newErrors.monument = "Monument type is required";
+        if (!state.periodValue) newErrors.period = "Period is required";
+        if (!GlobalState.polygonValue || GlobalState.polygonValue.length === 0)
+            newErrors.polygon = "You must draw a polygon";
+    
+        setErrors(newErrors);
+    
+        // If there are errors, do NOT submit
+        if (Object.keys(newErrors).length > 0) {
+            return;
+        }
+    
+        // If no errors, submit as normal
+        dispatch({type: 'changeSendRequest'})
+        handleSnackbarOpen();
     }
 
     useEffect(()=>{
@@ -285,7 +327,7 @@ export default function CreateRecord() {
                 console.log([
                     state.titleValue, state.descriptionValue, state.prnValue,
                     state.siteValue, state.monumentValue, state.periodValue,
-                    state.latitudeValue, state.longitudeValue, state.picture1Value,
+                    // state.latitudeValue, state.longitudeValue, state.picture1Value,
                     state.picture2Value, state.picture3Value, state.picture4Value, state.picture5Value,
                     GlobalState.userId
                   ]);
@@ -302,10 +344,10 @@ export default function CreateRecord() {
                         "monument", state.monumentValue);
                     formData.append(
                         "period", state.periodValue);
-                    formData.append(
-                        "latitude", state.latitudeValue);
-                    formData.append(
-                        "longitude", state.longitudeValue);
+                    // formData.append(
+                    //     "latitude", state.latitudeValue);
+                    // formData.append(
+                    //     "longitude", state.longitudeValue);
                     formData.append(
                         "picture1", state.picture1Value);
                     formData.append(
@@ -322,13 +364,16 @@ export default function CreateRecord() {
                 try {
                     const response = await Axios.post('http://localhost:8000/api/records/create/', formData);
                     console.log(response)
+                    dispatch({ type: "resetForm" }); // <--- Reset form
+                    resetPolygon(); // Reset the polygon in the parent component
+console.log("Called resetPolygon from CreateRecord!");
                 } catch(e){
                     console.log(e.response)
                 }
             }
             AddRecord()
         }
-    }), [state.sendRequest] // watch for changes in state.sendRequest
+    }, [state.sendRequest]); // watch for changes in state.sendRequest
 
 
     return (
@@ -363,12 +408,13 @@ export default function CreateRecord() {
 
                     {/* Title */}
                     <Grid>
-                        <TextField 
+                        <TextField style={errors.title ? {  borderRadius: '5px', padding: 4 } : {}}
                         id="title" 
                         fullWidth 
-                        label="Title" 
+                        label="Title *" 
                         variant="outlined"
                         value={state.titleValue}
+                        
                         // When the user types in the input field, onChange function runs.
                         // When the user types in the Username input:
                         // 1. Grab the new value (e.target.value)
@@ -382,6 +428,8 @@ export default function CreateRecord() {
                             titleChosen: e.target.value // This is the new value from the input field
                             })
                         } 
+                        error={Boolean(errors.title)}
+                        helperText={errors.title}
                         /> 
                     </Grid>
                         
@@ -404,10 +452,10 @@ export default function CreateRecord() {
                     
                     {/* Description */}
                     <Grid>
-                        <TextField 
+                        <TextField style={errors.description ? {  borderRadius: '5px', padding: 4 } : {}}
                         id="description" 
                         fullWidth 
-                        label="Description" 
+                        label="Description *" 
                         variant="outlined"
                         multiline
                         rows="3"
@@ -418,15 +466,18 @@ export default function CreateRecord() {
                             descriptionChosen: e.target.value 
                             })
                         } 
+                        error={Boolean(errors.description)}
+                        helperText={errors.description}
                         /> 
                     </Grid>
 
                     {/* site type */}
                     <Grid>
                         <TextField 
+                            style={errors.site ? {  borderRadius: '5px', padding: 4 } : {}}
                             id="site" 
                             fullWidth 
-                            label="Site Type" 
+                            label="Site Type *" 
                             variant="outlined"
                             value={state.siteValue}
                             onChange = {(e) => {
@@ -434,21 +485,25 @@ export default function CreateRecord() {
                                 dispatch({ type: "catchMonumentChange", monumentChosen: "" }); // Reset monument type
                                 }} 
                             select
+                            error={Boolean(errors.site)}
+                            helperText={errors.site}
                         >
                             {siteOptions.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
                                 {option.label}
                                 </MenuItem>
                             ))}
+                            
                         </TextField>
                     </Grid>
 
                     {/* monument type */}
                     <Grid>
                         <TextField 
+                            style={errors.monument ? {  borderRadius: '5px', padding: 4 } : {}} 
                             id="monument" 
                             fullWidth 
-                            label="Monument Type" 
+                            label="Monument Type *" 
                             variant="outlined"
                             value={state.monumentValue}
                             onChange = {(e)=> 
@@ -458,7 +513,12 @@ export default function CreateRecord() {
                         } 
                             select
                             disabled={!state.siteValue} // <-- disables if site type is not selected
-                            helperText={!state.siteValue ? "Please select a site type first" : ""}
+                            error={Boolean(errors.monument)}
+                            helperText={
+                                !state.siteValue
+                                  ? "Please select a site type first"
+                                  : errors.monument // Will show the error if site type is selected but no monument is picked
+                              }
                         >
                             <MenuItem 
                                 value="">
@@ -483,15 +543,18 @@ export default function CreateRecord() {
                     {/* period */}
                     <Grid>
                         <TextField 
+                            style={errors.period ? {  borderRadius: '5px', padding: 4 } : {}}
                             id="period" 
                             fullWidth 
-                            label="Period" 
+                            label="Period *" 
                             variant="outlined"
                             value={state.periodValue}
                             onChange = {(e)=> 
                                 dispatch({
                                 type: "catchPeriodChange", periodChosen: e.target.value})}
-                            select 
+                            select
+                            error={Boolean(errors.period)}
+                            helperText={errors.period}
                         >
                             {periodOptions.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
@@ -542,7 +605,7 @@ export default function CreateRecord() {
                     </Grid> */}
 
                     {/* latitude */}
-                    <Grid>
+                    {/* <Grid>
                         <TextField 
                         id="latitude" 
                         fullWidth 
@@ -554,10 +617,10 @@ export default function CreateRecord() {
                             dispatch({
                             type: "catchLatitudeChange", latitudeChosen: e.target.value})} 
                         />
-                    </Grid>
+                    </Grid> */}
 
                     {/* longitude */}
-                    <Grid>
+                    {/* <Grid>
                         <TextField 
                         id="longitude" 
                         fullWidth 
@@ -569,23 +632,7 @@ export default function CreateRecord() {
                             dispatch({
                             type: "catchLongitudeChange", longitudeChosen: e.target.value})} 
                         />
-                    </Grid>
-
-                    {/* Picture uploaded feedback */}
-                    <Grid 
-                        container
-                        sx= {{
-                            color: "black",
-                        }}>
-                        <ul>
-                            {state.picture1Value ? <li>{state.picture1Value.name}</li> : ""}
-                            {state.picture2Value ? <li>{state.picture2Value.name}</li> : ""}
-                            {state.picture3Value ? <li>{state.picture3Value.name}</li> : ""}
-                            {state.picture4Value ? <li>{state.picture4Value.name}</li> : ""}
-                            {state.picture5Value ? <li>{state.picture5Value.name}</li> : ""}
-                        </ul>       
-                    </Grid>
-
+                    </Grid> */}
 
                     {/* Photo upload */}
                     <Grid>
@@ -619,8 +666,35 @@ export default function CreateRecord() {
                         </Button>
                     </Grid>
 
+                    {/* Picture uploaded feedback */}
+                    <Grid 
+                        container
+                        sx= {{
+                            color: "black",
+                        }}>
+                        <ul>
+                            {state.picture1Value ? <li>{state.picture1Value.name}</li> : ""}
+                            {state.picture2Value ? <li>{state.picture2Value.name}</li> : ""}
+                            {state.picture3Value ? <li>{state.picture3Value.name}</li> : ""}
+                            {state.picture4Value ? <li>{state.picture4Value.name}</li> : ""}
+                            {state.picture5Value ? <li>{state.picture5Value.name}</li> : ""}
+                        </ul>       
+                    </Grid>
+
                     {/* Submit Button */}
                     <Grid>
+                        {/* Display error message if polygon is not drawn */}
+                        {errors.polygon && (
+                        <Typography color="error" align="left" sx={{ marginBottom: 2 }}>
+                            {errors.polygon}
+                        </Typography>
+                    )}
+                    {/* Display error message if there are any errors */}
+                    {Object.keys(errors).length > 0 && (
+                        <Typography color="error" align="left" sx={{ marginBottom: 1 }}>
+                            Please make sure all required fields are complete
+                        </Typography>
+                    )}
                         <Button 
                         variant="contained" 
                         xs={8}
@@ -636,6 +710,7 @@ export default function CreateRecord() {
                             backgroundColor: "#FFD034",
                             }} 
                         type="submit">Submit
+                        
                         </Button>
                     </Grid>
 
@@ -655,6 +730,13 @@ export default function CreateRecord() {
 
                 </Grid>
             </form>
+
+            <Snackbar
+                open={snackbarOpen}
+                onClose={handleSnackbarClose}
+                message="Record submitted!"
+            />
+
         </div> 
     </div>
     );

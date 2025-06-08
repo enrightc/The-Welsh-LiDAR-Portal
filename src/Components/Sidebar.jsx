@@ -2,7 +2,10 @@ import React from "react";
 
 import CreateRecord from '../Components/CreateRecord';
 
-export default function Sidebar({ open, onClose }) {
+// Sidebar component receives open (whether sidebar is open), onClose (function to close sidebar),
+// and resetPolygon (function to reset polygon after form submit) as props from its parent (Map.jsx)
+// These are the props sidebar expects to receive from its parent component and can use them, or pass them  further down to child components.
+export default function Sidebar({ open, onClose, resetPolygon }) {
   return (
     <div
       style={{
@@ -40,7 +43,8 @@ export default function Sidebar({ open, onClose }) {
       {/* Sidebar content */}
       {open && (
         <div style={{ padding: -45 }}>
-          <CreateRecord />
+        {/* Component to create a record with reset polygon passed as prop */}
+          <CreateRecord resetPolygon={resetPolygon} /> 
         </div>
       )}
     </div>

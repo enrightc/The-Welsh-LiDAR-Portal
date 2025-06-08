@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
 import CreateRecord from '../Components/CreateRecord'; // Import the CreateRecord component for creating new records
+
+
 import Sidebar from '../Components/Sidebar';
 // React Leaflet
 import {
@@ -9,11 +11,11 @@ import {
     TileLayer,
     WMSTileLayer,
     useMap,
-    Marker,
+    // Marker,
     Popup,
     LayersControl,
     FeatureGroup,
-    Polygon
+    Polygon,
   } from 'react-leaflet'
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-loading';
@@ -48,35 +50,35 @@ const Map = () => {
   // Use 'setSidebarOpen' to change its value (for example, to open or close the sidebar).
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  // *Draggable Marker*
-  // 1. Get global state and dispatch from context
+  // // *Draggable Marker*
+  // // 1. Get global state and dispatch from context
   const state = React.useContext(StateContext);
   const dispatch = React.useContext(DispatchContext);
 
-  // 2. Get marker position from global state
-  const markerPosition = [
-    Number(state.markerPosition.latitudeValue),
-    Number(state.markerPosition.longitudeValue),
-  ];
+  // // 2. Get marker position from global state
+  // const markerPosition = [
+  //   Number(state.markerPosition.latitudeValue),
+  //   Number(state.markerPosition.longitudeValue),
+  // ];
 
-  // 3. Create a ref for the marker
-  const markerRef = useRef(null);
+  // // 3. Create a ref for the marker
+  // const markerRef = useRef(null);
 
-  // 4. Set up event handlers for the marker
-  const eventHandlers = useMemo(
-    () => ({
-      dragend() {
-        const marker = markerRef.current;
-        if (marker) {
-          const { lat, lng } = marker.getLatLng();
-          // Update global state with new position
-          dispatch({ type: "catchLatitudeChange", latitudeChosen: lat });
-          dispatch({ type: "catchLongitudeChange", longitudeChosen: lng });
-        }
-      },
-    }),
-    [dispatch] // Make sure to add dispatch as a dependency
-  );
+  // // 4. Set up event handlers for the marker
+  // const eventHandlers = useMemo(
+  //   () => ({
+  //     dragend() {
+  //       const marker = markerRef.current;
+  //       if (marker) {
+  //         const { lat, lng } = marker.getLatLng();
+  //         // Update global state with new position
+  //         dispatch({ type: "catchLatitudeChange", latitudeChosen: lat });
+  //         dispatch({ type: "catchLongitudeChange", longitudeChosen: lng });
+  //       }
+  //     },
+  //   }),
+  //   [dispatch] // Make sure to add dispatch as a dependency
+  // );
 
   // Use the useState hook to create a state variable called allRecords
   // It starts as an empty array []
@@ -85,6 +87,15 @@ const Map = () => {
   const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
 
   const [polygonDrawn, setPolygonDrawn] = useState(false);  // state to track if polygon has been drawn.
+
+  // Function to reset the polygon drawing state after form is submitted
+  // This function will be passed to the Sidebar component
+  // so it can be called when the user submits the form
+  function resetPolygon() {
+    console.log("resetPolygon called");
+    setPolygonDrawn(false);  // Allow drawing again
+    dispatch({ type: "catchPolygonCoordinateChange", polygonChosen: [] }); // Clear global polygon
+  }
 
 
   // useEffect runs code when the component first loads (mounts)
@@ -151,6 +162,7 @@ const Map = () => {
       setPolygonDrawn(true); // Set flag so user can't draw more
     }
   };
+  
 
   
   // If data is loaded, show the map
@@ -167,7 +179,11 @@ const Map = () => {
     >
       {/* Sidebar */}
       {/* Sidebar: appears on the left, pushes map content over */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {/* The Sidebar component is imported from the Components folder */}
+      {/* It takes 'open' and 'onClose' props to control its visibility */}
+      {/* 'resetPolygon' prop is passed to reset polygon drawing state */}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} resetPolygon={resetPolygon} />
+
 
       {/* Main content (map), shrinks when sidebar is open */}
       <div style={{ flex: 1, position: "relative" }}>
@@ -357,8 +373,10 @@ const Map = () => {
             {Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
                     <Polygon
                       positions={record.polygonCoordinate} // Pass polygon coordinates
-                      pathOptions={{ color: "blue", fillOpacity: 0.5 }} // Styling
-                      
+                      pathOptions={{ 
+                        Bordercolor: "blue", 
+                        
+                        }}
                     >
                       <Popup>
                         {record.picture1 && (

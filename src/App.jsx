@@ -27,10 +27,10 @@ function App() {
     userToken: localStorage.getItem("theUserToken"), 
     userIsLoggedIn: localStorage.getItem('theUserUsername') ? true : false, // State to track if the user is logged in
     // userIsAdmin: false, // State to track if the user is an admin
-    markerPosition: {
-      latitudeValue: "52.1307",    
-      longitudeValue: "-3.7837", 
-    },  
+    // markerPosition: {
+    //   latitudeValue: "52.1307",    
+    //   longitudeValue: "-3.7837", 
+    // },  
     polygonValue: [],
   };
       
@@ -48,12 +48,12 @@ function App() {
       case "Logout":
         draft.userIsLoggedIn = false; // Set userIsLoggedIn to false
         break;
-      case "catchLatitudeChange":
-        draft.markerPosition.latitudeValue = action.latitudeChosen;
-        break;
-      case "catchLongitudeChange":
-        draft.markerPosition.longitudeValue = action.longitudeChosen;
-        break;
+      // case "catchLatitudeChange":
+      //   draft.markerPosition.latitudeValue = action.latitudeChosen;
+      //   break;
+      // case "catchLongitudeChange":
+      //   draft.markerPosition.longitudeValue = action.longitudeChosen;
+      //   break;
       case 'catchPolygonCoordinateChange':
         draft.polygonValue = action.polygonChosen;
         break;
