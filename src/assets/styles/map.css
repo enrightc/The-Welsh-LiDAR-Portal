@@ -1,0 +1,32 @@
+/* Modern styled popup for Scheduled Monuments */
+.custom-popup {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: #2e2e2e;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+.custom-popup strong {
+  display: block;
+  color: #b30000;  /* rich red for titles */
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.custom-popup em {
+  font-style: normal;
+  font-weight: 600;
+  color: #555;
+}
+
+.custom-popup a {
+  display: inline-block;
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.custom-popup a:hover {
+  text-decoration: underline;
+}

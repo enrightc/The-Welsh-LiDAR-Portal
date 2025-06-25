@@ -3,6 +3,7 @@ import Axios from 'axios'; // Import Axios for making HTTP requests
 
 import CreateRecord from '../Components/CreateRecord'; // Import the CreateRecord component for creating new records
 
+import '../assets/styles/map.css';
 
 import Sidebar from '../Components/Sidebar';
 // React Leaflet
@@ -272,6 +273,14 @@ useEffect(() => {
             />
           </LayersControl.Overlay>
 
+          <LayersControl.Overlay name="Custom DTM Tiles">
+  <TileLayer
+    url="/data/DTM/{z}/{x}/{y}.png"
+    attribution="&copy; Your Attribution"
+    opacity={1}
+  />
+</LayersControl.Overlay>
+
           {/* Cadw Scheduled Monuments */}
           {/* <LayersControl.Overlay name="Scheduled Monuments">
             <WMSTileLayer
@@ -301,7 +310,18 @@ useEffect(() => {
                 onEachFeature={(feature, layer) => {
                   if (feature.properties) {
                     layer.bindPopup(
-                      `<strong>${feature.properties.Name || feature.properties.name || "Scheduled Monument"}</strong>`
+                      `<div class="custom-popup">
+                      <strong>Scheduled Monument</strong>
+                      <br>
+                      <strong>${feature.properties.Name}</strong>
+                      <br>
+                      <em>Site Type: </em>${feature.properties.SiteType}
+                      <br>
+                      <em>Period: </em>${feature.properties.Period}
+                      <br>
+                      <em>Cadw Report: </em><a href="${feature.properties.Report}" target="_blank" rel="noopener noreferrer">View</a>
+                      <br>
+                      `
                     );
                   }
                 }}
