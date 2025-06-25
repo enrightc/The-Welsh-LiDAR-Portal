@@ -716,7 +716,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                     </Grid>
 
                     {/* display capatured coords in the form */}  
-                <Grid item container style={{ marginTop: "2rem" }}>
+                {/* <Grid item container style={{ marginTop: "2rem" }}>
                     <TextField
                         id="polygon"
                         label="Polygon Coordinates"
@@ -727,7 +727,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                         value={JSON.stringify(GlobalState.polygonValue)}
                         InputProps={{ readOnly: true }}
                     />
-                </Grid>
+                </Grid> */}
 
                 </Grid>
             </form>

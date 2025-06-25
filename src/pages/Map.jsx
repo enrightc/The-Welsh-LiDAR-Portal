@@ -117,14 +117,14 @@ useEffect(() => {
   // Function to fetch Scheduled Monuments GeoJSON data
   // This effect runs only once when the component first mounts
   useEffect(() => {
-    fetch("/data/scheduled_monuments.geojson")
-      .then(res => res.json())
-      .then(data => {
-        setScheduledMonuments(data);
-        console.log('Scheduled Monuments:', data); // <-- Now it will log the actual data!
-      })
-      .catch(err => console.error("Error loading Scheduled Monuments GeoJSON:", err));
-  }, []);
+  fetch(`${import.meta.env.BASE_URL}data/scheduled_monuments.geojson`)
+    .then(res => res.json())
+    .then(data => {
+      setScheduledMonuments(data);
+      console.log('Scheduled Monuments:', data);
+    })
+    .catch(err => console.error("Error loading Scheduled Monuments GeoJSON:", err));
+}, []);
   
   // If data is still loading, show a loading message
   if (dataIsLoading === true) {
@@ -273,30 +273,7 @@ useEffect(() => {
             />
           </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Custom DTM Tiles">
-  <TileLayer
-    url="/data/DTM/{z}/{x}/{y}.png"
-    attribution="&copy; Your Attribution"
-    opacity={1}
-  />
-</LayersControl.Overlay>
-
           {/* Cadw Scheduled Monuments */}
-          {/* <LayersControl.Overlay name="Scheduled Monuments">
-            <WMSTileLayer
-                url="https://datamap.gov.wales/geoserver/ows?" 
-                layers="inspire-wg:Cadw_SAM"
-                format="image/png"
-                transparent={true}
-                tileSize={1024}  // ✅ Increase tile size for better clarity
-                version="1.1.1"  // ✅ Try version 1.1.1 if 1.3.0 is not working well
-                maxZoom={18}  // ✅ Allows for higher resolution zoom levels
-                minZoom={6}  // ✅ Ensures tiles load at lower zoom levels
-                opacity={1}  // ✅ Make sure the layer is fully visible
-                detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
-                attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
-            />
-          </LayersControl.Overlay> */}
           <LayersControl.Overlay name="Scheduled Monuments">
             {scheduledMonuments && (
               <GeoJSON
