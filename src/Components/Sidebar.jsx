@@ -11,7 +11,7 @@ export default function Sidebar({ open, onClose, resetPolygon, fetchRecords }) {
       style={{
         width: open ? "45vw" : 0,
         maxWidth: 500,
-        transition: "width 0.3s",
+        transition: "width 0.5s",
         overflow: "hidden",
         background: "white",
         color: "#fff",

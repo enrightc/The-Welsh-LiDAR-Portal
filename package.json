@@ -1,16 +1,13 @@
 {
     "name": "welsh-lidar-portal",
     "private": true,
-    "homepage": "https://enrightc.github.io/The-Welsh-LiDAR-Portal",
     "version": "0.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
         "lint": "eslint .",
-        "preview": "vite preview",
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d dist"
+        "preview": "vite preview"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
