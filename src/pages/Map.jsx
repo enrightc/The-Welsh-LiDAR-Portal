@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
 import CreateRecord from '../Components/CreateRecord'; // Import the CreateRecord component for creating new records
-import DrawPolygonBtn from "../Components/DrawPolygonBtn";
-import DeletePolygonBtn from "../Components/DeletePolygonBtn";
+
+import Snackbar from '../Components/MySnackbar';
 import CornerHelpBox from "../Components/CornerHelpBox";
 
 import MapToolbar from "../Components/MapToolbar";
@@ -56,6 +56,9 @@ const Map = () => {
   // 'sidebarOpen' is true if the sidebar is open, false if it is closed.
   // Use 'setSidebarOpen' to change its value (for example, to open or close the sidebar).
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   
   // // *Draggable Marker*
   // // 1. Get global state and dispatch from context
@@ -137,7 +140,6 @@ const Map = () => {
 
 // Custom function to delete a polygon once drawn
 const handleDeletePolygon = () => {
-  alert("Are you sure you want to delete your polygon. You will have to redraw it");
   const fg = featureGroupRef.current;
 
   if (!fg) return;
@@ -150,6 +152,10 @@ const handleDeletePolygon = () => {
 
   // Clear coordinates from the reducer
   dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: [] });
+
+  // Show the snackbar
+  setSnackbarOpen(true);
+  
 };
 
   // Function to reset the polygon drawing state after form is submitted
@@ -271,10 +277,17 @@ useEffect(() => {
         )}
 
       <CornerHelpBox />
-      
+
       <MapToolbar 
         handleStartPolygon={handleStartPolygon} 
         handleDeletePolygon={handleDeletePolygon} 
+      />
+
+      {/* Polygon delete confirmation */}
+      <Snackbar
+        open={snackbarOpen}
+        onClose={() => setSnackbarOpen(false)}
+        message="Polygon deleted"
       />
       
       <MapContainer
