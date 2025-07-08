@@ -6,6 +6,8 @@ import DrawPolygonBtn from "../Components/DrawPolygonBtn";
 import DeletePolygonBtn from "../Components/DeletePolygonBtn";
 import CornerHelpBox from "../Components/CornerHelpBox";
 
+import MapToolbar from "../Components/MapToolbar";
+
 import '../assets/styles/map.css';
 
 import Sidebar from '../Components/Sidebar';
@@ -268,34 +270,12 @@ useEffect(() => {
           </Tooltip>
         )}
 
-      {/* Custom "Draw Polygon" button */}
-      {/* <button
-      style={{
-            position: 'absolute',
-            bottom: 100,
-            left: 20,
-            zIndex: 1000,
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            border: 'none',
-            padding: '10px 15px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-          onClick={handleStartPolygon} // ← This now calls the drawing function
-          >
-        ✏️ Draw Polygon
-      </button> */}
-      
-      
-      {/* Custom Default draw polygon button */}
-      <DrawPolygonBtn onClick={handleStartPolygon} />
-
-      {/* Custom Default draw polygon button */}
-      <DeletePolygonBtn onClick={handleDeletePolygon} />
-
-      
       <CornerHelpBox />
+      
+      <MapToolbar 
+        handleStartPolygon={handleStartPolygon} 
+        handleDeletePolygon={handleDeletePolygon} 
+      />
       
       <MapContainer
         center={[
