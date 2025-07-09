@@ -235,9 +235,9 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
             case "changeSendRequest":
                 draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
                 break; // This action will trigger the useEffect to send the request
-                case "resetForm":
-                    return initialstate; // Resets all fields to their initial values
-                    break;
+            case "resetForm":
+                return initialstate; // Resets all fields to their initial values
+                break;
         }
     }
     

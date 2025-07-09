@@ -11,6 +11,7 @@ import Map from "./pages/Map";
 import Testing from "./pages/Testing"; // Import the Testing component
 import Register from "./pages/Register"; 
 import Login from "./pages/Login"; 
+import Profile from "./pages/Profile";
 
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
@@ -90,6 +91,7 @@ useEffect(() => {
                 <Route path="/testing" element={<Testing />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
           </main>
         </DispatchContext.Provider>

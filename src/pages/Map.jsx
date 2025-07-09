@@ -1,16 +1,14 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
-import CreateRecord from '../Components/CreateRecord'; // Import the CreateRecord component for creating new records
-
+// Components
+import CreateRecord from '../Components/CreateRecord'; 
 import Snackbar from '../Components/MySnackbar';
 import CornerHelpBox from "../Components/CornerHelpBox";
-
 import MapToolbar from "../Components/MapToolbar";
-
 import '../assets/styles/map.css';
-
 import Sidebar from '../Components/Sidebar';
+
 // React Leaflet
 import {
     MapContainer,
@@ -28,6 +26,8 @@ import 'leaflet-loading';
 
 // React Leaflet Draw
 import { EditControl } from "react-leaflet-draw"
+
+
 
 // MUI Imports
 import Typography from '@mui/material/Typography';
@@ -155,8 +155,19 @@ const handleDeletePolygon = () => {
 
   // Show the snackbar
   setSnackbarOpen(true);
-  
 };
+
+const handleActivateRuler = () => {
+  const fg = featureGroupRef.current;
+
+  if (!fg || !fg._map) return;
+
+  const map = fg._map;
+
+  // Create a new ruler and add to map
+  L.control.ruler({ measureUnits: { length: 'metres' } }).addTo(map);
+};
+
 
   // Function to reset the polygon drawing state after form is submitted
   // This function will be passed to the Sidebar component
@@ -280,7 +291,6 @@ useEffect(() => {
 
       <MapToolbar 
         handleStartPolygon={handleStartPolygon} 
-        handleDeletePolygon={handleDeletePolygon} 
       />
 
       {/* Polygon delete confirmation */}
@@ -289,6 +299,8 @@ useEffect(() => {
         onClose={() => setSnackbarOpen(false)}
         message="Polygon deleted"
       />
+
+      
       
       <MapContainer
         center={[
@@ -394,6 +406,8 @@ useEffect(() => {
           </LayersControl.Overlay>
 
         </LayersControl>
+
+        
 
       <FeatureGroup ref={featureGroupRef}>
         <EditControl
@@ -503,5 +517,8 @@ useEffect(() => {
     </div>
     )
 }
+
+
+
 
 export default Map

@@ -81,6 +81,11 @@ function Navigation() {
     }
   }
 
+  function handleProfile() {
+    setAnchorElNav(null);
+    navigate("/profile");
+  }
+
   return (
     <AppBar position="static" sx={{ 
       width: "100%", 
@@ -251,7 +256,7 @@ function Navigation() {
               {GlobalState.userIsLoggedIn ? (
                 // Logged-in menu
                 <>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={handleProfile}>
                     <Typography textAlign="center">Profile</Typography>
                   </MenuItem>
                   <MenuItem onClick={handleCloseUserMenu}>

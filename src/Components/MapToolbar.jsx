@@ -5,6 +5,7 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import StraightenIcon from '@mui/icons-material/Straighten';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -16,8 +17,6 @@ import Button from '@mui/material/Button';
 
 export default function MapToolbar({ handleStartPolygon, handleDeletePolygon }) {
   const [openConfirm, setOpenConfirm] = React.useState(false);
-
-  
 
 return (
     <Box sx={{ 
@@ -56,6 +55,17 @@ return (
                 <DeleteIcon />
             </IconButton>
         </Tooltip>
+
+        <Tooltip title="Measure Distance (coming Soon)" arrow>
+            <IconButton
+                aria-label="Measure distance"
+                color="black"
+
+            >
+                <StraightenIcon />
+            </IconButton>
+        </Tooltip>
+
 
         {/* Delete Confirmation dialogue box */}
         <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
