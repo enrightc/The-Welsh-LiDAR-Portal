@@ -177,7 +177,16 @@ function Profile() {
 
   return (
     <>
-    <div>
+    <div
+    style={{
+        width: '100%',
+        maxWidth: '800px',
+        margin: '3rem auto',
+        padding: '2rem',
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        backgroundColor: 'white',
+      }}>
         <Typography 
             variant="h3"
             style={{
@@ -190,6 +199,16 @@ function Profile() {
                 color: "green",
                 fontWeight: "bolder"
             }}>{GlobalState.userUsername}</span>
+        </Typography>
+
+        <Typography 
+            variant="h5"
+            style={{
+                marginTop: "2rem",
+                textAlign: "center",
+            }}
+        >
+            You have record X LiDAR Features
         </Typography>
     </div>
     
@@ -209,7 +228,7 @@ function Profile() {
       <form onSubmit={FormSubmit}>
         <Grid container direction="column" spacing={3} >
           <Grid>
-            <Typography variant="h4" align="center">
+            <Typography variant="h4" align="left">
               My Profile
             </Typography>
           </Grid>

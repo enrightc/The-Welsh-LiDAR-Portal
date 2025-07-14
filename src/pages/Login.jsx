@@ -141,7 +141,7 @@ function Login() {
                 IdInfo: response.data.id
             }); // Dispatch an action to update the username in the state
             setLoginComplete(true); // Set this after dispatch
-            navigate("/"); // Redirect to the home page after successful registration
+            navigate("/profile"); // Redirect to the home page after successful registration
             
         } catch (error) {
             if (error.response) {

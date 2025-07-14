@@ -290,7 +290,8 @@ useEffect(() => {
       <CornerHelpBox />
 
       <MapToolbar 
-        handleStartPolygon={handleStartPolygon} 
+        handleStartPolygon={handleStartPolygon}
+        handleDeletePolygon={handleDeletePolygon}
       />
 
       {/* Polygon delete confirmation */}
@@ -504,6 +505,7 @@ useEffect(() => {
                         {record.recorded_by} <br />
                         {record.title} <br />
                         {record.description} <br />
+                        {record.recorded_by}
                       </Popup>
                     </Polygon>
                     
