@@ -502,7 +502,6 @@ useEffect(() => {
                             style={{ height: "14rem", width: "18rem", marginBottom: "0.5rem" }}
                           />
                         )}
-                        {record.recorded_by} <br />
                         {record.title} <br />
                         {record.description} <br />
                         {record.recorded_by}

@@ -358,11 +358,18 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                         "picture4", state.picture4Value);
                     formData.append(
                         "picture5", state.picture5Value);
-                    formData.append(
-                        "recorded_by", GlobalState.userId);
+                    
                     formData.append("polygonCoordinate", JSON.stringify(GlobalState.polygonValue));  
                 try {
-                    const response = await Axios.post('http://localhost:8000/api/records/create/', formData);
+                    const response = await Axios.post(
+                        'http://localhost:8000/api/records/create/',
+                        formData,
+                        {
+                            headers: {
+                            Authorization: `Token ${GlobalState.userToken}`  // 👈 this must be your user's auth token
+                            }
+                        }
+                        );
                     console.log(response)
                     dispatch({ type: "resetForm" }); // <--- Reset form
                     resetPolygon(); // Reset the polygon in the parent component
