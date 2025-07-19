@@ -101,7 +101,7 @@ function Users() {
                         {profile.user_username}
                         </Typography>
                         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        {profile.bio.substring(0,100)}...
+                        {profile.bio.substring(0,100) || "No bio provided."}... 
                         </Typography>
                         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         Member since {profile.joined_date.split('T')[0]}
@@ -111,7 +111,7 @@ function Users() {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small">X Lidar Features recorded</Button>
+                        <Button size="small">{profile.record_count} Lidar Features recorded</Button>
                     </CardActions>
                 </Card>
                 </Grid>
