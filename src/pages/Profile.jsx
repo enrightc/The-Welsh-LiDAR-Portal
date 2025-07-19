@@ -103,7 +103,7 @@ function Profile() {
                 draft.blueskyValue = action.blueskyChosen;
                 break;
 
-            case "changeSendReuest": 
+            case "changeSendRequest": 
                 draft.sendRequest = draft.sendRequest + 1
                 break;
             }
@@ -133,6 +133,7 @@ function Profile() {
                         instagram: response.data.instagram || "",
                         linkedin: response.data.linkedin || "",
                         bluesky: response.data.bluesky || "",
+                        record_count: response.data.record_count || 0,
                     },
                     });
             } catch (e) {
@@ -172,7 +173,7 @@ function Profile() {
 
     function FormSubmit(e){
         e.preventDefault()
-        dispatch({type: 'changeSendReuest'})
+        dispatch({type: 'changeSendRequest'})
     }
 
   return (
@@ -208,7 +209,7 @@ function Profile() {
                 textAlign: "center",
             }}
         >
-            You have record X LiDAR Features
+            You have recorded {state.userProfile.record_count || 0} LiDAR Features
         </Typography>
     </div>
     

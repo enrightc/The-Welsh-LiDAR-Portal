@@ -341,7 +341,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                     formData.append(
                         "site_type", state.siteValue);
                     formData.append(
-                        "monument", state.monumentValue);
+                        "monument_type", state.monumentValue);
                     formData.append(
                         "period", state.periodValue);
                     // formData.append(

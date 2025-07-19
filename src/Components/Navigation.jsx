@@ -56,7 +56,7 @@ function Navigation() {
   // This will allow you to access user information from the global state
   const GlobalDispatch = useContext(DispatchContext); // Access global dispatch function
   // This will allow you to dispatch actions to update the global state
-
+  
   async function handleLogout() {
     // Clear user data from localStorage
     setAnchorElUser(null);
@@ -264,6 +264,9 @@ function Navigation() {
                   </MenuItem>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography textAlign="center">Dashboard</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/users"); }}>
+                    <Typography textAlign="center">Users</Typography>
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <Typography textAlign="center">Logout</Typography>

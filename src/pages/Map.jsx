@@ -487,28 +487,36 @@ useEffect(() => {
             </Marker> */}
             {/* Display Polygon if it exists */}
             {Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
-                    <Polygon
-                      positions={record.polygonCoordinate} // Pass polygon coordinates
-                      pathOptions={{ 
-                        Bordercolor: "blue", 
-                        
-                        }}
-                    >
-                      <Popup>
-                        {record.picture1 && (
-                          <img
-                            src={record.picture1}
-                            alt={record.title}
-                            style={{ height: "14rem", width: "18rem", marginBottom: "0.5rem" }}
-                          />
-                        )}
-                        {record.title} <br />
-                        {record.description} <br />
-                        {record.recorded_by}
-                      </Popup>
-                    </Polygon>
-                    
-                  )}
+                                  <Polygon
+                positions={record.polygonCoordinate} // Pass polygon coordinates
+                pathOptions={{ 
+                  Bordercolor: "blue", 
+                }}
+              >
+                <Popup>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", lineHeight: "1.4", maxWidth: "300px", backgroundColor: "#fff", padding: "10px", borderRadius: "6px",  }}>
+                    <strong style={{ color: "blue", fontSize: "15px", display: "block", marginBottom: "12px" }}>LiDAR Feature</strong>
+                    <h3 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "blue" }}>{record.title}</h3>
+                    {record.picture1 && (
+                      <img
+                        src={record.picture1}
+                        alt={record.title}
+                        style={{ height: "10rem", width: "100%", objectFit: "cover", marginBottom: "8px", borderRadius: "4px" }}
+                      />
+                    )}
+                    {record.prn && (
+                      <p style={{ margin: 0 }}><strong>PRN:</strong> {record.prn}</p>
+                    )}
+                    <p style={{ margin: 0 }}><strong>Site Type:</strong> {record.site_type}</p>
+                    <p style={{ margin: 0 }}><strong>Monument Type:</strong> {record.monument_type}</p>
+                    <p style={{ margin: 0 }}><strong>Recorded By:</strong> {record.recorded_by}</p>
+                    <p style={{ margin: 0 }}>
+                    <strong>Date Recorded:</strong> {new Date(record.date_recorded).toLocaleDateString()}
+                  </p>
+                  </div>
+                </Popup>
+              </Polygon>
+            )}
           </React.Fragment>
         ))}
       
