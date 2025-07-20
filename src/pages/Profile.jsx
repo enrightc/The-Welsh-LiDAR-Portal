@@ -158,6 +158,7 @@ function Profile() {
                         linkedin: response.data.linkedin || "",
                         bluesky: response.data.bluesky || "",
                         record_count: response.data.record_count || 0,
+                        profilePicture: response.data.profile_picture || "",
                     },
                     });
             } catch (e) {
@@ -190,14 +191,14 @@ function Profile() {
                 if (state.profilePictureValue) {
                 formData.append("profile_picture", state.profilePictureValue);
                 }
-
- 
                 try {
                     const response = await Axios.patch(`http://localhost:8000/api/profiles/${GlobalState.userId}/update/`, formData);
                     console.log(response)
                     
                 } catch(e){
                     console.log(e.response)
+                    console.log("profilePicture from API:", response.data.profilePicture);
+                    console.log("userProfile from state:", state.userProfile);
                 }
             }
             updateProfile()
@@ -209,10 +210,14 @@ function Profile() {
         dispatch({type: 'changeSendRequest'})
     }
 
+    function WelcomeDisplay(){
+        
+    }
+
   return (
     <>
     <div
-    style={{
+      style={{
         width: '100%',
         maxWidth: '800px',
         margin: '3rem auto',
@@ -221,29 +226,48 @@ function Profile() {
         borderRadius: '8px',
         backgroundColor: 'white',
       }}>
-        <Typography 
+      <Grid container spacing={4} alignItems="center">
+        <Grid item xs={12} md={4}>
+          <img
+            src={state.userProfile.profilePicture}
+            alt="Profile"
+            style={{
+              width: '100%',
+              maxWidth: '200px',
+              borderRadius: '8px',
+              display: 'block',
+              margin: '0 auto'
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Typography
             variant="h3"
             style={{
-                marginTop: "2rem",
-                textAlign: "center",
+              marginBottom: "1rem",
+              textAlign: "center",
             }}
-        >
+          >
             Welcome <span
-            style= {{
+              style={{
                 color: "green",
                 fontWeight: "bolder"
-            }}>{GlobalState.userUsername}</span>
-        </Typography>
-
-        <Typography 
+              }}>{GlobalState.userUsername}</span>
+          </Typography>
+          <Typography
             variant="h5"
             style={{
-                marginTop: "2rem",
-                textAlign: "center",
+              textAlign: "center",
             }}
-        >
+          >
             You have recorded {state.userProfile.record_count || 0} LiDAR Features
-        </Typography>
+          </Typography>
+        </Grid>
+      </Grid>
+    </div>
+
+    <div>
+        {WelcomeDisplay()}
     </div>
     
     {/* Profile Fields */}
