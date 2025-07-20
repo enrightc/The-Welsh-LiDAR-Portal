@@ -33,6 +33,8 @@ function Profile() {
                 instagram: "",
                 linkedin: "",
                 bluesky: "",
+                uploadededPicture: [],
+                profilePicture: ""
             },
             bioValue: "",
             locationValue: "",
@@ -44,6 +46,8 @@ function Profile() {
             instagramValue: "",
             linkedinValue: "",
             blueskyValue: "",
+            uploadedPicture: [],
+            profilePictureValue: "",
             sendRequest: 0,
             };
     
@@ -61,6 +65,8 @@ function Profile() {
                 draft.instagramValue = action.profileObject.instagram;
                 draft.linkedinValue = action.profileObject.linkedin;
                 draft.blueskyValue = action.profileObject.bluesky;
+                draft.uploadedPictureValue = action.profileObject.uploadededPicture;
+                draft.profilePictureValue = action.profileObject.profilePicture;
                 break;
 
             case "catchBioChange":
@@ -103,6 +109,14 @@ function Profile() {
                 draft.blueskyValue = action.blueskyChosen;
                 break;
 
+            case "catchUploadedPictureChange":
+                draft.uploadedPictureValue = action.uploadedPictureChosen;
+                break;
+
+            case "catchProfilePictureChange":
+                draft.profilePictureValue = action.profilePictureChosen;
+                break;
+
             case "changeSendRequest": 
                 draft.sendRequest = draft.sendRequest + 1
                 break;
@@ -110,6 +124,16 @@ function Profile() {
         }
 
     const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
+
+    // useEffect to catch uploaded picture
+    useEffect(() => {
+    if (state.uploadedPictureValue && state.uploadedPictureValue[0]){
+        dispatch({
+            type: 'catchProfilePictureChange',
+            profilePictureChosen: state.uploadedPictureValue[0]
+        });
+    }
+}, [state.uploadedPictureValue]);
 
     // request to get profile info
     useEffect(() => {
@@ -158,9 +182,18 @@ function Profile() {
                 formData.append("instagram", state.instagramValue);
                 formData.append("linkedin", state.linkedinValue);
                 formData.append("bluesky", state.blueskyValue);
+                let website = state.websiteValue;
+                if (website && !website.startsWith("http://") && !website.startsWith("https://")) {
+                website = "https://" + website;
+                }
+                formData.append("website", website);
+                if (state.profilePictureValue) {
+                formData.append("profile_picture", state.profilePictureValue);
+                }
+
  
                 try {
-                    const response = await Axios.patch(`http://localhost:8000/api/profiles/${GlobalState.userId}/update`, formData);
+                    const response = await Axios.patch(`http://localhost:8000/api/profiles/${GlobalState.userId}/update/`, formData);
                     console.log(response)
                     
                 } catch(e){
@@ -435,6 +468,48 @@ function Profile() {
             />
             </Grid>
 
+            {/* Upload profile photo */}
+            <Grid>
+                <Button 
+                    variant="contained" 
+                    xs={6}
+                    component="label"
+                    style={{
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                    }}
+                    sx= {{
+                        color: "black",
+                        border: "1px solid black",
+                        fontSize: { xs: '0.8rem', md: '0.8rem' },
+                        borderRadius: "5px",
+                        backgroundColor: "",
+                        }} 
+                >
+                    Profile Picture
+                    <input
+                        type="file"
+                        accept="image/png, image/gif, image/jpeg"
+                        hidden  
+                        onChange={(e) =>
+                            dispatch({type: 'catchUploadedPictureChange', uploadedPictureChosen: e.target.files,
+                            })
+                        }
+                    />
+                </Button>
+            </Grid>
+
+            {/* Picture uploaded feedback */}
+            <Grid 
+                container
+                sx= {{
+                    color: "black",
+                }}>
+                <ul>
+                    {state.profilePictureValue ? <li>{state.profilePictureValue.name}</li> : ""}
+                </ul>       
+            </Grid>
+
 
           <Grid>
             <Button variant="contained" xs={8}
@@ -451,6 +526,8 @@ function Profile() {
                   }} 
                 type="submit">Update</Button>
           </Grid>
+
+          
 
         </Grid>
       </form>
