@@ -188,7 +188,11 @@ function Profile() {
                 website = "https://" + website;
                 }
                 formData.append("website", website);
-                if (state.profilePictureValue) {
+                if (
+                state.profilePictureValue &&
+                typeof state.profilePictureValue === "object" &&
+                state.profilePictureValue instanceof File
+                ) {
                 formData.append("profile_picture", state.profilePictureValue);
                 }
                 try {
@@ -217,7 +221,7 @@ function Profile() {
   return (
     <>
     <div
-      style={{
+    style={{
         width: '100%',
         maxWidth: '800px',
         margin: '3rem auto',
@@ -226,44 +230,46 @@ function Profile() {
         borderRadius: '8px',
         backgroundColor: 'white',
       }}>
-      <Grid container spacing={4} alignItems="center">
-        <Grid item xs={12} md={4}>
-          <img
-            src={state.userProfile.profilePicture}
-            alt="Profile"
-            style={{
-              width: '100%',
-              maxWidth: '200px',
-              borderRadius: '8px',
-              display: 'block',
-              margin: '0 auto'
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Typography
+        <Grid item>
+  
+    <img
+      src={state.userProfile.profilePicture}
+      alt="Profile"
+      style={{
+        width: '200px',
+        borderRadius: '8px',
+        display: 'block',
+        margin: '0 auto'
+      }}
+    />
+</Grid>
+
+        <Grid item>
+            <Typography 
             variant="h3"
             style={{
-              marginBottom: "1rem",
-              textAlign: "center",
+                marginTop: "2rem",
+                textAlign: "center",
             }}
-          >
+        >
             Welcome <span
-              style={{
+            style= {{
                 color: "green",
                 fontWeight: "bolder"
-              }}>{GlobalState.userUsername}</span>
-          </Typography>
-          <Typography
+            }}>{GlobalState.userUsername}</span>
+        </Typography>
+
+        <Typography 
             variant="h5"
             style={{
-              textAlign: "center",
+                marginTop: "2rem",
+                textAlign: "center",
             }}
-          >
+        >
             You have recorded {state.userProfile.record_count || 0} LiDAR Features
-          </Typography>
+        </Typography>
         </Grid>
-      </Grid>
+        
     </div>
 
     <div>
