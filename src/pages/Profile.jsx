@@ -214,9 +214,29 @@ function Profile() {
         dispatch({type: 'changeSendRequest'})
     }
 
-    function WelcomeDisplay(){
-        
-    }
+    // function to display thumbnail profile picture
+    function ProfilePictureDisplay() {
+        if (state.profilePictureValue && typeof state.profilePictureValue === "object") {
+            // This is the newly uploaded file (before submission)
+            const imageUrl = URL.createObjectURL(state.profilePictureValue);
+            return (
+            <Grid item style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
+                <img src={imageUrl} alt="Preview" style={{ height: "5rem", width: "5rem", objectFit: "cover", borderRadius: "5px" }} />
+            </Grid>
+            );
+        }
+
+        if (typeof state.profilePictureValue === "string" && state.profilePictureValue !== "") {
+            // This is the existing profile picture from the backend
+            return (
+            <Grid item style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
+                <img src={state.profilePictureValue} alt="Current Profile" style={{ height: "5rem", width: "5rem", objectFit: "cover", borderRadius: "5px" }} />
+            </Grid>
+            );
+        }
+
+        return null; // Nothing to show
+        }
 
   return (
     <>
@@ -230,52 +250,50 @@ function Profile() {
         borderRadius: '8px',
         backgroundColor: 'white',
       }}>
-        <Grid item>
-  
-    <img
-      src={state.userProfile.profilePicture}
-      alt="Profile"
-      style={{
-        width: '200px',
-        borderRadius: '8px',
-        display: 'block',
-        margin: '0 auto'
-      }}
-    />
-</Grid>
+        <Grid container spacing={2} alignItems="center" justifyContent="center" style={{ marginBottom: '2rem' }}>
+            {/* Profile Picture */}
+            <Grid item xs={12} md={4}>
+                <img
+                src={state.userProfile.profilePicture}
+                alt="Profile"
+                style={{
+                    width: '100%',
+                    maxWidth: '200px',
+                    borderRadius: '8px',
+                    display: 'block',
+                    margin: '0 auto'
+                }}
+                />
+            </Grid>
 
-        <Grid item>
-            <Typography 
-            variant="h3"
-            style={{
-                marginTop: "2rem",
-                textAlign: "center",
-            }}
-        >
-            Welcome <span
-            style= {{
-                color: "green",
-                fontWeight: "bolder"
-            }}>{GlobalState.userUsername}</span>
-        </Typography>
+            {/* Welcome Text */}
+            <Grid item xs={12} md={8}>
+                <Typography 
+                variant="h3"
+                style={{
+                    textAlign: "center",
+                }}
+                >
+                Welcome <span
+                    style= {{
+                    color: "green",
+                    fontWeight: "bolder"
+                    }}>{GlobalState.userUsername}</span>
+                </Typography>
 
-        <Typography 
-            variant="h5"
-            style={{
-                marginTop: "2rem",
-                textAlign: "center",
-            }}
-        >
-            You have recorded {state.userProfile.record_count || 0} LiDAR Features
-        </Typography>
-        </Grid>
-        
+                <Typography 
+                variant="h5"
+                style={{
+                    marginTop: "1rem",
+                    textAlign: "center",
+                }}
+                >
+                You have recorded {state.userProfile.record_count || 0} LiDAR Features
+                </Typography>
+            </Grid>
+        </Grid>   
     </div>
 
-    <div>
-        {WelcomeDisplay()}
-    </div>
-    
     {/* Profile Fields */}
     <div
       style={{
@@ -329,7 +347,6 @@ function Profile() {
                 variant="outlined"
                 value={state.locationValue}
                 onChange = {(e)=> 
-                    // When the user types in the Confirm Password input, do the following:
                     dispatch({
                         type: "catchLocationChange", // Action that tells the reducer what to update
                         locationChosen: e.target.value // This is the new value from the input field
@@ -535,9 +552,10 @@ function Profile() {
                 sx= {{
                     color: "black",
                 }}>
-                <ul>
+                    {ProfilePictureDisplay()}
+                {/* <ul>
                     {state.profilePictureValue ? <li>{state.profilePictureValue.name}</li> : ""}
-                </ul>       
+                </ul>        */}
             </Grid>
 
 
