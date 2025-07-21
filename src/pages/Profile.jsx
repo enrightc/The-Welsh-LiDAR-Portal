@@ -8,6 +8,9 @@ import Axios from 'axios';
 // Contexts
 import StateContext from '../Contexts/StateContext';
 
+//Assets
+import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.webp";
+
 // MUI imports
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -33,7 +36,7 @@ function Profile() {
                 instagram: "",
                 linkedin: "",
                 bluesky: "",
-                uploadededPicture: [],
+                uploadedPicture: [],
                 profilePicture: ""
             },
             bioValue: "",
@@ -169,45 +172,59 @@ function Profile() {
     }, []);
 
     // useEffect to send the update request
-    useEffect(()=>{
-        if (state.sendRequest){
-            async function updateProfile(){
-                const formData = new FormData();
-                formData.append("bio", state.bioValue);
-                formData.append("location", state.locationValue);
-                formData.append("expertise_level", state.expertiseValue ? state.expertiseValue.toLowerCase() : "");
-                formData.append("organisation", state.organisationValue);
-                formData.append("website", state.websiteValue);
-                formData.append("twitter", state.twitterValue);
-                formData.append("facebook", state.facebookValue);
-                formData.append("instagram", state.instagramValue);
-                formData.append("linkedin", state.linkedinValue);
-                formData.append("bluesky", state.blueskyValue);
-                let website = state.websiteValue;
-                if (website && !website.startsWith("http://") && !website.startsWith("https://")) {
-                website = "https://" + website;
-                }
-                formData.append("website", website);
-                if (
-                state.profilePictureValue &&
-                typeof state.profilePictureValue === "object" &&
-                state.profilePictureValue instanceof File
-                ) {
-                formData.append("profile_picture", state.profilePictureValue);
-                }
-                try {
-                    const response = await Axios.patch(`http://localhost:8000/api/profiles/${GlobalState.userId}/update/`, formData);
-                    console.log(response)
-                    
-                } catch(e){
-                    console.log(e.response)
-                    console.log("profilePicture from API:", response.data.profilePicture);
-                    console.log("userProfile from state:", state.userProfile);
-                }
-            }
-            updateProfile()
+    useEffect(() => {
+      if (state.sendRequest) {
+        async function updateProfile() {
+          const formData = new FormData();
+
+          formData.append("bio", state.bioValue || "");
+          formData.append("location", state.locationValue || "");
+          formData.append(
+            "expertise_level",
+            state.expertiseValue ? state.expertiseValue.toLowerCase() : ""
+          );
+          formData.append("organisation", state.organisationValue || "");
+
+          let website = state.websiteValue || "";
+          if (
+            website &&
+            !website.startsWith("http://") &&
+            !website.startsWith("https://")
+          ) {
+            website = "https://" + website;
+          }
+          formData.append("website", website);
+          formData.append("twitter", state.twitterValue || "");
+          formData.append("facebook", state.facebookValue || "");
+          formData.append("instagram", state.instagramValue || "");
+          formData.append("linkedin", state.linkedinValue || "");
+          formData.append("bluesky", state.blueskyValue || "");
+
+          if (
+            state.profilePictureValue &&
+            typeof state.profilePictureValue === "object" &&
+            state.profilePictureValue instanceof File
+          ) {
+            formData.append("profile_picture", state.profilePictureValue);
+          }
+
+          try {
+            const response = await Axios.patch(
+              `http://localhost:8000/api/profiles/${GlobalState.userId}/update/`,
+              formData
+            );
+            console.log(response);
+            navigate(0);
+          } catch (e) {
+            console.log(e.response);
+            console.log("profilePicture from API:", e?.response?.data?.profilePicture);
+            console.log("userProfile from state:", state.userProfile);
+          }
         }
-    }, [state.sendRequest]); // watch for changes in state.sendRequest
+
+        updateProfile();
+      }
+    }, [state.sendRequest]);
 
     function FormSubmit(e){
         e.preventDefault()
@@ -254,17 +271,21 @@ function Profile() {
             {/* Profile Picture */}
             <Grid item xs={12} md={4}>
                 <img
-                src={state.userProfile.profilePicture}
-                alt="Profile"
-                style={{
+                    src={
+                    state.userProfile.profilePicture
+                        ? state.userProfile.profilePicture
+                        : defaultProfilePicture
+                    }
+                    alt="Profile"
+                    style={{
                     width: '100%',
                     maxWidth: '200px',
                     borderRadius: '8px',
                     display: 'block',
-                    margin: '0 auto'
-                }}
+                    margin: '0 auto',
+                    }}
                 />
-            </Grid>
+                </Grid>
 
             {/* Welcome Text */}
             <Grid item xs={12} md={8}>
