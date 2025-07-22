@@ -11,6 +11,9 @@ import StateContext from '../Contexts/StateContext';
 //Assets
 import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.webp";
 
+// Components
+import Snackbar from '../Components/MySnackbar.jsx';
+
 // MUI imports
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -23,6 +26,22 @@ import MenuItem from '@mui/material/MenuItem';
 function Profile() {
     const navigate = useNavigate()
     const GlobalState = useContext(StateContext) 
+
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+
+    const [snackbarMessage, setSnackbarMessage] = React.useState("Profile updated!");
+
+    // Function to Open the Snackbar:
+    const handleSnackbarOpen = (
+        message = "Profile updated!") => {
+        setSnackbarMessage(message);
+        setSnackbarOpen(true);
+    };  
+    
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') return;
+        setSnackbarOpen(false);
+    };
 
     const initialstate = {
             userProfile: {
@@ -214,14 +233,15 @@ function Profile() {
               formData
             );
             console.log(response);
-            navigate(0);
+            handleSnackbarOpen("Profile updated!");
+            setTimeout(() => navigate(0), 1500);
           } catch (e) {
             console.log(e.response);
+            handleSnackbarOpen("Update failed. Please try again.");
             console.log("profilePicture from API:", e?.response?.data?.profilePicture);
             console.log("userProfile from state:", state.userProfile);
           }
         }
-
         updateProfile();
       }
     }, [state.sendRequest]);
@@ -237,7 +257,7 @@ function Profile() {
             // This is the newly uploaded file (before submission)
             const imageUrl = URL.createObjectURL(state.profilePictureValue);
             return (
-            <Grid item style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
+            <Grid style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
                 <img src={imageUrl} alt="Preview" style={{ height: "5rem", width: "5rem", objectFit: "cover", borderRadius: "5px" }} />
             </Grid>
             );
@@ -246,7 +266,7 @@ function Profile() {
         if (typeof state.profilePictureValue === "string" && state.profilePictureValue !== "") {
             // This is the existing profile picture from the backend
             return (
-            <Grid item style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
+            <Grid style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
                 <img src={state.profilePictureValue} alt="Current Profile" style={{ height: "5rem", width: "5rem", objectFit: "cover", borderRadius: "5px" }} />
             </Grid>
             );
@@ -257,352 +277,360 @@ function Profile() {
 
   return (
     <>
-    <div
-    style={{
-        width: '100%',
-        maxWidth: '800px',
-        margin: '3rem auto',
-        padding: '2rem',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        backgroundColor: 'white',
-      }}>
-        <Grid container spacing={2} alignItems="center" justifyContent="center" style={{ marginBottom: '2rem' }}>
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        
+        style={{
+          padding: "4rem",
+        }}
+      >
+        <Box
+          sx={{
+            width: "90%",
+            maxWidth: "800px",
+            mx: "auto",
+            my: 6,
+            p: 3,
+            border: "1px solid #ccc",
+            borderRadius: 2,
+            backgroundColor: "white",
+          }}
+        >
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            sx={{
+              px: { xs: 2, sm: 4 }, // padding left/right: 2 on mobile, 4 on desktop
+              py: 4, // padding top/bottom stays 4
+            }}
+          >
             {/* Profile Picture */}
-            <Grid item xs={12} md={4}>
-                <img
-                    src={
-                    state.userProfile.profilePicture
-                        ? state.userProfile.profilePicture
-                        : defaultProfilePicture
-                    }
-                    alt="Profile"
-                    style={{
-                    width: '100%',
-                    maxWidth: '200px',
-                    borderRadius: '8px',
-                    display: 'block',
-                    margin: '0 auto',
-                    }}
-                />
-                </Grid>
+            <Grid style={{ flexBasis: "100%", maxWidth: "100%" }}>
+              <img
+                src={
+                  state.userProfile.profilePicture
+                    ? state.userProfile.profilePicture
+                    : defaultProfilePicture
+                }
+                alt="Profile"
+                style={{
+                  width: "100%",
+                  maxWidth: "200px",
+                  borderRadius: "8px",
+                  display: "block",
+                  margin: "0 auto",
+                }}
+              />
+            </Grid>
 
             {/* Welcome Text */}
-            <Grid item xs={12} md={8}>
-                <Typography 
+            <Grid style={{ flexBasis: "100%", maxWidth: "100%" }}>
+              <Typography
                 variant="h3"
                 style={{
-                    textAlign: "center",
+                  textAlign: "center",
                 }}
-                >
-                Welcome <span
-                    style= {{
+              >
+                Welcome{" "}
+                <span
+                  style={{
                     color: "green",
-                    fontWeight: "bolder"
-                    }}>{GlobalState.userUsername}</span>
-                </Typography>
+                    fontWeight: "bolder",
+                  }}
+                >
+                  {GlobalState.userUsername}
+                </span>
+              </Typography>
 
-                <Typography 
+              <Typography
                 variant="h5"
                 style={{
-                    marginTop: "1rem",
-                    textAlign: "center",
+                  marginTop: "1rem",
+                  textAlign: "center",
                 }}
-                >
+              >
                 You have recorded {state.userProfile.record_count || 0} LiDAR Features
-                </Typography>
+              </Typography>
             </Grid>
-        </Grid>   
-    </div>
-
-    {/* Profile Fields */}
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '800px',
-        margin: '3rem auto',
-        padding: '2rem',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        backgroundColor: 'white',
-      }}
-    >
-
-      <form onSubmit={FormSubmit}>
-        <Grid container direction="column" spacing={3} >
-          <Grid>
-            <Typography variant="h4" align="left">
-              My Profile
-            </Typography>
           </Grid>
+        </Box>
 
-            {/* Bio */}
-            <Grid>
-            <TextField 
-                id="bio" 
-                fullWidth 
-                label="bio" 
-                variant="outlined"
-                multiline
-                rows={5}
-                value={state.bioValue}
-                onChange = {(e)=> 
-                    // When the user types in the Confirm Password input, do the following:
-                    dispatch({
-                        type: "catchBioChange", // Action that tells the reducer what to update
-                        bioChosen: e.target.value // This is the new value from the input field
-                    })
-                    }
-                    InputLabelProps={{
-                    shrink: true
-                    }} 
-                    />
-            </Grid>
+        {/* Profile Fields */}
+        <Box
+          sx={{
+            width: "90%",
+            maxWidth: "800px",
+            mx: "auto",
+            my: 6,
+            p: 3,
+            border: "1px solid #ccc",
+            borderRadius: 2,
+            backgroundColor: "white",
+          }}
+        >
+          <form onSubmit={FormSubmit}>
+            <Grid container direction="column" spacing={3}>
+              <Grid sx={{ width: "100%" }}>
+                <Typography variant="h4" align="left">
+                  My Profile
+                </Typography>
+              </Grid>
 
-            {/* Location */}
-            <Grid>
-            <TextField 
-                id="location" 
-                fullWidth 
-                label="location" 
-                variant="outlined"
-                value={state.locationValue}
-                onChange = {(e)=> 
-                    dispatch({
-                        type: "catchLocationChange", // Action that tells the reducer what to update
-                        locationChosen: e.target.value // This is the new value from the input field
-                    })
-                    }
-                    InputLabelProps={{
-                    shrink: true
-                    }} 
-                    />
-            </Grid>
-
-            {/* Expertise */}
-            <Grid>
+              {/* Bio */}
+              <Grid item sx={{ width: "100%" }}>
                 <TextField
-                    id="expertise"
-                    fullWidth
-                    select
-                    label="Expertise"
-                    value={state.expertiseValue}
-                    onChange={(e) =>
+                  id="bio"
+                  fullWidth
+                  label="bio"
+                  variant="outlined"
+                  multiline
+                  rows={5}
+                  value={state.bioValue}
+                  onChange={e =>
                     dispatch({
-                        type: "catchExpertiseChange",
-                        expertiseChosen: e.target.value
+                      type: "catchBioChange",
+                      bioChosen: e.target.value,
                     })
-                    }
+                  }
+                />
+              </Grid>
+
+              {/* Location */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="location"
+                  fullWidth
+                  label="location"
+                  variant="outlined"
+                  value={state.locationValue}
+                  onChange={e =>
+                    dispatch({
+                      type: "catchLocationChange",
+                      locationChosen: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
+
+              {/* Expertise */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="expertise"
+                  fullWidth
+                  select
+                  label="Expertise"
+                  value={state.expertiseValue}
+                  onChange={e =>
+                    dispatch({
+                      type: "catchExpertiseChange",
+                      expertiseChosen: e.target.value,
+                    })
+                  }
                 >
-                <MenuItem value="Beginner">Beginner</MenuItem>
-                <MenuItem value="Enthusiast">Enthusiast</MenuItem>
-                <MenuItem value="Researcher">Researcher</MenuItem>
-                <MenuItem value="Professional">Professional</MenuItem>
-            </TextField>
-            </Grid>
+                  <MenuItem value="Beginner">Beginner</MenuItem>
+                  <MenuItem value="Enthusiast">Enthusiast</MenuItem>
+                  <MenuItem value="Researcher">Researcher</MenuItem>
+                  <MenuItem value="Professional">Professional</MenuItem>
+                </TextField>
+              </Grid>
 
-            {/* Organisation */}
-            <Grid>
-            <TextField 
-                id="organisation" 
-                fullWidth 
-                label="organisation" 
-                variant="outlined"
-                value={state.organisationValue}
-                onChange = {(e)=> 
-                    // When the user types in the Confirm Password input, do the following:
+              {/* Organisation */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="organisation"
+                  fullWidth
+                  label="organisation"
+                  variant="outlined"
+                  value={state.organisationValue}
+                  onChange={e =>
                     dispatch({
-                        type: "catchOrganisationChange", // Action that tells the reducer what to update
-                        organisationChosen: e.target.value // This is the new value from the input field
+                      type: "catchOrganisationChange",
+                      organisationChosen: e.target.value,
                     })
-                    }
-                    InputLabelProps={{
-                    shrink: true
-                    }} 
-                    />
-            </Grid>
+                  }
+                />
+              </Grid>
 
-            {/* Website */}
-            <Grid>
-            <TextField 
-                id="website" 
-                fullWidth 
-                label="website" 
-                variant="outlined"
-                value={state.websiteValue}
-                onChange = {(e)=> 
-                    // When the user types in the Confirm Password input, do the following:
+              {/* Website */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="website"
+                  fullWidth
+                  label="website"
+                  variant="outlined"
+                  value={state.websiteValue}
+                  onChange={e =>
                     dispatch({
-                        type: "catchWebsiteChange", // Action that tells the reducer what to update
-                        websiteChosen: e.target.value // This is the new value from the input field
+                      type: "catchWebsiteChange",
+                      websiteChosen: e.target.value,
                     })
-                    }
-                    InputLabelProps={{
-                    shrink: true
-                    }} 
-                    />
-            </Grid>
+                  }
+                />
+              </Grid>
 
-            {/* Twitter */}
-            <Grid>
-            <TextField 
-                id="twitter" 
-                fullWidth 
-                label="twitter" 
-                variant="outlined"
-                value={state.twitterValue}
-                onChange = {(e)=> 
-                    // When the user types in the Confirm Password input, do the following:
+              {/* Twitter */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="twitter"
+                  fullWidth
+                  label="twitter"
+                  variant="outlined"
+                  value={state.twitterValue}
+                  onChange={e =>
                     dispatch({
-                        type: "catchTwitterChange", // Action that tells the reducer what to update
-                        twitterChosen: e.target.value // This is the new value from the input field
+                      type: "catchTwitterChange",
+                      twitterChosen: e.target.value,
                     })
-                    }
-                    InputLabelProps={{
-                    shrink: true
-                    }} 
-                    />
-            </Grid>
+                  }
+                />
+              </Grid>
 
-            {/* Facebook */}
-            <Grid>
-            <TextField 
-                id="facebook" 
-                fullWidth 
-                label="facebook" 
-                variant="outlined"
-                value={state.facebookValue}
-                onChange={(e) =>
-                dispatch({
-                    type: "catchFacebookChange",
-                    facebookChosen: e.target.value,
-                })
-                }
-                InputLabelProps={{ shrink: true }}
-            />
-            </Grid>
+              {/* Facebook */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="facebook"
+                  fullWidth
+                  label="facebook"
+                  variant="outlined"
+                  value={state.facebookValue}
+                  onChange={e =>
+                    dispatch({
+                      type: "catchFacebookChange",
+                      facebookChosen: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
 
-            {/* Instagram */}
-            <Grid>
-            <TextField 
-                id="instagram" 
-                fullWidth 
-                label="instagram" 
-                variant="outlined"
-                value={state.instagramValue}
-                onChange={(e) =>
-                dispatch({
-                    type: "catchInstagramChange",
-                    instagramChosen: e.target.value,
-                })
-                }
-                InputLabelProps={{ shrink: true }}
-            />
-            </Grid>
+              {/* Instagram */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="instagram"
+                  fullWidth
+                  label="instagram"
+                  variant="outlined"
+                  value={state.instagramValue}
+                  onChange={e =>
+                    dispatch({
+                      type: "catchInstagramChange",
+                      instagramChosen: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
 
-            {/* LinkedIn */}
-            <Grid>
-            <TextField 
-                id="linkedin" 
-                fullWidth 
-                label="linkedin" 
-                variant="outlined"
-                value={state.linkedinValue}
-                onChange={(e) =>
-                dispatch({
-                    type: "catchLinkedInChange",
-                    linkedinChosen: e.target.value,
-                })
-                }
-                InputLabelProps={{ shrink: true }}
-            />
-            </Grid>
+              {/* LinkedIn */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="linkedin"
+                  fullWidth
+                  label="linkedin"
+                  variant="outlined"
+                  value={state.linkedinValue}
+                  onChange={e =>
+                    dispatch({
+                      type: "catchLinkedInChange",
+                      linkedinChosen: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
 
-            {/* Bluesky */}
-            <Grid>
-            <TextField 
-                id="bluesky" 
-                fullWidth 
-                label="bluesky" 
-                variant="outlined"
-                value={state.blueskyValue}
-                onChange={(e) =>
-                dispatch({
-                    type: "catchBlueskyChange",
-                    blueskyChosen: e.target.value,
-                })
-                }
-                InputLabelProps={{ shrink: true }}
-            />
-            </Grid>
+              {/* Bluesky */}
+              <Grid item sx={{ width: "100%" }}>
+                <TextField
+                  id="bluesky"
+                  fullWidth
+                  label="bluesky"
+                  variant="outlined"
+                  value={state.blueskyValue}
+                  onChange={e =>
+                    dispatch({
+                      type: "catchBlueskyChange",
+                      blueskyChosen: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
 
-            {/* Upload profile photo */}
-            <Grid>
-                <Button 
-                    variant="contained" 
-                    xs={6}
-                    component="label"
-                    style={{
-                        marginLeft: 'auto',
-                        marginRight: 'auto',
-                    }}
-                    sx= {{
-                        color: "black",
-                        border: "1px solid black",
-                        fontSize: { xs: '0.8rem', md: '0.8rem' },
-                        borderRadius: "5px",
-                        backgroundColor: "",
-                        }} 
-                >
-                    Profile Picture
-                    <input
-                        type="file"
-                        accept="image/png, image/gif, image/jpeg"
-                        hidden  
-                        onChange={(e) =>
-                            dispatch({type: 'catchUploadedPictureChange', uploadedPictureChosen: e.target.files,
-                            })
-                        }
-                    />
-                </Button>
-            </Grid>
-
-            {/* Picture uploaded feedback */}
-            <Grid 
-                container
-                sx= {{
+              {/* Upload profile photo */}
+              <Grid item sx={{ width: "100%" }}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  style={{
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                  sx={{
                     color: "black",
-                }}>
-                    {ProfilePictureDisplay()}
-                {/* <ul>
-                    {state.profilePictureValue ? <li>{state.profilePictureValue.name}</li> : ""}
-                </ul>        */}
-            </Grid>
+                    border: "1px solid black",
+                    fontSize: "0.9rem",
+                    borderRadius: "5px",
+                    backgroundColor: "",
+                  }}
+                >
+                  Profile Picture
+                  <input
+                    type="file"
+                    accept="image/png, image/gif, image/jpeg"
+                    hidden
+                    onChange={e =>
+                      dispatch({
+                        type: "catchUploadedPictureChange",
+                        uploadedPictureChosen: e.target.files,
+                      })
+                    }
+                  />
+                </Button>
+              </Grid>
 
-
-          <Grid>
-            <Button variant="contained" xs={8}
-                style={{
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
+              {/* Picture uploaded feedback */}
+              <Grid
+                container
+                sx={{
+                  color: "black",
                 }}
-                sx= {{
+              >
+                {ProfilePictureDisplay()}
+                {/* <ul>
+                  {state.profilePictureValue ? <li>{state.profilePictureValue.name}</li> : ""}
+                </ul>        */}
+              </Grid>
+
+              <Grid item sx={{ width: "100%" }}>
+                <Button
+                  variant="contained"
+                  style={{
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                  sx={{
                     color: "black",
                     border: "none",
-                    fontSize: { xs: '0.8rem', md: '1rem' },
+                    fontSize: "0.9rem",
                     borderRadius: "5px",
                     backgroundColor: "#FFD034",
-                  }} 
-                type="submit">Update</Button>
-          </Grid>
-
-          
-
-        </Grid>
-      </form>
-    </div>
+                  }}
+                  type="submit"
+                >
+                  Update
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+          <Snackbar
+            open={snackbarOpen}
+            onClose={handleSnackbarClose}
+            message={snackbarMessage}
+          />
+        </Box>
+      </Grid>
     </>
-  )
+  );
 }
 
 export default Profile
