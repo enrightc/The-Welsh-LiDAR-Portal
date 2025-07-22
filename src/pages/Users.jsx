@@ -6,6 +6,9 @@ import Axios from 'axios';
 // Contexts
 import StateContext from '../Contexts/StateContext';
 
+//Assets
+import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.webp";
+
 // MUI imports
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -43,6 +46,7 @@ function Users() {
 
     const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate);
 
+    // Request to get all profiles
     useEffect(() => {
       async function GetProfiles() {
         try {
@@ -74,36 +78,47 @@ function Users() {
     }
 
     return (
-      <Grid container justifyContent="flex-start"
-      spacing={2} 
+      <Grid container justifyContent="center"
+      spacing={4} 
       style={{
-        padding: "100px"
+        padding: "4rem"
       }} 
     >
           {state.profilesList.map((profile) => {
             return (
                 <Grid 
+                  container
+                  justifyContent="center"
+                  
                     key={profile.id} 
-                    item style={{
-                        marginTop: "1em", 
+                    style={{
+                         
                         maxWidth: "20em",
                         minWidth: "20em",
+                        display: "flex",
+                        justifyContent: "center"
                     }}
                 >
-                    <Card>
+                    <Card
+                      sx={{
+                        width: "100%", boxShadow: 3, borderRadius: 2
+                      }}
+                    >
                     <CardMedia
-                        sx={{ height: 140 }}
-                        image=""
-                        title="Profile Picture"
+                        sx={{
+                          height: 200,
+                        }}
+                        image={profile.profile_picture ? profile.profile_picture : defaultProfilePicture }
+                        alt="Profile Picture"
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                         {profile.user_username}
                         </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                         {profile.bio.substring(0,100) || "No bio provided."}... 
                         </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                         Member since {profile.joined_date.split('T')[0]}
                         </Typography>
                         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -113,7 +128,7 @@ function Users() {
                     <CardActions>
                         <Button size="small">{profile.record_count} Lidar Features recorded</Button>
                     </CardActions>
-                </Card>
+                  </Card>
                 </Grid>
                 
             );
