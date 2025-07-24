@@ -126,7 +126,7 @@ function Users() {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small">{profile.record_count} Lidar Features recorded</Button>
+                        <Button size="small" onClick={()=>navigate(`/user/${profile.id}`)}>{profile.record_count} Lidar Features recorded</Button>
                     </CardActions>
                   </Card>
                 </Grid>
