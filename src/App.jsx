@@ -13,6 +13,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login"; 
 import Profile from "./pages/Profile";
 import Users from "./pages/Users";
+import ProfileDetail from "./pages/ProfileDetail";
+
 
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
@@ -94,6 +96,7 @@ useEffect(() => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/users" element={<Users />} />
+                <Route path="/user/:id" element={<ProfileDetail />} />
             </Routes>
           </main>
         </DispatchContext.Provider>
