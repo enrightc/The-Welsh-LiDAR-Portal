@@ -181,6 +181,7 @@ function Profile() {
                         bluesky: response.data.bluesky || "",
                         record_count: response.data.record_count || 0,
                         profilePicture: response.data.profile_picture || "",
+                        user_username: response.data.user_username || "",
                     },
                     });
             } catch (e) {

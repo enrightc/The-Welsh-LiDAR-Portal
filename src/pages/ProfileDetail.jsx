@@ -10,8 +10,21 @@ import StateContext from '../Contexts/StateContext';
 
 //Assets
 import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.webp";
+import blueskyLogo from "../Components/Assets/blueskyLogo.png";
 
 // Components
+
+// Icons 
+import LocationPinIcon from '@mui/icons-material/LocationPin';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import StarIcon from '@mui/icons-material/Star';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import SearchIcon from '@mui/icons-material/Search';
+import LanguageIcon from '@mui/icons-material/Language';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import XIcon from '@mui/icons-material/X';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 
 // MUI imports
@@ -22,6 +35,13 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+
+
 
 
 function ProfileDetail() {
@@ -44,7 +64,8 @@ function ProfileDetail() {
             linkedin: "",
             bluesky: "",
             uploadedPicture: [],
-            profilePicture: ""
+            profilePicture: "",
+            user_records: []
         },
         bioValue: "",
         locationValue: "",
@@ -58,6 +79,7 @@ function ProfileDetail() {
         blueskyValue: "",
         uploadedPicture: [],
         profilePictureValue: "",
+        user_records: [],
         sendRequest: 0,
         };
     
@@ -127,6 +149,8 @@ function ProfileDetail() {
                 draft.profilePictureValue = action.profilePictureChosen;
                 break;
 
+            
+
             case "changeSendRequest": 
                 draft.sendRequest = draft.sendRequest + 1
                 break;
@@ -169,8 +193,12 @@ function ProfileDetail() {
                         bluesky: response.data.bluesky || "",
                         record_count: response.data.record_count || 0,
                         profilePicture: response.data.profile_picture || "",
+                        user_username: response.data.user_username || "",
+                        last_active: response.data.last_active || "",
+                        joined_date: response.data.joined_date || "",
+                        user_records: response.data.user_records || [],
                     },
-                    });
+                });
             } catch (e) {
                 console.log(e.response);
             }
@@ -178,8 +206,348 @@ function ProfileDetail() {
         GetProfileInfo();
     }, []);
 
+    if (state.dataIsLoading === true) {
+      return (
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          style={{ height: "100vh" }}
+        >
+          <CircularProgress />
+        </Grid>
+      );
+    }
+
   return (
-    <div> Profile Page</div>
+    <div>
+        <Grid
+            container
+            direction="column"
+            alignItems={{ xs: "center", sm: "center" }}
+            spacing={2}
+            sx={{
+                mb: 2,
+                border: "1px solid red",
+                p: "4rem", 
+                backgroundColor: "FCFCFB"
+            }}
+        >
+            <Box
+                sx={{
+                    width: "90%",
+                    maxWidth: "800px",
+                    mx: "auto",
+                    my: 6,
+                    p: 3,
+                    border: "1px solid #ccc",
+                    borderRadius: 2,
+                    backgroundColor: "white",
+                }}
+                >
+
+                <Typography
+                display="flex"
+                justifyContent="flex-end"
+                    variant="body2"
+                    sx={{ color: "primary.main", cursor: "pointer", fontWeight: "medium" }}
+                >
+                    Edit Profile
+                </Typography>
+
+                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                    <img
+                        src={
+                        state.userProfile.profilePicture
+                            ? state.userProfile.profilePicture
+                            : defaultProfilePicture
+                        }
+                        alt="Profile"
+                        style={{
+                        width: "200px",
+                        height: "200px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        }}
+                    />
+                </Box>
+
+                {/* Bio */}
+                
+                <Typography  
+                    variant="h4" sx={{ fontWeight: "bold", color: "green" }}>
+                    @{state.userProfile.user_username}
+                </Typography>
+                    
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        mt: 2,
+                        alignItems: { xs: "flex-start", sm: "center" },
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                    }}
+                    >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <LocationPinIcon fontSize="large" />
+                        <Typography
+                            variant="body1"
+                            sx={{ textTransform: "capitalize" }}
+                        >
+                            {state.userProfile.location}
+                        </Typography>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <StarIcon fontSize="large" />
+                        <Typography variant="body1">{state.userProfile.expertise}</Typography>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <HomeWorkIcon fontSize="large" />
+                        <Typography variant="body1">{state.userProfile.organisation}</Typography>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <CalendarMonthIcon fontSize="large" />
+                        <Typography variant="body1">Last active: {state.userProfile.last_active}</Typography>
+                    </Box>
+                </Box>
+
+                <Box sx={{mt: 4}}>
+                    <Typography>
+                        {state.userProfile.bio}
+                    </Typography>
+                </Box>
+            </Box>
+        
+        
+        <Box
+            sx={{
+                width: "90%",
+                maxWidth: "800px",
+                mx: "auto",
+                p: 3,
+                border: "1px solid #ccc",
+                borderRadius: 2,
+                backgroundColor: "white",
+            }}
+        >
+            <Box sx={{mt: 2, display: "flex", justifyContent: "center", gap: 10}}>
+                <Typography variant="body1" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+                    <SearchIcon fontSize="large" />
+                    Records Submitted: {" "}  
+                    {state.userProfile.record_count}
+                </Typography>
+                <Divider orientation="vertical" flexItem />
+                <Typography variant="body1" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+                    <CalendarMonthIcon fontSize="large" />
+                    Member since: {" "}  
+                    {state.userProfile.joined_date}
+                </Typography>
+            </Box>
+        </Box>
+
+        {/* Social Media */}
+        <Box
+            sx={{
+                width: "90%",
+                maxWidth: "800px",
+                mx: "auto",
+                mt: 5,
+                p: 3,
+                border: "1px solid #ccc",
+                borderRadius: 2,
+                backgroundColor: "white",
+            }}
+        >
+            <Box sx={{mt: 2, display: "flex", justifyContent: "center", gap: 6}}>
+                {/* users website */}
+                {state.userProfile.website && (
+                    <Typography
+                        variant="body1"
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}
+                    >
+                        <a
+                        href={state.userProfile.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Visit user website (opens in new tab)"
+                        style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                        <LanguageIcon fontSize="large" />
+                        </a>
+                    </Typography>
+                )}
+                
+                {/* Facebook */}
+                {state.userProfile.facebook && (
+                    <Typography
+                        variant="body1"
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}
+                        >
+                        <a
+                            href={state.userProfile.facebook}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visit user facebook (opens in new tab)"
+                            style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                            <FacebookIcon fontSize="large" />
+                        </a>
+                    </Typography>
+                )}
+                
+                {/* Twitter */}
+                {state.userProfile.twitter && (
+                    <Typography
+                        variant="body1"
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}
+                        >
+                        <a
+                            href={state.userProfile.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visit user X (opens in new tab)"
+                            style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                            <XIcon fontSize="large" />
+                        </a>
+                    </Typography>
+                )}
+
+                {/* Linkedin */}
+                {state.userProfile.linkedin && (
+                    <Typography
+                        variant="body1"
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}
+                        >
+                        <a
+                            href={state.userProfile.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visit user Linkedin (opens in new tab)"
+                            style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                            <LinkedInIcon fontSize="large" />
+                        </a>
+                    </Typography>
+                )}
+
+                {/* Bluesky */}
+                {state.userProfile.bluesky && (
+                    <Typography
+                        variant="body1"
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}
+                        >
+                        <a
+                            href={state.userProfile.bluesky}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visit user bluesky (opens in new tab)"
+                            style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                            <img src={blueskyLogo} alt="Bluesky Logo" style={{ width: "32px", height: "32px" }} />
+                        </a>
+                    </Typography>
+                )} 
+            </Box>             
+        </Box>
+
+        {/* Features recorded by */}
+            <Box
+                sx={{
+                    width: "90%",
+                    maxWidth: "800px",
+                    mx: "auto",
+                    mt: 5,
+                    p: 3,
+                    border: "1px solid #ccc",
+                    borderRadius: 2,
+                    backgroundColor: "white",
+                }}
+            >
+                <Box>
+                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+                        Features recorded by {state.userProfile.user_username}
+                    </Typography>
+
+                {state.userProfile.user_records.length === 0 ? (
+                    <Typography variant="body2">
+                        This user hasn't recorded any features yet.
+                    </Typography>
+                    ) : (
+                    state.userProfile.user_records.map((feature) => (
+                        <Box 
+                            key={feature.id} 
+                            sx={{ 
+                                mb: 2, 
+                                p: 2, 
+                                border: "1px solid #ccc", borderRadius: 2 
+                            }}
+                        >
+                            <Typography 
+                                variant="body1"
+                            >
+                                {feature.title}
+                            </Typography>
+                            <Typography 
+                                variant="body2" 
+                                color="text.secondary"
+                            >
+                                {feature.monument_type_display}
+                            </Typography>
+                            <Typography 
+                                variant="body2" 
+                                color="text.secondary"
+                            >
+                                Period: {feature.period_display}
+                            </Typography>
+                            <Typography 
+                                variant="body2" 
+                                sx={{ mt: 1 }}
+                            >
+                                {feature.description?.slice(0, 100)}...
+                            </Typography>
+                        
+                            <Box 
+                                sx={{ 
+                                    mt: 1, 
+                                    display: "flex", 
+                                    gap: 2 
+                                }}
+                            >
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    onClick={() => navigate(`/map?feature_id=${feature.id}`)}
+                                >
+                                    View on Map
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    onClick={() => navigate(`/record/${feature.id}`)}
+                                >
+                                    View Full Record
+                                </Button>
+                            </Box>
+                        </Box>
+                    ))
+                    )}     
+                </Box>
+
+            </Box>
+        </Grid>
+
+        
+        
+            
+        
+        
+        
+    </div>
   )
 }
 
