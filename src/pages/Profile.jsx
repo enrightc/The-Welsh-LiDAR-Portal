@@ -25,7 +25,15 @@ import MenuItem from '@mui/material/MenuItem';
 
 function Profile() {
     const navigate = useNavigate()
-    const GlobalState = useContext(StateContext) 
+    const GlobalState = useContext(StateContext)
+    
+    // Redirect unauthenticated users to login if the try to access /profile route
+    useEffect(() => {
+      if (!GlobalState.userId) {
+        navigate("/login");
+      }
+    }, [GlobalState.userId]);
+
 
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
