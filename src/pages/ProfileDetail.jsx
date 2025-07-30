@@ -13,6 +13,7 @@ import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.we
 import blueskyLogo from "../Components/Assets/blueskyLogo.png";
 
 // Components
+import RecordDetail from '../Components/RecordDetail'; // Make sure the path is correct
 
 // Icons 
 import LocationPinIcon from '@mui/icons-material/LocationPin';
@@ -45,6 +46,9 @@ import CardMedia from '@mui/material/CardMedia';
 
 
 function ProfileDetail() {
+
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [selectedFeature, setSelectedFeature] = React.useState(null);
 
     const navigate = useNavigate();
     const GlobalState = useContext(StateContext);
@@ -478,7 +482,7 @@ console.log("Profile page ID:", params.id);
                         Features recorded by {state.userProfile.user_username}
                     </Typography>
 
-                {state.userProfile.user_records.length === 0 ? (
+                    {state.userProfile.user_records.length === 0 ? (
                     <Typography variant="body2">
                         This user hasn't recorded any features yet.
                     </Typography>
@@ -526,20 +530,16 @@ console.log("Profile page ID:", params.id);
                                 <Button
                                     variant="outlined"
                                     size="small"
-                                    onClick={() => navigate(`/map?feature_id=${feature.id}`)}
-                                >
-                                    View on Map
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    onClick={() => navigate(`/record/${feature.id}`)}
-                                >
+                                    onClick={() => {
+                                        setSelectedFeature(feature);
+                                        setModalOpen(true);
+                                    }}
+                                    >
                                     View Full Record
                                 </Button>
                             </Box>
                         </Box>
-                    ))
+                        ))
                     )}     
                 </Box>
 
@@ -547,7 +547,11 @@ console.log("Profile page ID:", params.id);
         </Grid>
 
         
-        
+       <RecordDetail
+            open={modalOpen}
+            onClose={() => setModalOpen(false)}
+            feature={selectedFeature}
+        /> 
             
         
         
