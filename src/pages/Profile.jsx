@@ -323,6 +323,7 @@ function Profile() {
                   borderRadius: "8px",
                   display: "block",
                   margin: "0 auto",
+                  borderRadius: "50%",
                 }}
               />
             </Grid>

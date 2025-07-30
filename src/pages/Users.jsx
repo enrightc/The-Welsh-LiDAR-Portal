@@ -106,7 +106,11 @@ function Users() {
                     >
                     <CardMedia
                         sx={{
-                          height: 200,
+                          height: 64,
+                          width: 64,
+                          borderRadius: 100,
+                          marginLeft: 2,
+                          marginTop: 2,
                         }}
                         image={profile.profile_picture ? profile.profile_picture : defaultProfilePicture }
                         alt="Profile Picture"

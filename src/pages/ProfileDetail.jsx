@@ -219,6 +219,9 @@ function ProfileDetail() {
       );
     }
 
+    console.log("Logged in user ID:", GlobalState.userId);
+console.log("Profile page ID:", params.id);
+
   return (
     <div>
         <Grid
@@ -228,7 +231,6 @@ function ProfileDetail() {
             spacing={2}
             sx={{
                 mb: 2,
-                border: "1px solid red",
                 p: "4rem", 
                 backgroundColor: "FCFCFB"
             }}
@@ -246,16 +248,18 @@ function ProfileDetail() {
                 }}
                 >
 
-                <Typography
-                display="flex"
-                justifyContent="flex-end"
-                    variant="body2"
-                    sx={{ color: "primary.main", cursor: "pointer", fontWeight: "medium" }}
-                >
-                    Edit Profile
-                </Typography>
+                {String(GlobalState.userId) === String(params.id) && (
+                    <Typography
+                        display="flex"
+                        justifyContent="flex-end"
+                        variant="body2"
+                        sx={{ color: "primary.main", cursor: "pointer", fontWeight: "medium" }}
+                    >
+                        <Button onClick={() => navigate("/profile")}>Edit Profile</Button>
+                    </Typography>
+                )}
 
-                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                <Box sx={{ display: "flex", mb: 2 }}>
                     <img
                         src={
                         state.userProfile.profilePicture
@@ -264,8 +268,8 @@ function ProfileDetail() {
                         }
                         alt="Profile"
                         style={{
-                        width: "200px",
-                        height: "200px",
+                        width: "6rem",
+                        height: "6rem",
                         borderRadius: "50%",
                         objectFit: "cover",
                         }}
@@ -290,7 +294,7 @@ function ProfileDetail() {
                     }}
                     >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <LocationPinIcon fontSize="large" />
+                        <LocationPinIcon fontSize="medium" />
                         <Typography
                             variant="body1"
                             sx={{ textTransform: "capitalize" }}
@@ -300,17 +304,17 @@ function ProfileDetail() {
                     </Box>
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <StarIcon fontSize="large" />
+                        <StarIcon fontSize="medium" />
                         <Typography variant="body1">{state.userProfile.expertise}</Typography>
                     </Box>
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <HomeWorkIcon fontSize="large" />
+                        <HomeWorkIcon fontSize="medium" />
                         <Typography variant="body1">{state.userProfile.organisation}</Typography>
                     </Box>
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <CalendarMonthIcon fontSize="large" />
+                        <CalendarMonthIcon fontSize="medium" />
                         <Typography variant="body1">Last active: {state.userProfile.last_active}</Typography>
                     </Box>
                 </Box>
@@ -332,16 +336,17 @@ function ProfileDetail() {
                 border: "1px solid #ccc",
                 borderRadius: 2,
                 backgroundColor: "white",
+                flexDirection: { xs: "column", sm: "row" },
             }}
         >
-            <Box sx={{mt: 2, display: "flex", justifyContent: "center", gap: 10}}>
-                <Typography variant="body1" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+            <Box sx={{mt: 2, display: "flex", justifyContent: "center", gap: 10, }}>
+                <Typography variant="body1" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                     <SearchIcon fontSize="large" />
                     Records Submitted: {" "}  
                     {state.userProfile.record_count}
                 </Typography>
                 <Divider orientation="vertical" flexItem />
-                <Typography variant="body1" sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+                <Typography variant="body1" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                     <CalendarMonthIcon fontSize="large" />
                     Member since: {" "}  
                     {state.userProfile.joined_date}
