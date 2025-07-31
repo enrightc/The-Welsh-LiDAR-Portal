@@ -13,7 +13,7 @@ import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.we
 import blueskyLogo from "../Components/Assets/blueskyLogo.png";
 
 // Components
-import RecordDetail from '../Components/RecordDetail'; // Make sure the path is correct
+import RecordDetail from '../Components/RecordDetail'; 
 
 // Icons 
 import LocationPinIcon from '@mui/icons-material/LocationPin';
@@ -222,9 +222,6 @@ function ProfileDetail() {
         </Grid>
       );
     }
-
-    console.log("Logged in user ID:", GlobalState.userId);
-console.log("Profile page ID:", params.id);
 
   return (
     <div>
@@ -542,11 +539,10 @@ console.log("Profile page ID:", params.id);
                         ))
                     )}     
                 </Box>
-
             </Box>
         </Grid>
 
-        
+        {/* Modal */}
        <RecordDetail
             open={modalOpen}
             onClose={() => setModalOpen(false)}

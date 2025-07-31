@@ -8,6 +8,10 @@ import ListItem from '@mui/joy/ListItem';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 
+// Components
+import FeatureMap from '../Components/FeatureMap'; 
+
+
 export default function RecordDetail({ open, onClose, feature }) {
   if (!feature) return null;
 
@@ -15,7 +19,7 @@ export default function RecordDetail({ open, onClose, feature }) {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalDialog layout="center" sx={{ width: "90%", maxWidth: 800 }}>
+      <ModalDialog layout="center" sx={{ width: "90%", maxWidth: 800, height: "90vh" }}>
         <ModalClose onClick={onClose} />
         
         <DialogTitle>{feature.title}</DialogTitle>
@@ -33,11 +37,14 @@ export default function RecordDetail({ open, onClose, feature }) {
               <strong>Description:</strong> {feature.description}
             </Typography>
           </ListItem>
-          {feature.prn && (
+          {feature.PRN && (
             <ListItem>
-              <Typography><strong>PRN:</strong> {feature.prn}</Typography>
+              <Typography><strong>PRN:</strong> {feature.PRN}</Typography>
             </ListItem>
           )}
+          <ListItem>
+            <Typography><strong>Site Type:</strong> {feature.site_type_display}</Typography>
+          </ListItem>
           <ListItem>
             <Typography><strong>Monument Type:</strong> {feature.monument_type_display}</Typography>
           </ListItem>
@@ -140,6 +147,11 @@ export default function RecordDetail({ open, onClose, feature }) {
             </ListItem>
           )}
         </List>
+
+        <ListItem>
+          <FeatureMap coordinates={feature.polygonCoordinate} />
+        </ListItem>
+        
       </ModalDialog>
     </Modal>
   );
