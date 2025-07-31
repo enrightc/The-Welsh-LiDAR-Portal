@@ -27,7 +27,7 @@ import { Global } from "@emotion/react";
 const pages = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
-  { name: "Map", path: "/map" },
+  { name: "Lidar Portal", path: "/LidarPortal" },
 ];
 
 

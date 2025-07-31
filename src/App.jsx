@@ -7,7 +7,7 @@ import React, { useEffect } from "react"; // Import React and useEffect for side
 // Import the pages that will be displayed
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Map from "./pages/Map";
+import LidarPortal from "./pages/LidarPortal";
 import Testing from "./pages/Testing"; // Import the Testing component
 import Register from "./pages/Register"; 
 import Login from "./pages/Login"; 
@@ -90,7 +90,7 @@ useEffect(() => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/map" element={<Map />} />
+                <Route path="/LidarPortal" element={<LidarPortal />} />
                 <Route path="/testing" element={<Testing />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />

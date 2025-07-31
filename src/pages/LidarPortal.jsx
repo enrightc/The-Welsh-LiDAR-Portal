@@ -27,8 +27,6 @@ import 'leaflet-loading';
 // React Leaflet Draw
 import { EditControl } from "react-leaflet-draw"
 
-
-
 // MUI Imports
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -47,7 +45,7 @@ function records() {
 }
 records();
 
-const Map = () => {
+const LidarPortal = () => {
   
   const [scheduledMonuments, setScheduledMonuments] = useState(null);
 
@@ -527,7 +525,4 @@ useEffect(() => {
     )
 }
 
-
-
-
-export default Map
+export default LidarPortal
