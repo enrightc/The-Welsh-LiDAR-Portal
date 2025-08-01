@@ -8,6 +8,7 @@ import CornerHelpBox from "../Components/CornerHelpBox";
 import MapToolbar from "../Components/MapToolbar";
 import '../assets/styles/map.css';
 import Sidebar from '../Components/Sidebar';
+import RecordDetail from '../Components/RecordDetail'; 
 
 // React Leaflet
 import {
@@ -32,6 +33,7 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
 
 import StateContext from "../Contexts/StateContext";
 import DispatchContext from "../Contexts/DispatchContext";
@@ -43,9 +45,14 @@ import { GeoJSON } from "react-leaflet";
 function records() {
   // fetch('http://127.0.0.1:8000/api/records/').then((response) => response.json()).then(data=>console.log(data))
 }
+
 records();
 
 const LidarPortal = () => {
+
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [selectedFeature, setSelectedFeature] = React.useState(null);
+    
   
   const [scheduledMonuments, setScheduledMonuments] = useState(null);
 
@@ -492,9 +499,22 @@ useEffect(() => {
                 }}
               >
                 <Popup>
-                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", lineHeight: "1.4", maxWidth: "300px", backgroundColor: "#fff", padding: "10px", borderRadius: "6px",  }}>
-                    <strong style={{ color: "blue", fontSize: "15px", display: "block", marginBottom: "12px" }}>LiDAR Feature</strong>
-                    <h3 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "blue" }}>{record.title}</h3>
+                  <div 
+                    style={{ 
+                      fontFamily: "Arial, sans-serif", fontSize: "14px", lineHeight: "1.4", maxWidth: "300px", backgroundColor: "#fff", padding: "10px", borderRadius: "6px",  
+                    }}
+                  >
+                    <strong 
+                      style={{ 
+                        color: "blue", fontSize: "15px", display: "block", marginBottom: "12px" 
+                      }}
+                    >
+                      LiDAR Feature
+                    </strong>
+                    <h3 
+                      style={{ 
+                        margin: "0 0 6px 0", fontSize: "16px", color: "blue" }}>{record.title}
+                      </h3>
                     {record.picture1 && (
                       <img
                         src={record.picture1}
@@ -505,12 +525,43 @@ useEffect(() => {
                     {record.prn && (
                       <p style={{ margin: 0 }}><strong>PRN:</strong> {record.prn}</p>
                     )}
-                    <p style={{ margin: 0 }}><strong>Site Type:</strong> {record.site_type}</p>
-                    <p style={{ margin: 0 }}><strong>Monument Type:</strong> {record.monument_type}</p>
-                    <p style={{ margin: 0 }}><strong>Recorded By:</strong> {record.recorded_by}</p>
-                    <p style={{ margin: 0 }}>
-                    <strong>Date Recorded:</strong> {new Date(record.date_recorded).toLocaleDateString()}
-                  </p>
+                    <p 
+                      style={{ 
+                        margin: 0 }}><strong>Site Type:</strong> {record.site_type_display}
+                    </p>
+                    <p 
+                      style={{ 
+                        margin: 0 }}>
+                        <strong>
+                          Monument Type:
+                        </strong> 
+                        {record.monument_type_display}
+                      </p>
+                    <p style=
+                      {{ margin: 0 }}
+                    >
+                      <strong>
+                        Recorded By:
+                      </strong> 
+                      {record.recorded_by}
+                    </p>
+                    <p style={{ 
+                        margin: 0 
+                      }}
+                    >
+                      <strong>Date Recorded:</strong> {record.date_recorded}
+                    </p>
+                    
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => {
+                            setSelectedFeature(record);
+                            setModalOpen(true);
+                        }}
+                        >
+                        View Full Record
+                    </Button>
                   </div>
                 </Popup>
               </Polygon>
@@ -521,8 +572,15 @@ useEffect(() => {
       </MapContainer>
       
     </div>
+
+    {/* See record detail Modal */}
+    <RecordDetail
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        record={selectedFeature}
+    />
     </div>
-    )
+  )
 }
 
 export default LidarPortal
