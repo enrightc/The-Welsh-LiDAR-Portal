@@ -11,18 +11,22 @@ import Box from '@mui/joy/Box';
 // Components
 import FeatureMap from '../Components/FeatureMap'; 
 
+export default function RecordDetail({ open, onClose, record }) {
+  if (!record) return null;
 
-export default function RecordDetail({ open, onClose, feature }) {
-  if (!feature) return null;
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const getImageUrl = (url) =>
+  url?.startsWith("http") ? url : `${backendURL}${url}`;
 
+  console.log("Picture1:", record.picture1);
   return (
+    
     <Modal open={open} onClose={onClose}>
       <ModalDialog layout="center" sx={{ width: "90%", maxWidth: 800, height: "90vh" }}>
         <ModalClose onClick={onClose} />
         
-        <DialogTitle>{feature.title}</DialogTitle>
+        <DialogTitle>{record.title}</DialogTitle>
 
         <List
           sx={{
@@ -34,39 +38,38 @@ export default function RecordDetail({ open, onClose, feature }) {
         >
           <ListItem>
             <Typography level="body-md">
-              <strong>Description:</strong> {feature.description}
+              <strong>Description:</strong> {record.description}
             </Typography>
           </ListItem>
-          {feature.PRN && (
+          {record.PRN && (
             <ListItem>
-              <Typography><strong>PRN:</strong> {feature.PRN}</Typography>
+              <Typography><strong>PRN:</strong> {record.PRN}</Typography>
             </ListItem>
           )}
           <ListItem>
-            <Typography><strong>Site Type:</strong> {feature.site_type_display}</Typography>
+            <Typography><strong>Site Type:</strong> {record.site_type_display}</Typography>
           </ListItem>
           <ListItem>
-            <Typography><strong>Monument Type:</strong> {feature.monument_type_display}</Typography>
+            <Typography><strong>Monument Type:</strong> {record.monument_type_display}</Typography>
           </ListItem>
           <ListItem>
-            <Typography><strong>Period:</strong> {feature.period_display}</Typography>
+            <Typography><strong>Period:</strong> {record.period_display}</Typography>
           </ListItem>
           <ListItem>
-            <Typography><strong>Recorded by:</strong> {feature.recorded_by}</Typography>
+            <Typography><strong>Recorded by:</strong> {record.recorded_by}</Typography>
           </ListItem>
           <ListItem>
-            <Typography><strong>Date Recorded:</strong> {feature.date_recorded}</Typography>
+            <Typography><strong>Date Recorded:</strong> {record.date_recorded}</Typography>
           </ListItem>
 
 
           {/* Pictures */}
-          {(feature.picture1 || feature.picture2 || feature.picture3 || feature.picture4 || feature.picture5) && (
+          {(record.picture1 || record.picture2 || record.picture3 || record.picture4 || record.picture5) && (
             <ListItem>
               <Box sx={{ display: "flex", flexWrap: "nowrap", gap: 2 }}>
-                {feature.picture1 && (
-                  <a href={`${backendURL}${feature.picture1}`} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={`${backendURL}${feature.picture1}`}
+                {record.picture1 && (
+                  <a href={getImageUrl(record.picture1)} target="_blank" rel="noopener noreferrer">
+                    <img src={getImageUrl(record.picture1)}
                       alt="Feature"
                       style={{
                         width: "120px",
@@ -79,10 +82,10 @@ export default function RecordDetail({ open, onClose, feature }) {
                     />
                   </a>
                 )}
-                {feature.picture2 && (
-                  <a href={`${backendURL}${feature.picture2}`} target="_blank" rel="noopener noreferrer">
+                {record.picture2 && (
+                  <a href={getImageUrl(record.picture2)} target="_blank" rel="noopener noreferrer">
                     <img
-                      src={`${backendURL}${feature.picture2}`}
+                      src={getImageUrl(record.picture2)}
                       alt="Feature"
                       style={{
                         width: "120px",
@@ -95,10 +98,10 @@ export default function RecordDetail({ open, onClose, feature }) {
                     />
                   </a>
                 )}
-                {feature.picture3 && (
-                  <a href={`${backendURL}${feature.picture3}`} target="_blank" rel="noopener noreferrer">
+                {record.picture3 && (
+                  <a href={getImageUrl(record.picture3)} target="_blank" rel="noopener noreferrer">
                     <img
-                      src={`${backendURL}${feature.picture3}`}
+                      src={getImageUrl(record.picture3)}
                       alt="Feature"
                       style={{
                         width: "120px",
@@ -111,10 +114,10 @@ export default function RecordDetail({ open, onClose, feature }) {
                     />
                   </a>
                 )}
-                {feature.picture4 && (
-                  <a href={`${backendURL}${feature.picture4}`} target="_blank" rel="noopener noreferrer">
+                {record.picture4 && (
+                  <a href={getImageUrl(record.picture4)} target="_blank" rel="noopener noreferrer">
                     <img
-                      src={`${backendURL}${feature.picture4}`}
+                      src={getImageUrl(record.picture4)}
                       alt="Feature"
                       style={{
                         width: "120px",
@@ -127,10 +130,10 @@ export default function RecordDetail({ open, onClose, feature }) {
                     />
                   </a>
                 )}
-                {feature.picture5 && (
-                  <a href={`${backendURL}${feature.picture5}`} target="_blank" rel="noopener noreferrer">
+                {record.picture5 && (
+                  <a href={getImageUrl(record.picture5)} target="_blank" rel="noopener noreferrer">
                     <img
-                      src={`${backendURL}${feature.picture5}`}
+                      src={getImageUrl(record.picture5)}
                       alt="Feature"
                       style={{
                         width: "120px",
@@ -149,7 +152,7 @@ export default function RecordDetail({ open, onClose, feature }) {
         </List>
 
         <ListItem>
-          <FeatureMap coordinates={feature.polygonCoordinate} />
+          <FeatureMap coordinates={record.polygonCoordinate} />
         </ListItem>
         
       </ModalDialog>
