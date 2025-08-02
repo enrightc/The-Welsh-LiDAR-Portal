@@ -8,7 +8,8 @@ import CornerHelpBox from "../Components/CornerHelpBox";
 import MapToolbar from "../Components/MapToolbar";
 import '../assets/styles/map.css';
 import Sidebar from '../Components/Sidebar';
-import RecordDetail from '../Components/RecordDetail'; 
+import RecordDetail from '../Components/RecordDetail';
+import MiniProfile from '../Components/MiniProfile';  
 
 // React Leaflet
 import {
@@ -49,10 +50,26 @@ function records() {
 records();
 
 const LidarPortal = () => {
-
-    const [modalOpen, setModalOpen] = React.useState(false);
-    const [selectedFeature, setSelectedFeature] = React.useState(null);
+  // Selected Record Modal
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [selectedFeature, setSelectedFeature] = React.useState(null);
     
+  // Profile view Modal
+  // State in LiDARPortal.jsx
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [miniProfileModalOpen, setMiniProfileOpen] = useState(false);
+
+  // When user clicks the username
+  const handleOpenMiniProfile = async (userId) => {
+  try {
+    const response = await Axios.get(`http://localhost:8000/api/profiles/${userId}/`);
+    setSelectedUser(response.data);
+    setMiniProfileOpen(true);
+  } catch (error) {
+    console.log("Error fetching mini profile:", error);
+  }
+};
+
   
   const [scheduledMonuments, setScheduledMonuments] = useState(null);
 
@@ -189,6 +206,7 @@ const handleActivateRuler = () => {
     const response = await Axios.get('http://127.0.0.1:8000/api/records/');
     setAllRecords(response.data);
     setDataIsLoading(false);
+    console.log(allRecords[0]);
   } catch (error) {
     console.log("Error fetching records:", error.response);
   }
@@ -527,29 +545,35 @@ useEffect(() => {
                     )}
                     <p 
                       style={{ 
-                        margin: 0 }}><strong>Site Type:</strong> {record.site_type_display}
+                        margin: 0 }}><strong>Site Type: {' '}</strong> {record.site_type_display}
                     </p>
                     <p 
                       style={{ 
                         margin: 0 }}>
                         <strong>
-                          Monument Type:
+                          Monument Type: {' '}
                         </strong> 
                         {record.monument_type_display}
                       </p>
-                    <p style=
-                      {{ margin: 0 }}
-                    >
+                    <p style= {{ margin: 0 }}>
                       <strong>
-                        Recorded By:
+                        Recorded By: {' '}      
                       </strong> 
-                      {record.recorded_by}
+                      <span
+                        onClick={() => {
+                          handleOpenMiniProfile(record.recorded_by_user_id);
+                        }}
+                        style={{
+                          color: "#1976d2",
+                          cursor: "pointer",
+                          textDecoration: "underline"
+                        }}
+                      >
+                        {record.recorded_by}
+                      </span>
                     </p>
-                    <p style={{ 
-                        margin: 0 
-                      }}
-                    >
-                      <strong>Date Recorded:</strong> {record.date_recorded}
+                    <p style={{ margin: 0 }}>
+                      <strong>Date Recorded: {' '}</strong> {record.date_recorded}
                     </p>
                     
                     <Button
@@ -571,14 +595,22 @@ useEffect(() => {
       
       </MapContainer>
       
-    </div>
+      </div>
 
-    {/* See record detail Modal */}
-    <RecordDetail
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        record={selectedFeature}
-    />
+      {/* See record detail Modal */}
+      <RecordDetail
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          record={selectedFeature}
+      />
+
+      {/* See mini profile view Modal */}
+      <MiniProfile
+        open={miniProfileModalOpen}
+        onClose={() => setMiniProfileOpen(false)}
+        user={selectedUser}
+      />
+
     </div>
   )
 }

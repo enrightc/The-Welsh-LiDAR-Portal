@@ -152,9 +152,6 @@ function ProfileDetail() {
             case "catchProfilePictureChange":
                 draft.profilePictureValue = action.profilePictureChosen;
                 break;
-
-            
-
             case "changeSendRequest": 
                 draft.sendRequest = draft.sendRequest + 1
                 break;
@@ -546,7 +543,7 @@ function ProfileDetail() {
        <RecordDetail
             open={modalOpen}
             onClose={() => setModalOpen(false)}
-            feature={selectedFeature}
+            record={selectedFeature}
         /> 
             
         
