@@ -50,7 +50,11 @@ function App() {
         draft.userIsLoggedIn = true; // Set userIsLoggedIn to true
         break; // This action will update the user information in the state
       case "Logout":
-        draft.userIsLoggedIn = false; // Set userIsLoggedIn to false
+        draft.userIsLoggedIn = false;
+        draft.userUsername = "";
+        draft.userEmail = "";
+        draft.userId = null;
+        draft.userToken = "";
         break;
       // case "catchLatitudeChange":
       //   draft.markerPosition.latitudeValue = action.latitudeChosen;
