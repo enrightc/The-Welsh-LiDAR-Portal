@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
 // Components
-import CreateRecord from '../Components/CreateRecord'; 
 import Snackbar from '../Components/MySnackbar';
 import CornerHelpBox from "../Components/CornerHelpBox";
 import MapToolbar from "../Components/MapToolbar";
@@ -13,7 +12,6 @@ import MiniProfile from '../Components/MiniProfile';
 import MainLidarMap from '../Components/MainLidarMap';
 
 // MUI Imports
-import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -49,7 +47,6 @@ const LidarPortal = () => {
   }
 };
 
-  
   const [scheduledMonuments, setScheduledMonuments] = useState(null);
 
   // *Sidebar*
@@ -289,34 +286,31 @@ useEffect(() => {
           </Tooltip>
         )}
 
-      <CornerHelpBox />
+        <CornerHelpBox />
 
-      <MapToolbar 
-        handleStartPolygon={handleStartPolygon}
-        handleDeletePolygon={handleDeletePolygon}
-      />
+        <MapToolbar 
+          handleStartPolygon={handleStartPolygon}
+          handleDeletePolygon={handleDeletePolygon}
+        />
 
-      {/* Polygon delete confirmation */}
-      <Snackbar
-        open={snackbarOpen}
-        onClose={() => setSnackbarOpen(false)}
-        message="Polygon deleted"
-      />
+        {/* Polygon delete confirmation */}
+        <Snackbar
+          open={snackbarOpen}
+          onClose={() => setSnackbarOpen(false)}
+          message="Polygon deleted"
+        />
 
-      <MainLidarMap
-        scheduledMonuments={scheduledMonuments}
-        handleDrawCreate={handleDrawCreate}
-        featureGroupRef={featureGroupRef}
-        dispatch={dispatch}
-        setPolygonDrawn={setPolygonDrawn}
-        allRecords={allRecords}
-        handleOpenMiniProfile={handleOpenMiniProfile}
-        setSelectedFeature={setSelectedFeature}
-        setModalOpen={setModalOpen}
-      />
-      
-      
-      
+        <MainLidarMap
+          scheduledMonuments={scheduledMonuments}
+          handleDrawCreate={handleDrawCreate}
+          featureGroupRef={featureGroupRef}
+          dispatch={dispatch}
+          setPolygonDrawn={setPolygonDrawn}
+          allRecords={allRecords}
+          handleOpenMiniProfile={handleOpenMiniProfile}
+          setSelectedFeature={setSelectedFeature}
+          setModalOpen={setModalOpen}
+        />
       </div>
 
       {/* See record detail Modal */}
