@@ -63,6 +63,9 @@ const LidarPortal = () => {
   const state = React.useContext(StateContext);
   const dispatch = React.useContext(DispatchContext);
 
+  const isLoggedIn = !!state.userId;
+  const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
+
   // // 2. Get marker position from global state
   // const markerPosition = [
   //   Number(state.markerPosition.latitudeValue),
@@ -182,7 +185,6 @@ const handleActivateRuler = () => {
     const response = await Axios.get('http://127.0.0.1:8000/api/records/');
     setAllRecords(response.data);
     setDataIsLoading(false);
-    console.log(allRecords[0]);
   } catch (error) {
     console.log("Error fetching records:", error.response);
   }
@@ -286,7 +288,10 @@ useEffect(() => {
           </Tooltip>
         )}
 
-        <CornerHelpBox />
+        <CornerHelpBox 
+          isLoggedIn={isLoggedIn}
+          isMobileDevice={isMobileDevice}
+        />
 
         <MapToolbar 
           handleStartPolygon={handleStartPolygon}

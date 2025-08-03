@@ -15,8 +15,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
 
-export default function MapToolbar({ handleStartPolygon, handleDeletePolygon }) {
-  const [openConfirm, setOpenConfirm] = React.useState(false);
+export default function MapToolbar({ handleStartPolygon, handleDeletePolygon}) {
+
+    const [openConfirm, setOpenConfirm] = React.useState(false);
 
     return (
         <Box sx={{ 
