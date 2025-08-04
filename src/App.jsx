@@ -100,7 +100,7 @@ useEffect(() => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/users" element={<Users />} />
-                <Route path="/user/:id" element={<ProfileDetail />} />
+                <Route path="/user/:username" element={<ProfileDetail />} />
             </Routes>
           </main>
         </DispatchContext.Provider>

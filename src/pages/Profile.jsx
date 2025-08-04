@@ -328,9 +328,9 @@ function Profile() {
                 style={{
                   width: "100%",
                   maxWidth: "200px",
-                  borderRadius: "8px",
                   display: "block",
                   margin: "0 auto",
+                  borderRadius: "50%",
                 }}
               />
             </Grid>

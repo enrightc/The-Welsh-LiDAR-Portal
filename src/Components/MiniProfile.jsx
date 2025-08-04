@@ -113,7 +113,7 @@ export default function MiniProfile({ open, onClose, user }) {
                         variant="solid"
                         color="danger"
                         onClick={() => {
-                        window.location.href = `/user/${user.id}`;
+                        window.location.href = `/user/${user.user_username}`;
                         }}
                     >
                         Continue

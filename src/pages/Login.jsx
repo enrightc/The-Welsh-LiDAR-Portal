@@ -41,8 +41,13 @@ function Login() {
               draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
               break; // This action will trigger the useEffect to send the request
             case "catchToken":
-            draft.token = action.tokenValue // Update the token in the state
+              draft.token = action.tokenValue // Update the token in the state
             break; // This action will update the token state when the request is successful
+            case 'userSignsIn':
+              draft.userId = action.IdInfo;
+              draft.username = action.usernameInfo;
+              draft.email = action.emailInfo;
+              break;
           }
         }
       

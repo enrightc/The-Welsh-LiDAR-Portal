@@ -53,7 +53,7 @@ function ProfileDetail() {
     const navigate = useNavigate();
     const GlobalState = useContext(StateContext);
 
-    const params = useParams();
+    const { username } = useParams();
 
     const initialstate = {
         userProfile: {
@@ -174,7 +174,7 @@ function ProfileDetail() {
     useEffect(() => {
         async function GetProfileInfo() {
             try {
-                const response = await Axios.get(`http://localhost:8000/api/profiles/${params.id}/`);
+                const response = await Axios.get(`http://localhost:8000/api/profiles/username/${username}/`);
                 console.log(response.data);
                 const expertiseRaw = response.data.expertise_level || "";
                 const expertiseFormatted = expertiseRaw.charAt(0).toUpperCase() + expertiseRaw.slice(1).toLowerCase();
@@ -246,7 +246,7 @@ function ProfileDetail() {
                 }}
                 >
 
-                {String(GlobalState.userId) === String(params.id) && (
+                {GlobalState.userUsername === username && (
                     <Typography
                         display="flex"
                         justifyContent="flex-end"
