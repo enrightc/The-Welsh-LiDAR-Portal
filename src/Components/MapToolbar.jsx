@@ -13,13 +13,15 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 
 
-export default function MapToolbar({ handleStartPolygon, handleDeletePolygon}) {
+export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice}) {
 
     const [openConfirm, setOpenConfirm] = React.useState(false);
 
     return (
+
         <Box sx={{ 
             width: 400,
             position: 'absolute',
@@ -27,13 +29,15 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon}) {
             bottom: 20,
             left: '50%',
             transform: 'translateX(-50%)',
-            bgcolor: 'white',
+            bgcolor: 'rgba(255, 255, 255)',
+            backdropFilter: 'blur(10px)',
             borderRadius: 12,
             overflow: 'hidden',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            border: '1px solid #ccc',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
             gap: 2,
             px: 2,
             }}>
@@ -42,6 +46,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon}) {
                     aria-label="Draw polygon"
                     color="black"
                     onClick={handleStartPolygon}
+                    disabled={!isLoggedIn || isMobileDevice}
                 >
                     <EditIcon />
                 </IconButton>
@@ -52,10 +57,13 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon}) {
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
+                    disabled={!isLoggedIn || isMobileDevice}
                 >
                     <DeleteIcon />
                 </IconButton>
             </Tooltip>
+
+            <Divider orientation="vertical" flexItem />
 
             <Tooltip title="Measure Distance (coming Soon)" arrow>
                 <IconButton

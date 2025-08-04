@@ -296,6 +296,8 @@ useEffect(() => {
         <MapToolbar 
           handleStartPolygon={handleStartPolygon}
           handleDeletePolygon={handleDeletePolygon}
+          isLoggedIn={isLoggedIn}
+          isMobileDevice={isMobileDevice}
         />
 
         {/* Polygon delete confirmation */}
