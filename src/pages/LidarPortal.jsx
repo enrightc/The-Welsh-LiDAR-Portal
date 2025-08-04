@@ -262,8 +262,8 @@ useEffect(() => {
       
       {/* Main content (map), shrinks when sidebar is open */}
       <div style={{ flex: 1, position: "relative" }}>
-        {/* Show menu button only when sidebar is closed */}
-        {!sidebarOpen && (
+        {/* Show menu button only when user is logged in, not on mobile, and sidebar is closed */}
+        {isLoggedIn && !isMobileDevice && !sidebarOpen && (
           <Tooltip title="Click to open record form" arrow>
             <button
               onClick={() => setSidebarOpen(true)}
