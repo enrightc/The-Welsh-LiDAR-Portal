@@ -34,7 +34,16 @@ export default function MainLidarMap({
   setModalOpen,
 }) {
     // Fallback to prevent map crash if allRecords isn't ready
-  if (!Array.isArray(allRecords)) return null;
+    if (!Array.isArray(allRecords)) return null;
+
+    const [cadwFeatures, setCadwFeatures] = React.useState(null);
+
+    React.useEffect(() => {
+    fetch("https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=inspire-wg:Cadw_SAM&srsName=EPSG:4326&outputFormat=application/json")
+        .then(res => res.json())
+        .then(data => setCadwFeatures(data))
+        .catch(err => console.error("Error loading Cadw features:", err));
+    }, []);
 
     return (
 
@@ -50,88 +59,120 @@ export default function MainLidarMap({
 
         {/* LayersControl for switching between map layers */}
         <LayersControl position="topright">
-          {/* Default OpenStreetMap Layer */}
-          <LayersControl.BaseLayer checked name="OpenStreetMap">
+            {/* Default OpenStreetMap Layer */}
+            <LayersControl.BaseLayer checked name="OpenStreetMap">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-          </LayersControl.BaseLayer>
+        </LayersControl.BaseLayer>
 
-          {/* Esri World Imagery Satellite Layer */}
-          <LayersControl.BaseLayer name="Esri World Imagery">
-            <TileLayer
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-            />
-          </LayersControl.BaseLayer>
+            {/* Esri World Imagery Satellite Layer */}
+            <LayersControl.BaseLayer name="Esri World Imagery">
+                <TileLayer
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                />
+            </LayersControl.BaseLayer>
 
-          {/* WMS LiDAR DSM Hillshade Layer */}
-          <LayersControl.Overlay name="LiDAR DSM Hillshade">
-            <WMSTileLayer
-                url="https://datamap.gov.wales/geoserver/ows?"
-                layers="geonode:wales_lidar_dsm_1m_hillshade_cog"
-                format="image/png"
-                transparent={true}
-                tileSize={1024}  // ✅ Increase tile size for better clarity
-                version="1.1.1"  // ✅ Try version 1.1.1 if 1.3.0 is not working well
-                maxZoom={18}  // ✅ Allows for higher resolution zoom levels
-                minZoom={6}  // ✅ Ensures tiles load at lower zoom levels
-                opacity={1}  // ✅ Make sure the layer is fully visible
-                detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
-                attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
-            />
-          </LayersControl.Overlay>
+            {/* WMS LiDAR DSM Hillshade Layer */}
+            <LayersControl.Overlay name="LiDAR DSM Hillshade">
+                <WMSTileLayer
+                    url="https://datamap.gov.wales/geoserver/ows?"
+                    layers="geonode:wales_lidar_dsm_1m_hillshade_cog"
+                    format="image/png"
+                    transparent={true}
+                    tileSize={1024}  // ✅ Increase tile size for better clarity
+                    version="1.1.1"  // ✅ Try version 1.1.1 if 1.3.0 is not working well
+                    maxZoom={18}  // ✅ Allows for higher resolution zoom levels
+                    minZoom={6}  // ✅ Ensures tiles load at lower zoom levels
+                    opacity={1}  // ✅ Make sure the layer is fully visible
+                    detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
+                    attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
+                />
+            </LayersControl.Overlay>
 
-          {/* WMS LiDAR DSM Multi-directinonal Hillshade Layer */}
-          <LayersControl.Overlay name="LiDAR DSM Multi-directional Hillshade">
-            <WMSTileLayer
-                url="https://datamap.gov.wales/geoserver/ows?"
-                layers="geonode:wales_lidar_dsm_1m_hillshade_multi_cog"
-                format="image/png"
-                transparent={true}
-                tileSize={1024}  // ✅ Increase tile size for better clarity
-                version="1.1.1"  // ✅ Try version 1.1.1 if 1.3.0 is not working well
-                maxZoom={18}  // ✅ Allows for higher resolution zoom levels
-                minZoom={6}  // ✅ Ensures tiles load at lower zoom levels
-                opacity={1}  // ✅ Make sure the layer is fully visible
-                detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
-                attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
-            />
-          </LayersControl.Overlay>
+            {/* WMS LiDAR DSM Multi-directinonal Hillshade Layer */}
+            <LayersControl.Overlay name="LiDAR DSM Multi-directional Hillshade">
+                <WMSTileLayer
+                    url="https://datamap.gov.wales/geoserver/ows?"
+                    layers="geonode:wales_lidar_dsm_1m_hillshade_multi_cog"
+                    format="image/png"
+                    transparent={true}
+                    tileSize={1024}  // ✅ Increase tile size for better clarity
+                    version="1.1.1"  // ✅ Try version 1.1.1 if 1.3.0 is not working well
+                    maxZoom={18}  // ✅ Allows for higher resolution zoom levels
+                    minZoom={6}  // ✅ Ensures tiles load at lower zoom levels
+                    opacity={1}  // ✅ Make sure the layer is fully visible
+                    detectRetina={true}  // ✅ Enable high-resolution tiles for Retina screens
+                    attribution='&copy; <a href="https://datamap.gov.wales/">DataMap Wales</a>'
+                />
+            </LayersControl.Overlay>
 
-          {/* Cadw Scheduled Monuments */}
-          <LayersControl.Overlay name="Scheduled Monuments">
-            {scheduledMonuments && (
-              <GeoJSON
-                data={scheduledMonuments}
-                style={{
-                  color: "#e60000",      // super bright red outline
-                  weight: 3,
-                  fillColor: "#ffe100",  // super bright yellow fill
-                  fillOpacity: 0.6,
+            {/* Cadw Scheduled Monuments */}
+            {/* <LayersControl.Overlay name="Scheduled Monuments">
+                {scheduledMonuments && (
+                <GeoJSON
+                    data={scheduledMonuments}
+                    style={{
+                    color: "#e60000",      // super bright red outline
+                    weight: 3,
+                    fillColor: "#ffe100",  // super bright yellow fill
+                    fillOpacity: 0.6,
+                    }}
+                    onEachFeature={(feature, layer) => {
+                    if (feature.properties) {
+                        layer.bindPopup(
+                        `<div class="custom-popup">
+                        <strong>Scheduled Monument</strong>
+                        <br>
+                        <strong>${feature.properties.Name}</strong>
+                        <br>
+                        <em>Site Type: </em>${feature.properties.SiteType}
+                        <br>
+                        <em>Period: </em>${feature.properties.Period}
+                        <br>
+                        <em>Cadw Report: </em><a href="${feature.properties.Report}" target="_blank" rel="noopener noreferrer">View</a>
+                        <br>
+                        `
+                        );
+                    }
+                    }}
+                />
+                )}
+            </LayersControl.Overlay> */}
+
+            <LayersControl.Overlay name="Cadw Scheduled Monuments (WFS)">
+                {cadwFeatures && (
+                    <GeoJSON
+                    data={cadwFeatures}
+                    style={{
+                        color: "#e60000",      // super bright red outline
+                        weight: 3,
+                        fillColor: "#ffe100",  // super bright yellow fill
+                        fillOpacity: 0.6,
+                    }}
+                    onEachFeature={(feature, layer) => {
+                        if (feature.properties) {
+                        layer.bindPopup(
+                            `<div class="custom-popup">
+                            <strong>Scheduled Monument</strong>
+                            <br>
+                            <strong>${feature.properties.Name || "No name"}</strong>
+                            <br>
+                            <em>Site Type: </em>${feature.properties.SiteType || "N/A"}
+                            <br>
+                            <em>Period: </em>${feature.properties.Period || "N/A"}
+                            <br>
+                            <em>Cadw Report: </em>
+                            ${feature.properties.Report ? `<a href="${feature.properties.Report}" target="_blank" rel="noopener noreferrer">View</a>` : "N/A"}
+                            </div>`
+                        );
+                    }
                 }}
-                onEachFeature={(feature, layer) => {
-                  if (feature.properties) {
-                    layer.bindPopup(
-                      `<div class="custom-popup">
-                      <strong>Scheduled Monument</strong>
-                      <br>
-                      <strong>${feature.properties.Name}</strong>
-                      <br>
-                      <em>Site Type: </em>${feature.properties.SiteType}
-                      <br>
-                      <em>Period: </em>${feature.properties.Period}
-                      <br>
-                      <em>Cadw Report: </em><a href="${feature.properties.Report}" target="_blank" rel="noopener noreferrer">View</a>
-                      <br>
-                      `
-                    );
-                  }
-                }}
-              />
+            />
             )}
-          </LayersControl.Overlay>
+            </LayersControl.Overlay>
 
         </LayersControl>
 
