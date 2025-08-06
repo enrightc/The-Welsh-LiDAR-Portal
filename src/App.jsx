@@ -8,7 +8,6 @@ import React, { useEffect } from "react"; // Import React and useEffect for side
 import Home from "./pages/Home";
 import About from "./pages/About";
 import LidarPortal from "./pages/LidarPortal";
-import Testing from "./pages/Testing"; // Import the Testing component
 import Register from "./pages/Register"; 
 import Login from "./pages/Login"; 
 import Profile from "./pages/Profile";
