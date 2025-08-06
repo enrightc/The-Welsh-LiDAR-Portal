@@ -95,7 +95,6 @@ useEffect(() => {
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/LidarPortal" element={<LidarPortal />} />
-                <Route path="/testing" element={<Testing />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/profile" element={<Profile />} />

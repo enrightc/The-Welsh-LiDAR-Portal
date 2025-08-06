@@ -39,25 +39,17 @@ export default function MainLidarMap({
     return (
 
         <MapContainer
-        center={[
-          52.1307, 
-          -3.7837
-        ]} 
-        zoom={8.5} 
-        scrollWheelZoom={true} 
-        loadingControl={true}
-      >
+            center={[
+            52.1307, 
+            -3.7837
+            ]} 
+            zoom={8.5} 
+            scrollWheelZoom={true} 
+            loadingControl={true}
+        >
 
-      {/* DraggableMarker */}
-      {/* <Marker
-        draggable
-        eventHandlers={eventHandlers}
-        position={markerPosition}
-        ref={markerRef}>
-      </Marker> */}
-
-      {/* LayersControl for switching between map layers */}
-      <LayersControl position="topright">
+        {/* LayersControl for switching between map layers */}
+        <LayersControl position="topright">
           {/* Default OpenStreetMap Layer */}
           <LayersControl.BaseLayer checked name="OpenStreetMap">
             <TileLayer
@@ -145,7 +137,7 @@ export default function MainLidarMap({
 
         
 
-      <FeatureGroup ref={featureGroupRef}>
+        <FeatureGroup ref={featureGroupRef}>
         <EditControl
           position="topright"
           draw={{
@@ -166,126 +158,79 @@ export default function MainLidarMap({
             dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: [] });
           }}
         />
-      </FeatureGroup>
-
-      {/* // Below code is the default leaflet draw control buttons */}
-        {/* <FeatureGroup>
-          <EditControl
-            position="topright"
-            draw={{
-              polygon: !polygonDrawn, // Only allow polygon if one hasn't been drawn yet
-              polyline: false,
-              rectangle: false,
-              circle: false,
-              marker: false,
-              circlemarker: false,
-            }}
-            // onCreated={(e) => {
-            //   const layer = e.layer;
-            //   const coords = layer.getLatLngs();
-            //   console.log("Polygon drawn:", coords);
-            //   // You can store these in state or send to your Django backend
-            // }}
-            onCreated={handleDrawCreate}
-            onDeleted={(e) => {
-              // If the polygon is deleted, allow drawing again
-              setPolygonDrawn(false);
-              dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: [] });
-            }}
-          />
-        </FeatureGroup> */}
+        </FeatureGroup>
 
         {/* Map markers for each record */}
         {/* <Marker position={[latitude, longitude ]}></Marker> */}
         {allRecords.map((record) => (
-          <React.Fragment key={record.id}>
-            {/* Display Marker */}
-            {/* <Marker 
-              key={record.id}  
-              position={[
-                record.latitude, 
-                record.longitude
-              ]}
-            >
-              <Popup>
-                {record.picture1 && (
-                  <img
-                    src={record.picture1}
-                    alt={record.title}
-                    style={{ height: "14rem", width: "18rem", marginBottom: "0.5rem" }}
-                  />
-                )}
-                {record.recorded_by} <br />
-                {record.title} <br />
-                {record.description} <br />
-              </Popup>
-            </Marker> */}
+            <React.Fragment key={record.id}>
+            
             {/* Display Polygon if it exists */}
             {Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
-                                  <Polygon
+                                    <Polygon
                 positions={record.polygonCoordinate} // Pass polygon coordinates
                 pathOptions={{ 
-                  Bordercolor: "blue", 
+                    Bordercolor: "blue", 
                 }}
-              >
+                >
                 <Popup>
-                  <div 
+                    <div 
                     style={{ 
-                      fontFamily: "Arial, sans-serif", fontSize: "14px", lineHeight: "1.4", maxWidth: "300px", backgroundColor: "#fff", padding: "10px", borderRadius: "6px",  
+                        fontFamily: "Arial, sans-serif", fontSize: "14px", lineHeight: "1.4", maxWidth: "300px", backgroundColor: "#fff", padding: "10px", borderRadius: "6px",  
                     }}
-                  >
-                    <strong 
-                      style={{ 
-                        color: "blue", fontSize: "15px", display: "block", marginBottom: "12px" 
-                      }}
                     >
-                      LiDAR Feature
+                    <strong 
+                        style={{ 
+                        color: "blue", fontSize: "15px", display: "block", marginBottom: "12px" 
+                        }}
+                    >
+                        LiDAR Feature
                     </strong>
                     <h3 
-                      style={{ 
+                        style={{ 
                         margin: "0 0 6px 0", fontSize: "16px", color: "blue" }}>{record.title}
-                      </h3>
+                        </h3>
                     {record.picture1 && (
-                      <img
+                        <img
                         src={record.picture1}
                         alt={record.title}
                         style={{ height: "10rem", width: "100%", objectFit: "cover", marginBottom: "8px", borderRadius: "4px" }}
-                      />
+                        />
                     )}
                     {record.prn && (
-                      <p style={{ margin: 0 }}><strong>PRN:</strong> {record.prn}</p>
+                        <p style={{ margin: 0 }}><strong>PRN:</strong> {record.prn}</p>
                     )}
                     <p 
-                      style={{ 
+                        style={{ 
                         margin: 0 }}><strong>Site Type: {' '}</strong> {record.site_type_display}
                     </p>
                     <p 
-                      style={{ 
+                        style={{ 
                         margin: 0 }}>
                         <strong>
-                          Monument Type: {' '}
+                            Monument Type: {' '}
                         </strong> 
                         {record.monument_type_display}
-                      </p>
+                        </p>
                     <p style= {{ margin: 0 }}>
-                      <strong>
+                        <strong>
                         Recorded By: {' '}      
-                      </strong> 
-                      <span
+                        </strong> 
+                        <span
                         onClick={() => {
-                          handleOpenMiniProfile(record.recorded_by_user_id);
+                            handleOpenMiniProfile(record.recorded_by_user_id);
                         }}
                         style={{
-                          color: "#1976d2",
-                          cursor: "pointer",
-                          textDecoration: "underline"
+                            color: "#1976d2",
+                            cursor: "pointer",
+                            textDecoration: "underline"
                         }}
-                      >
+                        >
                         {record.recorded_by}
-                      </span>
+                        </span>
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong>Date Recorded: {' '}</strong> {record.date_recorded}
+                        <strong>Date Recorded: {' '}</strong> {record.date_recorded}
                     </p>
                     
                     <Button
@@ -298,11 +243,11 @@ export default function MainLidarMap({
                         >
                         View Full Record
                     </Button>
-                  </div>
+                    </div>
                 </Popup>
-              </Polygon>
+                </Polygon>
             )}
-          </React.Fragment>
+            </React.Fragment>
         ))}
       
       </MapContainer>

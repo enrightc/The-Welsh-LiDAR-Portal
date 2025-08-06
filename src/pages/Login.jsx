@@ -205,18 +205,17 @@ function Login() {
 
           <Grid>
             <TextField 
-                id="password" 
-                fullWidth 
-                label="Password" 
-                variant="outlined" 
-                type="password"
-                onChange = {(e)=> 
-                    dispatch({
-                        type:       "catchPasswordChange", passwordChosen: e.target.value})} 
+              id="password" 
+              fullWidth 
+              label="Password" 
+              variant="outlined" 
+              type="password"
+              onChange = {(e)=> 
+                dispatch({
+                type:       "catchPasswordChange", passwordChosen: e.target.value})} 
             />
           </Grid>
-
-
+          
           <Grid>
             <Button variant="contained" xs={8}
                 style={{

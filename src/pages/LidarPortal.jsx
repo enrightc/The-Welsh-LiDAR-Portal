@@ -66,31 +66,6 @@ const LidarPortal = () => {
   const isLoggedIn = !!state.userId;
   const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
 
-  // // 2. Get marker position from global state
-  // const markerPosition = [
-  //   Number(state.markerPosition.latitudeValue),
-  //   Number(state.markerPosition.longitudeValue),
-  // ];
-
-  // // 3. Create a ref for the marker
-  // const markerRef = useRef(null);
-
-  // // 4. Set up event handlers for the marker
-  // const eventHandlers = useMemo(
-  //   () => ({
-  //     dragend() {
-  //       const marker = markerRef.current;
-  //       if (marker) {
-  //         const { lat, lng } = marker.getLatLng();
-  //         // Update global state with new position
-  //         dispatch({ type: "catchLatitudeChange", latitudeChosen: lat });
-  //         dispatch({ type: "catchLongitudeChange", longitudeChosen: lng });
-  //       }
-  //     },
-  //   }),
-  //   [dispatch] // Make sure to add dispatch as a dependency
-  // );
-
   // Use the useState hook to create a state variable called allRecords
   // It starts as an empty array []
   // setAllRecords is the function used to update the state later
