@@ -105,5 +105,3 @@ const Home = () => {
 }
 // Export the Home component so it can be used in other files
 export default Home
-
-// Trigger redeploy

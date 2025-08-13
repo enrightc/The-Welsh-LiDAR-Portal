@@ -23,6 +23,8 @@ import StateContext from '../Contexts/StateContext';
 // Components
 import Snackbar from './MySnackbar.jsx';
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 const siteOptions = [
     { value: '', label: '' },
     { value: 'enclosure', label: 'Enclosure' },
@@ -362,14 +364,14 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                     formData.append("polygonCoordinate", JSON.stringify(GlobalState.polygonValue));  
                 try {
                     const response = await Axios.post(
-                        'http://localhost:8000/api/records/create/',
+                        `${BASE_URL}/api/records/create/`,
                         formData,
                         {
                             headers: {
-                            Authorization: `Token ${GlobalState.userToken}`  // 👈 this must be your user's auth token
+                                Authorization: `Token ${GlobalState.userToken}`  // 👈 this must be your user's auth token
                             }
                         }
-                        );
+                    );
                     console.log(response)
                     dispatch({ type: "resetForm" }); // <--- Reset form
                     resetPolygon(); // Reset the polygon in the parent component

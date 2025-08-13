@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 // Components
 import Snackbar from '../Components/MySnackbar';
 import CornerHelpBox from "../Components/CornerHelpBox";
@@ -39,7 +41,7 @@ const LidarPortal = () => {
   // When user clicks the username
   const handleOpenMiniProfile = async (userId) => {
   try {
-    const response = await Axios.get(`http://localhost:8000/api/profiles/${userId}/`);
+    const response = await Axios.get(`${BASE_URL}/api/profiles/${userId}/`);
     setSelectedUser(response.data);
     setMiniProfileOpen(true);
   } catch (error) {
@@ -157,7 +159,7 @@ const handleActivateRuler = () => {
   // a function to fetch records from your backend
   const fetchRecords = async () => {
   try {
-    const response = await Axios.get('http://127.0.0.1:8000/api/records/');
+    const response = await Axios.get(`${BASE_URL}/api/records/`);
     setAllRecords(response.data);
     setDataIsLoading(false);
   } catch (error) {

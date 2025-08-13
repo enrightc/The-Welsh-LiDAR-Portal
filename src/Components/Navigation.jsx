@@ -22,7 +22,7 @@ import StateContext from "../Contexts/StateContext"; // Import the StateContext 
 import DispatchContext from "../Contexts/DispatchContext";
 import { Global } from "@emotion/react";
 
-
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const pages = [
   { name: "Home", path: "/" },
@@ -64,7 +64,7 @@ function Navigation() {
     if (confirmLogout) {
       try {
         const response = await Axios.post(
-          'http://localhost:8000/api-auth-djoser/token/logout/', 
+          `${import.meta.env.VITE_BACKEND_URL}/api-auth-djoser/token/logout/`, 
           GlobalState.userToken,
           { 
             headers: {

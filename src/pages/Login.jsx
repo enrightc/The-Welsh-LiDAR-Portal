@@ -16,6 +16,7 @@ import StateContext from '../Contexts/StateContext';
 function Login() {
     const navigate = useNavigate()
 
+    // Get the value of VITE_BACKEND_URL from the environment variables available at build time.
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const [loginComplete, setLoginComplete] = useState(false);  // State to track if login is complete

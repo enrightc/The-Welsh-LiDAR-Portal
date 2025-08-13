@@ -3,7 +3,9 @@ import React from 'react'
 import { useEffect, useContext } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
+
 import Axios from 'axios'; 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Contexts
 import StateContext from '../Contexts/StateContext';
@@ -174,7 +176,7 @@ function ProfileDetail() {
     useEffect(() => {
         async function GetProfileInfo() {
             try {
-                const response = await Axios.get(`http://localhost:8000/api/profiles/username/${username}/`);
+                const response = await Axios.get(`${BASE_URL}/api/profiles/username/${username}/`);
                 console.log(response.data);
                 const expertiseRaw = response.data.expertise_level || "";
                 const expertiseFormatted = expertiseRaw.charAt(0).toUpperCase() + expertiseRaw.slice(1).toLowerCase();

@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
 import Axios from 'axios'; 
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 // Contexts
 import StateContext from '../Contexts/StateContext';
 
@@ -169,7 +171,7 @@ function Profile() {
     useEffect(() => {
         async function GetProfileInfo() {
             try {
-                const response = await Axios.get(`http://localhost:8000/api/profiles/${GlobalState.userId}/`);
+                const response = await Axios.get(`${BASE_URL}/api/profiles/${GlobalState.userId}/`);
                 console.log(response.data);
                 const expertiseRaw = response.data.expertise_level || "";
                 const expertiseFormatted = expertiseRaw.charAt(0).toUpperCase() + expertiseRaw.slice(1).toLowerCase();
@@ -238,7 +240,7 @@ function Profile() {
 
           try {
             const response = await Axios.patch(
-              `http://localhost:8000/api/profiles/${GlobalState.userId}/update/`,
+              `${BASE_URL}/api/profiles/${GlobalState.userId}/update/`,
               formData
             );
             console.log(response);

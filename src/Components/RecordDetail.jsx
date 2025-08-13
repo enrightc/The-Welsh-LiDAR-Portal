@@ -14,10 +14,10 @@ import FeatureMap from '../Components/FeatureMap';
 export default function RecordDetail({ open, onClose, record }) {
   if (!record) return null;
 
-  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const getImageUrl = (url) =>
-  url?.startsWith("http") ? url : `${backendURL}${url}`;
+    url?.startsWith("http") ? url : `${BASE_URL}${url}`;
 
   console.log("Picture1:", record.picture1);
   return (

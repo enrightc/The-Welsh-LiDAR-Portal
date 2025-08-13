@@ -50,7 +50,8 @@ function Users() {
     useEffect(() => {
       async function GetProfiles() {
         try {
-          const response = await Axios.get(`http://localhost:8000/api/profiles/`);
+          const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+          const response = await Axios.get(`${BASE_URL}/api/profiles/`);
           console.log(response.data);
           dispatch({
             type: "catchProfiles",
