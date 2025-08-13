@@ -80,9 +80,21 @@ function Register() {
           },
         );
         // If the request is successful, the response will contain the data
-
         console.log(response)
-        navigate("/"); // Redirect to the home page after successful registration
+        // Automatically log the user in after successful registration
+        const loginResponse = await Axios.post(
+          `${BASE_URL}/api-auth-djoser/token/login/`,
+          {
+            username: state.usernameValue,
+            password: state.passwordValue,
+          }
+        );
+
+        // Store token in localStorage
+        localStorage.setItem("authToken", loginResponse.data.auth_token);
+
+        navigate("/"); // Redirect to the home page after successful registration and login
+
 
       } catch (error) {
         if (error.response) {
