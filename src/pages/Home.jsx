@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import './Home.css';
 
 // Assets
-import lidarMain from '../components/Assets/lidar-main.webp'
+import lidarMain from '../Components/Assets/lidar-main.webp'
 
 // Define the Home component (Functional Component)
 const Home = () => {
