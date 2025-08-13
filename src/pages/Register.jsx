@@ -3,6 +3,8 @@ import Axios from 'axios';  // Import Axios for making HTTP requests
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer"; // Import useImmerReducer for state management
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 // MUI Imports
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -66,13 +68,13 @@ function Register() {
       try {
         // Make a Post request to  Django backend to register new user
         const response = await Axios.post(
-          'http://localhost:8000/api-auth-djoser/users/', 
+          `${BASE_URL}/api-auth-djoser/users/`,
           {
             username: state.usernameValue,
             email: state.emailValue,
             password: state.passwordValue,
             re_password: state.password2Value,
-          }, 
+          },
           {
             cancelToken: source.token // Attach the cancel token so it cancel the request if the component unmounts
           },
