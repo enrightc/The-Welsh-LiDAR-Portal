@@ -16,6 +16,8 @@ import StateContext from '../Contexts/StateContext';
 function Login() {
     const navigate = useNavigate()
 
+    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
     const [loginComplete, setLoginComplete] = useState(false);  // State to track if login is complete
 
     const GlobalDispatch = useContext(DispatchContext); // Get the dispatch function from the context
@@ -77,13 +79,13 @@ function Login() {
       try {
         // Make a Post request to  Django backend to register new user
         const response = await Axios.post(
-          'http://localhost:8000/api-auth-djoser/token/login/', 
+          `${BASE_URL}/api-auth-djoser/token/login/`,
           {
             username: state.usernameValue,
             password: state.passwordValue,
-          }, 
+          },
           {
-            cancelToken: source.token // Attach the cancel token so it cancel the request if the component unmounts
+            cancelToken: source.token
           },
         );
         // If the request is successful, the response will contain the data
@@ -128,14 +130,14 @@ function Login() {
         try {
             // Make a get request to  Django backend to get user information
             const response = await Axios.get(
-                'http://localhost:8000/api-auth-djoser/users/me/', 
-                {
-                  headers: {
-                    Authorization: `Token ${state.token}`,
-                  },
-                  cancelToken: source.token,
-                }
-              );
+              `${BASE_URL}/api-auth-djoser/users/me/`,
+              {
+                headers: {
+                  Authorization: `Token ${state.token}`,
+                },
+                cancelToken: source.token,
+              },
+            );
             
             // If the request is successful, the response will contain the data
 
