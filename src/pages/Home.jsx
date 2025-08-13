@@ -1,5 +1,5 @@
 import React from 'react' // Import React library
-import Navigation from "../components/Navigation";
+import Navigation from "../Components/Navigation";
 
 // MUI Imports
 import Typography from '@mui/material/Typography';
