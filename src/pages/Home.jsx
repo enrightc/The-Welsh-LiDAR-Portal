@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
 // Importing CSS for styling
-import './home.css';
+import './Home.css';
 
 // Assets
 import lidarMain from '../components/Assets/lidar-main.webp'
