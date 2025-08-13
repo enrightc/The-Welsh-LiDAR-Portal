@@ -1,6 +1,6 @@
 // Import Routes and Route from React Router to handle page navigation
 import { Routes, Route } from "react-router-dom";
-import Navigation from "./components/Navigation"; // Import the Navigation component
+import Navigation from "./Components/Navigation"; // Import the Navigation component
 import { useImmerReducer } from "use-immer";
 import React, { useEffect } from "react"; // Import React and useEffect for side effects
 
