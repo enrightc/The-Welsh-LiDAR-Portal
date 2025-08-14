@@ -173,8 +173,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
         siteValue: "",
         monumentValue: "",
         periodValue: "",
-        // confidenceValue: "",
-        // evidenceValue: "",
         picture1Value: "",
         picture2Value: "",
         picture3Value: "",
@@ -204,18 +202,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
             case "catchPeriodChange":
                 draft.periodValue = action.periodChosen;
                 break;
-            // case "catchConfidenceChange":
-                // draft.confidenceValue = action.confidenceChosen;
-                // break;
-            // case "catchEvidenceChange":
-                // draft.evidenceValue = action.evidenceChosen;
-                // break;
-            // case "catchLatitudeChange":
-            //     draft.latitudeValue = action.latitudeChosen;
-            //     break;
-            // case "catchLongitudeChange":
-            //     draft.longitudeValue = action.longitudeChosen;          
-            //     break;
             case "picture1Change":
                 draft.picture1Value = action.picture1Chosen;
                 break;
@@ -602,10 +588,14 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 multiple
                                 accept="image/png, image/gif, image/jpeg"
                                 hidden  
-                                onChange={(e) =>
-                                    dispatch({type: 'catchUploadedPictures', picturesChosen: e.target.files,
-                                    })
-                                }
+                                onChange={(e) => {
+                                    const newFiles = Array.from(e.target.files);
+                                    const updatedFiles = [...state.uploadedPictures, ...newFiles].slice(0, 5); // Limit to 5
+                                    dispatch({
+                                        type: 'catchUploadedPictures',
+                                        picturesChosen: updatedFiles,
+                                    });
+                                }}
                             />
                         </Button>
                     </Grid>
