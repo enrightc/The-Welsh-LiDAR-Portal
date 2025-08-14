@@ -285,8 +285,6 @@ export default function CustomLayerControl() {
                 "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
               }}
             />
-
-            
           </Stack>
         </Box>
       )}

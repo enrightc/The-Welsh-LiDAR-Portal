@@ -124,7 +124,7 @@ const periodOptions = [
 // { value: 'possible', label: 'Possible' },
 // ];
 
-export default function CreateRecord({ resetPolygon, fetchRecords }) {
+export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) {
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate()
     const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
@@ -377,6 +377,10 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                     resetPolygon(); // Reset the polygon in the parent component
                     console.log("Called resetPolygon from CreateRecord!");
                     fetchRecords(); // Fetch the updated records after adding a new one
+                    // if onSuccess provided tell sidebar to close.
+                    if (typeof onSuccess === "function") {
+                      onSuccess();
+                    }
                 } catch(e){
                     console.log(e.response)
                 }
@@ -574,77 +578,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                         </TextField>
                     </Grid>
 
-                    {/* Confidence */}
-                    {/* <Grid>
-                        <TextField 
-                            id="confidence" 
-                            fullWidth 
-                            label="Confidence Level" 
-                            variant="outlined"
-                            value={state.confidenceValue}
-                            onChange = {(e)=> 
-                                dispatch({
-                                type: "catchconfidenceChange", confidenceChosen: e.target.value})}
-                            select 
-                        >
-                            {confidenceOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid> */}
-
-                    {/* Additional Evidence / Context */}
-                    {/* <Grid>
-                        <TextField 
-                        id="evidence" 
-                        fullWidth 
-                        label="Addiontal Evidence / Context" 
-                        variant="outlined"
-                        multiline
-                        rows="2"
-                        value={state.Value}
-                        onChange = {(e)=> 
-                            dispatch({
-                            type: "catchEvidenceChange", 
-                            evidenceChosen: e.target.value 
-                            })
-                        } 
-                        /> 
-                    </Grid> */}
-
-                    {/* latitude */}
-                    {/* <Grid>
-                        <TextField 
-                        id="latitude" 
-                        fullWidth 
-                        label="Latitude" 
-                        variant="outlined"
-                        InputProps={{ readOnly: true }}
-                        value={GlobalState.markerPosition.latitudeValue}
-                        onChange = {(e)=> 
-                            dispatch({
-                            type: "catchLatitudeChange", latitudeChosen: e.target.value})} 
-                        />
-                    </Grid> */}
-
-                    {/* longitude */}
-                    {/* <Grid>
-                        <TextField 
-                        id="longitude" 
-                        fullWidth 
-                        label="Longitude" 
-                        variant="outlined"
-                        InputProps={{ readOnly: true }}
-                        value={GlobalState.markerPosition.longitudeValue}
-                        onChange = {(e)=> 
-                            dispatch({
-                            type: "catchLongitudeChange", longitudeChosen: e.target.value})} 
-                        />
-                    </Grid> */}
-
-                    {/* Photo upload */}
+                   {/* Photo upload */}
                     <Grid>
                         <Button 
                             variant="contained" 
@@ -725,18 +659,18 @@ export default function CreateRecord({ resetPolygon, fetchRecords }) {
                     </Grid>
 
                     {/* display capatured coords in the form */}  
-                <Grid container style={{ marginTop: "2rem" }}>
-                    <TextField
-                        id="polygon"
-                        label="Polygon Coordinates"
-                        variant="standard"
-                        fullWidth
-                        multiline
-                        rows={4}
-                        value={JSON.stringify(GlobalState.polygonValue)}
-                        InputProps={{ readOnly: true }}
-                    />
-                </Grid>
+                    {/* <Grid container style={{ marginTop: "2rem" }}>
+                        <TextField
+                            id="polygon"
+                            label="Polygon Coordinates"
+                            variant="standard"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            value={JSON.stringify(GlobalState.polygonValue)}
+                            InputProps={{ readOnly: true }}
+                        />
+                    </Grid> */}
 
                 </Grid>
             </form>

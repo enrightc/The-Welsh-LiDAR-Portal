@@ -47,6 +47,7 @@ export default function Sidebar({ open, onClose, resetPolygon, fetchRecords }) {
             <CreateRecord 
                 resetPolygon={resetPolygon}
                 fetchRecords={fetchRecords}
+                onSuccess={onClose}
             /> 
         </div>
       )}
