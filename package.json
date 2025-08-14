@@ -18,6 +18,8 @@
         "@mui/joy": "^5.0.0-beta.52",
         "@mui/material": "^7.0.2",
         "axios": "^1.9.0",
+        "georaster": "^1.6.0",
+        "georaster-layer-for-leaflet": "^3.10.0",
         "immer": "^10.1.1",
         "leaflet": "^1.9.4",
         "leaflet-draw": "^1.0.4",

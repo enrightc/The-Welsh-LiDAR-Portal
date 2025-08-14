@@ -22,14 +22,16 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
 
     return (
 
-        <Box sx={{ 
-            width: 400,
+        
+        <Box sx={{
+            width: { xs: 2, sm: 'auto' },
+            flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
             zIndex: 1000,
             bottom: 20,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            bgcolor: 'rgba(255, 255, 255)',
+            left: { xs: 20, sm: '50%' },
+            transform: { xs: 'none', sm: 'translateX(-50%)' },
+            bgcolor: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(10px)',
             borderRadius: 12,
             overflow: 'hidden',
