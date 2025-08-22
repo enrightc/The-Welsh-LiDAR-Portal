@@ -29,6 +29,8 @@ export default function CustomLayerControl() {
   const multiHillshadeRef = useRef(null);
   const cadwRef = useRef(null); // WFS -> GeoJSON layer (created once, reused)
 
+  const CADW_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
+
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
     if (!osmRef.current) {
@@ -65,6 +67,7 @@ export default function CustomLayerControl() {
           version: "1.1.1",
           maxZoom: 18,
           opacity: 1,
+          attribution: "© DataMapWales / Welsh Government"
         });
       }
       if (!map.hasLayer(dsmHillshadeRef.current)) dsmHillshadeRef.current.addTo(map);
@@ -88,6 +91,7 @@ export default function CustomLayerControl() {
           version: "1.1.1",
           maxZoom: 18,
           opacity: 1,
+          attribution: "© DataMapWales / Welsh Government"
         });
       }
       if (!map.hasLayer(multiHillshadeRef.current)) multiHillshadeRef.current.addTo(map);
@@ -126,7 +130,7 @@ export default function CustomLayerControl() {
               ? `<a href="${p.Report}" target="_blank" rel="noopener noreferrer">View</a>`
               : "N/A";
             layer.bindPopup(
-              `<div class="custom-popup">
+              `<div className="custom-popup">
                  <strong>Scheduled Monument</strong><br/>
                  <strong>${name}</strong><br/>
                  <em>Site Type: </em>${type}<br/>
@@ -137,6 +141,7 @@ export default function CustomLayerControl() {
           },
         });
         cadwRef.current.addTo(map);
+        if (map.attributionControl) map.attributionControl.addAttribution(CADW_ATTR);
       } catch (e) {
         console.error("Failed to load Cadw WFS:", e);
       }
@@ -146,6 +151,7 @@ export default function CustomLayerControl() {
       addCadw();
     } else if (cadwRef.current && map.hasLayer(cadwRef.current)) {
       map.removeLayer(cadwRef.current);
+      if (map.attributionControl) map.attributionControl.removeAttribution(CADW_ATTR);
     }
   }, [showCadwWfs, map]);
 
