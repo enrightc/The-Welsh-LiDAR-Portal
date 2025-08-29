@@ -91,7 +91,7 @@ function Navigation() {
       width: "100%", 
       top: 0, 
       left: 0, 
-      backgroundColor: "#1F2827",
+      backgroundColor: "#232138",
     }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
