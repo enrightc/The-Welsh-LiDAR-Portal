@@ -130,7 +130,7 @@ export default function CustomLayerControl() {
               ? `<a href="${p.Report}" target="_blank" rel="noopener noreferrer">View</a>`
               : "N/A";
             layer.bindPopup(
-              `<div className="custom-popup">
+              `<div class="custom-popup cadw-popup">
                  <strong>Scheduled Monument</strong><br/>
                  <strong>${name}</strong><br/>
                  <em>Site Type: </em>${type}<br/>

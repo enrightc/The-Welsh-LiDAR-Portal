@@ -7,14 +7,14 @@
   line-height: 1.5;
 }
 
-.custom-popup strong {
+.custom-popup, .cadw-popup strong {
   display: block;
   color: #b30000;  /* rich red for titles */
   font-size: 16px;
   margin-bottom: 6px;
 }
 
-.custom-popup em {
+.custom-popup, .cadw-popup em {
   font-style: normal;
   font-weight: 600;
   color: #555;

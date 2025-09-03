@@ -92,7 +92,7 @@ export default function MainLidarMap({
                 
                 {/* Display Polygon if it exists */}
                 {Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
-                                        <Polygon
+                                                            <Polygon
                     positions={record.polygonCoordinate} // Pass polygon coordinates
                     pathOptions={{ 
                         Bordercolor: "blue", 

@@ -3,13 +3,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 :root {
-  --bg: #17152D;
+  --bg: #1A2D3A;
+  --second-bg: #F8F9F6;
   --accent: yellow;
-  --text: #ffffff;
+  --text-light: #ffffff;
+  --text-dark: #1A2D3A;
   --primary: #5AC6CD;
   --muted: #C8C8D0;
-  --card: #232138;
+  --card: white;;
   --border:#4F4D5F;
+  --hero-img: url('src/Components/Assets/lidarMain1.webp');
 }
 
 /* Base Reset */
@@ -24,12 +27,10 @@ font-family: "Roboto", sans-serif; */
 
 /* Typography */
 body {
-    background-color: var(--bg);
     margin: 0;
     font-size: 1rem; /* 16px for body text */
     font-family: "Roboto", sans-serif; 
     line-height: 1.5;
-    color: var(--text);
 }
 
 img {
@@ -69,7 +70,7 @@ p {
 .container {
   width: 85%;
   margin: 0 auto;
-  max-width: 1200px;
+  max-width: 1149px;
 }
 
 .accent {
@@ -85,7 +86,7 @@ p {
   justify-content: center;
   text-decoration: none;
   font-weight: 600;
-  padding: 21px 24px;
+  padding: 12px 24px;
   border-radius: 25px;
   border: 0;
   cursor: pointer;
@@ -104,19 +105,33 @@ p {
   margin: 0 auto;
 }
 
-
 /* Hero */
-/* .hero__image {
-  margin-top: 2em;
-  width: 100%;       
-  height: auto;      
-  object-fit: cover; 
-} */
+.hero {
+  background: url('src/Components/Assets/heroMedia.webp') no-repeat  center/cover;
+  padding: 40px 20px;
+  position: relative;
+}
 
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1A2D3A;
+  background: linear-gradient(42deg, rgba(26, 45, 58, 1) 29%, rgba(26, 45, 58, 0.5) 100%);
+  z-index: 0;
+}
+
+.hero__image {
+  display: none; /* Hidden on mobile */
+  z-index: 1;
+}
 
 .hero__text {
   margin: 2em 0;
-  color: var(--text);
+  color: var(--text-light);
   display: flex;
   flex-direction: column;
   gap: 2em;
@@ -124,11 +139,13 @@ p {
 
 .hero__title {
   text-align: center;
+  z-index: 1;
 }
 
 .hero__tagline {
   font-weight: 700;
   text-align: center;
+  z-index: 1;
 }
 
 .hero__btns {
@@ -137,6 +154,7 @@ p {
   gap: 1rem;
   margin-bottom: 2em;
   align-items: center;
+  z-index: 1;
 }
 
 
@@ -144,7 +162,8 @@ p {
 .about {
   text-align: center;
   padding: 4rem 0;
-  
+  color: var(--text-dark);
+  background-color: var(--second-bg)
 }
 
 .about-text__title {
@@ -155,9 +174,6 @@ p {
   margin-bottom: 2rem;
 }
 
-.about-text p {
-  color: var(--muted)
-}
 
 .about-image img {
   border-radius: 10px;
@@ -165,6 +181,7 @@ p {
 
 /* How it works */
 .how-it-works {
+  background-color: var(--second-bg);;
   padding: 4rem 0;
   text-align: center;
 }
@@ -183,17 +200,14 @@ p {
 
 .card {
   background-color: var(--card);
-  border: 1px solid var(--border);
+  border: solid 1px rgb(211, 209, 209);
   border-radius: 10px;
   padding: 1rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-}
-
-.card p {
-  color: var(--muted);
+  height:100%
 }
 
 .card-icon {
@@ -205,14 +219,11 @@ p {
 .explore-heritage {
   padding: 4rem 0;
   text-align: center;
+  color: var(--text-dark);
 }
 
 .explore-heritage__title {
   margin-bottom: 2rem;
-}
-
-.explore-heritage p {
-  color: var(--muted);
 }
 
 .explore-heritage img {
@@ -229,22 +240,86 @@ p {
   margin-bottom: 2rem;
 }
 
-.what-is-lidar p {
-  color: var(--muted);
-}
-
 
 /* Contribute */
 .contribute {
-  position: relative;
-  margin-bottom: 2rem;
+  background-color: var(--bg);
+  color: var(--text-light);
+  padding-top: 4rem;
 }
 
 .contribute__text {
-  position: absolute;
-  bottom: 2rem;     
-  left: 50%;        
-  transform: translateX(-50%);
   text-align: center;
 }
 
+.contribute_title {
+  margin-bottom: 2rem;
+}
+
+
+
+@media (min-width: 900px) {
+  .hero {
+    background: ; /* remove background image */
+  }
+  .hero-content{
+    display: flex;
+    gap: 3rem;
+  }
+  .hero__image {
+    display: block; 
+    margin: auto;
+    max-width: 450px;
+  }
+  .hero__title, .hero__tagline {
+    text-align: left;
+  }
+  .hero__text {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2em;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 700px) {
+  .content{
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+  }
+  .reverse-content {
+    flex-direction: row-reverse;
+    gap: 3rem;
+  }
+  .about-text, .about-image {
+    flex: 1;
+    text-align: left;
+    margin-bottom: 0;
+  }
+  .how-it-works__title {
+    text-align: center;
+  }
+  ul {
+    align-items: stretch;
+  }
+  li {
+    flex: 1;
+  }
+  .explore-heritage__text, .explore-heritage__img {
+    flex: 1;
+    text-align: left;
+  }
+  .what-is-lidar__text {
+    text-align: left;
+    gap: 3rem;
+  }
+  .what-is-lidar__text, .what-is-lidar__img {
+    flex: 1;
+    text-align: left;
+  }
+  .lidar-info {
+    justify-content: flex-start;
+  }
+}
