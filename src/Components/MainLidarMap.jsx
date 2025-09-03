@@ -2,7 +2,6 @@ import * as React from 'react';
 
 // MUI Imports
 import Button from '@mui/material/Button';
-import { GeoJSON } from "react-leaflet";
 
 // React Leaflet
 import {
@@ -17,7 +16,7 @@ import {
     Polygon,
   } from 'react-leaflet'
 import 'leaflet-draw/dist/leaflet.draw.css';
-import 'leaflet-loading';
+import 'leaflet-loading'; // Leaflet plugin: shows a small spinner (top-left) when the map is "loading"
 
 // React Leaflet Draw
 import { EditControl } from "react-leaflet-draw"
@@ -26,27 +25,17 @@ import CustomLayerControl from "./CustomLayerControl";
 import '../assets/styles/map.css';
 
 export default function MainLidarMap({
-  scheduledMonuments,
-  handleDrawCreate,
-  featureGroupRef,
-  dispatch,
-  setPolygonDrawn,
-  allRecords,
-  handleOpenMiniProfile,
-  setSelectedFeature,
-  setModalOpen,
+    handleDrawCreate,
+    featureGroupRef,
+    dispatch,
+    setPolygonDrawn,
+    allRecords,
+    handleOpenMiniProfile,
+    setSelectedFeature,
+    setModalOpen,
 }) {
     // Fallback to prevent map crash if allRecords isn't ready
     if (!Array.isArray(allRecords)) return null;
-
-    const [cadwFeatures, setCadwFeatures] = React.useState(null);
-
-    React.useEffect(() => {
-    fetch("https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=inspire-wg:Cadw_SAM&srsName=EPSG:4326&outputFormat=application/json")
-        .then(res => res.json())
-        .then(data => setCadwFeatures(data))
-        .catch(err => console.error("Error loading Cadw features:", err));
-    }, []);
 
     return (
 
@@ -57,7 +46,7 @@ export default function MainLidarMap({
             ]} 
             zoom={8.5} 
             scrollWheelZoom={true} 
-            loadingControl={true}
+            loadingControl={true} // shows the little spinner control
         >
 
             <CustomLayerControl />

@@ -172,17 +172,7 @@ useEffect(() => {
   fetchRecords();
 }, []);
 
-  // Function to fetch Scheduled Monuments GeoJSON data
-  // This effect runs only once when the component first mounts
-  useEffect(() => {
-    fetch("/data/scheduled_monuments.geojson")
-      .then(res => res.json())
-      .then(data => {
-        setScheduledMonuments(data);
-        console.log('Scheduled Monuments:', data); // <-- Now it will log the actual data!
-      })
-      .catch(err => console.error("Error loading Scheduled Monuments GeoJSON:", err));
-  }, []);
+  
   
   // If data is still loading, show a loading message
   if (dataIsLoading === true) {
@@ -191,6 +181,7 @@ useEffect(() => {
         container 
         justifyContent="center" 
         alignItems="center" 
+        color="red"
         style={{ height: "100vh", width: "100vw" }}
         // Set width: "100vw" to make sure the Grid takes up the full screen width,
         // so the loading spinner can be perfectly centered horizontally

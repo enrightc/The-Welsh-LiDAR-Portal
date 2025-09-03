@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
+import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the map is "loading"
 
 import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
@@ -112,8 +113,13 @@ export default function CustomLayerControl() {
         return;
       }
       try {
+        // Tell the Leaflet.loading plugin a data request is starting
+        // This makes the small top-left spinner appear while the WFS loads
+        map.fire('dataloading'); // start spinner
         const res = await fetch(CADW_WFS_URL);
         const data = await res.json();
+
+        // Build the GeoJSON layer from the fetched data
         cadwRef.current = L.geoJSON(data, {
           style: {
             color: "#e60000",
@@ -144,14 +150,21 @@ export default function CustomLayerControl() {
         if (map.attributionControl) map.attributionControl.addAttribution(CADW_ATTR);
       } catch (e) {
         console.error("Failed to load Cadw WFS:", e);
+      } finally {
+        // 👉 Tell the plugin that loading is finished (success OR error)
+        // This hides the small top-left spinner
+        map.fire('dataload'); // stop spinner
       }
     }
 
-    if (showCadwWfs) {
-      addCadw();
-    } else if (cadwRef.current && map.hasLayer(cadwRef.current)) {
-      map.removeLayer(cadwRef.current);
-      if (map.attributionControl) map.attributionControl.removeAttribution(CADW_ATTR);
+    if (showCadwWfs) { // state boolean controlled by checkbox: "Cadw Scheduled Monuments".
+      addCadw(); // if showCadwWfs is true call addCadw function.
+    } else if (cadwRef.current // Otherwise, if the checkbox is OFF and... 
+        && map.hasLayer(cadwRef.current)) { // ...the Cadw layer is currently on the map
+      map.removeLayer(cadwRef.current); // Remove the layer from the map
+      if (map.attributionControl) 
+        map. attributionControl. // Also remove its attribution 
+       removeAttribution(CADW_ATTR);
     }
   }, [showCadwWfs, map]);
 
