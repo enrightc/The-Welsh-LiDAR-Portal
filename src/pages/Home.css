@@ -259,9 +259,6 @@ p {
 
 
 @media (min-width: 900px) {
-  .hero {
-    background: ; /* remove background image */
-  }
   .hero-content{
     display: flex;
     gap: 3rem;

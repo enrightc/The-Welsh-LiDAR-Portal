@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Users from "./pages/Users";
 import ProfileDetail from "./pages/ProfileDetail";
+import HowItWorks from "./pages/HowItWorks";
 
 
 // Contexts
@@ -93,6 +94,7 @@ useEffect(() => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/HowItWorks" element={<HowItWorks />} />
                 <Route path="/LidarPortal" element={<LidarPortal />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />

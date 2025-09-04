@@ -264,27 +264,29 @@ function Profile() {
 
     // function to display thumbnail profile picture
     function ProfilePictureDisplay() {
-        if (state.profilePictureValue && typeof state.profilePictureValue === "object") {
-            // This is the newly uploaded file (before submission)
-            const imageUrl = URL.createObjectURL(state.profilePictureValue);
-            return (
-            <Grid style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
-                <img src={imageUrl} alt="Preview" style={{ height: "5rem", width: "5rem", objectFit: "cover", borderRadius: "5px" }} />
-            </Grid>
-            );
-        }
+      const size = 80; // px
+      const commonStyle = {
+        width: size,
+        height: size,
+        objectFit: "cover",
+        borderRadius: "50%",
+        display: "block",
+        backgroundColor: "transparent",
+      };
 
-        if (typeof state.profilePictureValue === "string" && state.profilePictureValue !== "") {
-            // This is the existing profile picture from the backend
-            return (
-            <Grid style={{ marginTop: "1rem", marginLeft: "auto", marginRight: "auto" }}>
-                <img src={state.profilePictureValue} alt="Current Profile" style={{ height: "5rem", width: "5rem", objectFit: "cover", borderRadius: "5px" }} />
-            </Grid>
-            );
-        }
+      if (state.profilePictureValue && typeof state.profilePictureValue === "object") {
+        // Newly uploaded file preview
+        const imageUrl = URL.createObjectURL(state.profilePictureValue);
+        return <img src={imageUrl} alt="Preview" style={commonStyle} />;
+      }
 
-        return null; // Nothing to show
-        }
+      if (typeof state.profilePictureValue === "string" && state.profilePictureValue !== "") {
+        // Existing profile picture from backend
+        return <img src={state.profilePictureValue} alt="Current Profile" style={commonStyle} />;
+      }
+
+      return null; // Nothing to show
+    }
 
   return (
     <>
@@ -600,16 +602,8 @@ function Profile() {
               </Grid>
 
               {/* Picture uploaded feedback */}
-              <Grid
-                container
-                sx={{
-                  color: "black",
-                }}
-              >
+              <Grid container justifyContent="center" alignItems="center" sx={{ mt: 1 }}>
                 {ProfilePictureDisplay()}
-                {/* <ul>
-                  {state.profilePictureValue ? <li>{state.profilePictureValue.name}</li> : ""}
-                </ul>        */}
               </Grid>
 
               <Grid item sx={{ width: "100%" }}>

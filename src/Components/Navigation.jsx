@@ -15,7 +15,8 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 
 // Contexts
 import StateContext from "../Contexts/StateContext"; // Import the StateContext for accessing global state
@@ -25,8 +26,8 @@ import { Global } from "@emotion/react";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const pages = [
-  { name: "Home", path: "/" },
   { name: "About", path: "/about" },
+  { name: "How It Works", path: "/HowItWorks" },
   { name: "Lidar Portal", path: "/LidarPortal" },
 ];
 
@@ -96,7 +97,6 @@ function Navigation() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Desktop Logo */}
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
@@ -144,7 +144,6 @@ function Navigation() {
           </Box>
 
           {/* Mobile Logo */}
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
@@ -180,10 +179,6 @@ function Navigation() {
           {/* User Profile Menu */}
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-              {/* <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="User" src="/static/images/avatar/2.jpg" />
-              </IconButton> */}
-              
               {GlobalState.userIsLoggedIn ?
                 <Button 
                   color="inherit"
@@ -192,24 +187,22 @@ function Navigation() {
                   sx={{ 
                     textTransform: 'none',
                     alignItems: 'flex-start', // ensures left alignment within the button
-                    borderWidth: '1px',        // Make the border thinner
-                    borderColor: '#BDBDBD',    // Optional: softer colour than pure black
+                    border: '1px solid transparent', // invisible border for layout stability
                     '&:hover': {
-                      borderWidth: '1.5px',    // Optional: slightly thicker on hover, or just keep as 1px
-                      borderColor: '#757575',  // Optional: slightly darker on hover
+                    backgroundColor: 'rgba(255,255,255,0.08)', // light overlay
                     },
                   }}
                 >
                   <Box sx={{ 
                     display: "flex", 
-                    flexDirection: "column", 
+                    flexDirection: "row",
+                    gap: 0.5,
                     alignItems: "flex-start" }}>
                     <Typography sx={{ fontWeight: 500 }}>
-                      Hello, {GlobalState.userUsername}
+                      {GlobalState.userUsername}
                     </Typography>
-                    <Typography sx={{ fontSize: "0.8rem", color: "grey.400" }}>
-                      Accounts & Settings
-                    </Typography>
+                    <ArrowRightOutlinedIcon />
+                    <AccountCircleOutlinedIcon />
                   </Box>
                 </Button> :
 
@@ -220,29 +213,25 @@ function Navigation() {
                   sx={{ 
                     textTransform: 'none',
                     alignItems: 'flex-start', // ensures left alignment within the button
-                    borderWidth: '1px',        // Make the border thinner
-                      borderColor: '#BDBDBD',    // Optional: softer colour than pure black
-                      '&:hover': {
-                        borderWidth: '1.5px',    // Optional: slightly thicker on hover, or just keep as 1px
-                        borderColor: '#757575',  // Optional: slightly darker on hover
+                    border: '1px solid transparent', // invisible border for layout stability
+                    '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.08)', // light overlay
                       },
                   }}
                 >
                   <Box sx={{ 
                     display: "flex", 
-                    flexDirection: "column", 
+                    flexDirection: "row", 
                     alignItems: "flex-start",
+                    gap: 2,
                   }}>
                     <Typography sx={{ fontWeight: 500 }}>
-                      Hello, sign in
+                      Hello, 
                     </Typography>
-                    <Typography sx={{ fontSize: "0.8rem", color: "grey.400" }}>
-                      Accounts & Settings
-                    </Typography>
+                    <AccountCircleOutlinedIcon />
                   </Box>
                 </Button>
               }
-              
             </Tooltip>
             
             <Menu

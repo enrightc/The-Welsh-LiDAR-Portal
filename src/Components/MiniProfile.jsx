@@ -35,7 +35,7 @@ export default function MiniProfile({ open, onClose, user }) {
                         display: "flex", gap: 2, justifyContent: "center", mt: 2 }}>
                         <img
                             src={user.profile_picture || defaultProfilePicture}
-                            alt="Profile"
+                            alt="Profile picture"
                             style={{ width: "80px", height: "80px", borderRadius: "50%" }}
                         />
                     </Box>
