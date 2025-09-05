@@ -12,7 +12,6 @@
   --muted: #C8C8D0;
   --card: white;;
   --border:#4F4D5F;
-  --hero-img: url('src/Components/Assets/lidarMain1.webp');
 }
 
 /* Base Reset */
@@ -107,7 +106,7 @@ p {
 
 /* Hero */
 .hero {
-  background: url('src/Components/Assets/heroMedia.webp') no-repeat  center/cover;
+  background: url('../Components/Assets/heroMedia.webp') no-repeat  center/cover;
   padding: 40px 20px;
   position: relative;
 }
