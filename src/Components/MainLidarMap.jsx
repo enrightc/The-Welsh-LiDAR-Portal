@@ -9,10 +9,10 @@ import {
     TileLayer,
     WMSTileLayer,
     useMap,
-    // Marker,
     Popup,
     LayersControl,
     FeatureGroup,
+    LayerGroup,
     Polygon,
   } from 'react-leaflet'
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -37,6 +37,8 @@ export default function MainLidarMap({
     // Fallback to prevent map crash if allRecords isn't ready
     if (!Array.isArray(allRecords)) return null;
 
+    const [showCommunity, setShowCommunity] = React.useState(true); // start ON
+
     return (
 
         <MapContainer
@@ -49,7 +51,10 @@ export default function MainLidarMap({
             loadingControl={true} // shows the little spinner control
         >
 
-            <CustomLayerControl />
+            <CustomLayerControl
+                showCommunity={showCommunity}
+                setShowCommunity={setShowCommunity}
+            />
 
             <FeatureGroup ref={featureGroupRef}>
             <EditControl
@@ -74,95 +79,85 @@ export default function MainLidarMap({
             />
             </FeatureGroup> 
 
-            {/* Map markers for each record */}
-            {/* <Marker position={[latitude, longitude ]}></Marker> */}
-            {allRecords.map((record) => (
-                <React.Fragment key={record.id}>
-                
-                {/* Display Polygon if it exists */}
-                {Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
-                                                            <Polygon
-                    positions={record.polygonCoordinate} // Pass polygon coordinates
-                    pathOptions={{ 
-                        Bordercolor: "blue", 
-                    }}
-                    >
-                    <Popup>
-                        <div 
-                        style={{ 
-                            fontFamily: "Arial, sans-serif", fontSize: "14px", lineHeight: "1.4", maxWidth: "300px", backgroundColor: "#fff", padding: "10px", borderRadius: "6px",  
+            {/* Toggleable overlay for Community polygons (React-Leaflet, so the Button works) */}
+                {showCommunity && (
+                <LayerGroup>
+                {/* Loop through each record and draw its polygon on the map */}
+                {allRecords.map((record) => (
+                    Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
+                    <Polygon
+                        key={record.id}
+                        positions={record.polygonCoordinate}
+                        pathOptions={{ 
+                            color: '#3388ff',
+                            weight: 2,
+                            fillOpacity: 0.2, 
                         }}
-                        >
-                        <strong 
-                            style={{ 
-                            color: "blue", fontSize: "15px", display: "block", marginBottom: "12px" 
-                            }}
-                        >
-                            LiDAR Feature
-                        </strong>
-                        <h3 
-                            style={{ 
-                            margin: "0 0 6px 0", fontSize: "16px", color: "blue" }}>{record.title}
-                            </h3>
-                        {record.picture1 && (
-                            <img
-                            src={record.picture1}
-                            alt={record.title}
-                            style={{ height: "10rem", width: "100%", objectFit: "cover", marginBottom: "8px", borderRadius: "4px" }}
-                            />
-                        )}
-                        {record.prn && (
-                            <p style={{ margin: 0 }}><strong>PRN:</strong> {record.prn}</p>
-                        )}
-                        <p 
-                            style={{ 
-                            margin: 0 }}><strong>Site Type: {' '}</strong> {record.site_type_display}
-                        </p>
-                        <p 
-                            style={{ 
-                            margin: 0 }}>
-                            <strong>
-                                Monument Type: {' '}
-                            </strong> 
-                            {record.monument_type_display}
-                            </p>
-                        <p style= {{ margin: 0 }}>
-                            <strong>
-                            Recorded By: {' '}      
-                            </strong> 
-                            <span
-                            onClick={() => {
-                                handleOpenMiniProfile(record.recorded_by_user_id);
-                            }}
-                            style={{
-                                color: "#1976d2",
-                                cursor: "pointer",
-                                textDecoration: "underline"
-                            }}
+                    >
+                        <Popup>
+                            <div 
+                                style={{ 
+                                fontFamily: "Arial, sans-serif", fontSize: "14px", lineHeight: "1.4", maxWidth: "300px", backgroundColor: "#fff", padding: "10px", borderRadius: "6px",  
+                                }}
                             >
-                            {record.recorded_by}
-                            </span>
-                        </p>
-                        <p style={{ margin: 0 }}>
-                            <strong>Date Recorded: {' '}</strong> {record.date_recorded}
-                        </p>
-                        
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() => {
-                                setSelectedFeature(record);
-                                setModalOpen(true);
-                            }}
-                            >
-                            View Full Record
-                        </Button>
-                        </div>
-                    </Popup>
+                                <strong style={{ color: "blue", fontSize: "15px", display: "block", marginBottom: "12px" }}>
+                                LiDAR Feature
+                                </strong>
+
+                                <h3 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "blue" }}>
+                                {record.title}
+                                </h3>
+
+                                {record.picture1 && (
+                                <img
+                                    src={record.picture1}
+                                    alt={record.title}
+                                    style={{ height: "10rem", width: "100%", objectFit: "cover", marginBottom: "8px", borderRadius: "4px" }}
+                                />
+                                )}
+
+                                {record.prn && (
+                                <p style={{ margin: 0 }}><strong>PRN:</strong> {record.prn}</p>
+                                )}
+
+                                <p style={{ margin: 0 }}>
+                                <strong>Site Type: </strong>{record.site_type_display}
+                                </p>
+                                <p style={{ margin: 0 }}>
+                                <strong>Monument Type: </strong>{record.monument_type_display}
+                                </p>
+                                <p style={{ margin: 0 }}>
+                                <strong>Recorded By: </strong>
+                                <span
+                                    onClick={() => handleOpenMiniProfile(record.recorded_by_user_id)}
+                                    style={{ color: "#1976d2", cursor: "pointer", textDecoration: "underline" }}
+                                >
+                                    {record.recorded_by}
+                                </span>
+                                </p>
+                                <p style={{ margin: 0 }}>
+                                <strong>Date Recorded: </strong>{record.date_recorded}
+                                </p>
+
+                                <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => {
+                                    setSelectedFeature(record);
+                                    setModalOpen(true);
+                                }}
+                                >
+                                View Full Record
+                                </Button>
+                            </div>
+                        </Popup>
                     </Polygon>
+                    )
+                ))}
+                </LayerGroup>
                 )}
-                </React.Fragment>
-            ))}
+            
+                
       
         </MapContainer>
     

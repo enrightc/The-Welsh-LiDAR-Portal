@@ -9,7 +9,7 @@ import MapIcon from '@mui/icons-material/Map';
 
 import '../assets/styles/map.css';
 
-export default function CustomLayerControl() {
+export default function CustomLayerControl({ showCommunity, setShowCommunity }) {
   const map = useMap();
 
   // Base map selection
@@ -18,18 +18,19 @@ export default function CustomLayerControl() {
   // Collapsible state — default open
   const [collapsed, setCollapsed] = useState(false);
 
-  // Overlay toggles
-  const [showDsmHillshade, setShowDsmHillshade] = useState(false);
+  // Overlay toggles (each one controls whether a layer is shown)
+  const [showDsmHillshade, setShowDsmHillshade] = useState(false); // true or false from the checkbox
   const [showMultiHillshade, setShowMultiHillshade] = useState(false);
   const [showCadwWfs, setShowCadwWfs] = useState(false);
 
-  // Refs for Leaflet layers
+// Refs for Leaflet layers (stores the actual Leaflet layer objects here)
+// Using refs lets us add/remove the same layer without rebuilding it every render.
   const osmRef = useRef(null);
   const esriRef = useRef(null);
   const dsmHillshadeRef = useRef(null);
   const multiHillshadeRef = useRef(null);
   const cadwRef = useRef(null); // WFS -> GeoJSON layer (created once, reused)
- 
+
   const CADW_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
 
   // --- Base maps (create once, then swap) ---
@@ -162,9 +163,9 @@ export default function CustomLayerControl() {
     } else if (cadwRef.current // Otherwise, if the checkbox is OFF and... 
         && map.hasLayer(cadwRef.current)) { // ...the Cadw layer is currently on the map
       map.removeLayer(cadwRef.current); // Remove the layer from the map
-      if (map.attributionControl) 
-        map. attributionControl. // Also remove its attribution 
-       removeAttribution(CADW_ATTR);
+      if (map.attributionControl) {
+        map.attributionControl.removeAttribution(CADW_ATTR);
+      }
     }
   }, [showCadwWfs, map]);
 
@@ -254,6 +255,24 @@ export default function CustomLayerControl() {
           </Typography>
 
           <Stack spacing={0}>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={showCommunity}
+                  onChange={(e) => setShowCommunity(e.target.checked)}
+                />
+              }
+              label="Community Finds"
+              sx={{
+                m: 0,
+                p: 0.25,
+                borderRadius: 1,
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+              }}
+            />
+
             <FormControlLabel
               control={
                 <Checkbox
