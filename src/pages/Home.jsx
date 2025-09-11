@@ -21,7 +21,7 @@ const Home = () => {
     <>
       <header className="hero">
         <div className="container">
-          <div class="hero-content">
+          <div className="hero-content">
             <div className="hero__text">
               <h1 className="hero__title">Discover the Past, <span className="accent">Shape the Record</span></h1>
               <p className="hero__tagline">Search, explore and contribute to the map of Wales’ archaeological heritage.</p>

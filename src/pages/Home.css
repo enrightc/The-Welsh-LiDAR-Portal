@@ -38,7 +38,7 @@ img {
 }
 
 h1, h2, h3, h4 {
-  font-family: "Oswald", sans-serif;
+  font-family: "Outfit", sans-serif;
   font-weight: 700;
 }
 
@@ -319,3 +319,5 @@ p {
     justify-content: flex-start;
   }
 }
+
+

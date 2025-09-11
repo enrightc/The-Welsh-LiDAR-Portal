@@ -13,12 +13,18 @@ import "./index.css";
 // Import the main App component
 import App from "./App.jsx";
 
+// Theme
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';   // 👈 import the theme
+
 // Get the root element in index.html (React will render inside this)
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    {/* Wrap the entire app with BrowserRouter to enable routing */}
+    {/* Wrap the entire app with BrowserRouter to enable routing i.e. multiple page app */}
     <BrowserRouter>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   </StrictMode>
 );
