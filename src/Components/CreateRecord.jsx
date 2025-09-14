@@ -21,7 +21,7 @@ import MenuItem from '@mui/material/MenuItem';
 import StateContext from '../Contexts/StateContext';
 
 // Components
-import Snackbar from './MySnackbar.jsx';
+import ToastListener from './ToastListener.jsx';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -129,21 +129,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
     const navigate = useNavigate()
     const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
 
-    // Snackbar state
-    const [snackbarOpen, setSnackbarOpen] = React.useState(false);  // State to control the Snackbar visibility. snackbarOpen is false by default, meaning the Snackbar is hidden at first. setSnackbarOpen is a function that lets you change this value (to show or hide the Snackbar).
-
     const [errors, setErrors] = React.useState({});
-
-    // Function to Open the Snackbar:
-    const handleSnackbarOpen = () => setSnackbarOpen(true);  // When you call handleSnackbarOpen(), it sets snackbarOpen to true. This will open the snackbar.
-    // Function to Close the Snackbar:
-    
-    // This function is called when the Snackbar is closed, either by clicking away or by clicking the close button.
-    // It checks if the reason for closing is 'clickaway' (meaning the user clicked outside the Snackbar), and if so, it does nothing. Otherwise, it sets snackbarOpen to false, which hides the Snackbar.
-    const handleSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') return;
-        setSnackbarOpen(false);
-    };
 
     const initialstate = {
         titleValue: "",
@@ -209,8 +195,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
     }
     
     const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
-
-   
 
     // Catching picture fields
     // This effect runs every time the first uploaded picture changes.
@@ -340,12 +324,14 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                     console.log(response)
                     dispatch({ type: "resetForm" }); // <--- Reset form
                     resetPolygon(); // Reset the polygon in the parent component
+                    navigate("/LidarPortal", { state: { toast: "New record successfully created" } });
                     console.log("Called resetPolygon from CreateRecord!");
                     fetchRecords(); // Fetch the updated records after adding a new one
                     // if onSuccess provided tell sidebar to close.
                     if (typeof onSuccess === "function") {
                       onSuccess();
                     }
+
                 } catch(e){
                     console.log(e.response)
                 }
@@ -644,11 +630,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                 </Grid>
             </form>
 
-            <Snackbar
-                open={snackbarOpen}
-                onClose={handleSnackbarClose}
-                message="Record submitted!"
-            />
+            <ToastListener />
 
         </div> 
     </div>
