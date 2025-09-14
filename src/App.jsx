@@ -1,8 +1,27 @@
 // Import Routes and Route from React Router to handle page navigation
 import { Routes, Route } from "react-router-dom";
-import Navigation from "./Components/Navigation"; // Import the Navigation component
 import { useImmerReducer } from "use-immer";
-import React, { useEffect } from "react"; // Import React and useEffect for side effects
+import React, { useEffect, useState } from "react";
+
+import Navigation from "./Components/Navigation";
+import ToastListener from "./Components/ToastListener";
+
+
+// useEffect & useState from react
+// These are react hooks, Hooks are special functions that let you add features to your components.
+// 1) useState - lets components remember values between re-renders. 
+// 2) useEffect - Lets components run side effects (things that happen outside of rendering, like fetching data, logging or timers)
+
+// useNavigate & useLocation
+// These are React Router Hooks. They give info and control over navigation.
+// 1) useLocation - Tells you the current "location" in React Router.
+// 2) useNavigate - Gives you a function (navigate) that lets you move to a different page in code.
+
+// In simple terms:
+	// useState → remember something.
+	// useEffect → do something when the component renders/changes.
+	// useLocation → see where you are and read data passed along.
+	// useNavigate → go somewhere new in code.
 
 // Import the pages that will be displayed
 import Home from "./pages/Home";
@@ -15,7 +34,6 @@ import Users from "./pages/Users";
 import ProfileDetail from "./pages/ProfileDetail";
 import HowItWorks from "./pages/HowItWorks";
 
-
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
 import StateContext from "./Contexts/StateContext";
@@ -24,6 +42,7 @@ import './App.css';
 
 // the main App component
 function App() {
+
   const initialstate = {
     userUsername: localStorage.getItem("theUserUsername"), // Retrieve username from localStorage or set to empty string
     userEmail: localStorage.getItem("theUserEmail"),  
@@ -102,6 +121,7 @@ useEffect(() => {
                 <Route path="/users" element={<Users />} />
                 <Route path="/user/:username" element={<ProfileDetail />} />
             </Routes>
+            <ToastListener />
           </main>
         </DispatchContext.Provider>
       </StateContext.Provider>

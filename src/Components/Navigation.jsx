@@ -15,6 +15,12 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+
+// Icons
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 
@@ -52,34 +58,80 @@ function Navigation() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  
-  const GlobalState = useContext(StateContext); // Access global state
+
+  // LOGOUT Confirmation
+  // state varbale called openLogoutDialog is created.
+  // - It starts as false (dialog hidden).
+  // - setOpenLogoutDialog is the function React gives us to change it.
+  // - openLogout() is a helper that sets it to true (shows the dialog).
+  // - closeLogout() is a helper that sets it to false (hides the dialog).
+
+  // openLogoutDialog = state value (starts as false, so the dialog is hidden)
+  // setOpenLogoutDialog = function we call to change openLogoutDialog later
+  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+
+  // openLogout() sets openLogoutDialog to true (shows the dialog)
+  // closeLogout() sets openLogoutDialog to false (hides the dialog)
+  const openLogout = () => setOpenLogoutDialog(true); 
+  const closeLogout = () => setOpenLogoutDialog(false); 
+
+  // This is how you read from Global State
   // This will allow you to access user information from the global state
-  const GlobalDispatch = useContext(DispatchContext); // Access global dispatch function
+  const GlobalState = useContext(StateContext); 
+
+  // This is how you update/change the Global State.
   // This will allow you to dispatch actions to update the global state
+  const GlobalDispatch = useContext(DispatchContext); 
   
+  // Runs the actual logout request (no UI confirm here; the Dialog handles that)
+  // Because function is marked async it knows it may need to pause somewhere
   async function handleLogout() {
-    // Clear user data from localStorage
-    setAnchorElUser(null);
-    const confirmLogout = window.confirm("Are you sure you want to log out?");
-    if (confirmLogout) {
+    setAnchorElUser(null); // Close the user menu by removing the anchor element.”
+    
       try {
+        // This sends a POST request to `${BASE_URL}/api-auth-djoser/token/logout/` this is the djosser logout route.
+        // when djosser receives the request it looks at the authorization header, checks which user the token belongs to and then invalidates that token in the database.
+        // Axios.post(url, data, config)
+        // - url: where to send the request (our Djoser logout endpoint)
+        // - data: request body (not needed for Djoser logout → pass {})
+        // - config: extra options (we send an Authorization header so the backend
+        //   knows which user's token to invalidate)
+
+        // Important:
+        // - Axios.post returns a Promise.
+        // - 'await' pauses this function here until the server replies.
+        //   Only then will it move on to the next lines.
         const response = await Axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api-auth-djoser/token/logout/`, 
-          GlobalState.userToken,
-          { 
+          `${BASE_URL}/api-auth-djoser/token/logout/`,  // 1) URL 
+          GlobalState.userToken, // 2) data (request body) // not actually required, currently sending user token twice.
+          { // 3) config (extra options) 
             headers: {
-              Authorization: `Token ${GlobalState.userToken}`,
+              Authorization: `Token ${GlobalState.userToken}`, // header with your token
             }
           }
         );
-          console.log(response);
-          GlobalDispatch({ type: "Logout" }); // Dispatch action to update global state
-          navigate("/"); // Redirect to home page after logout
+        // once Axios.post finishes the promise is resolved.
+        console.log(response);
+        // This line tells the app's global state the user has logged out, update everything to reflect that. 
+        GlobalDispatch({ type: "Logout" }); 
+
+        // Redirect to the home page after logout
+        // We also pass a "toast" message using React Router's location.state.
+        // React Router keeps track of where you are on the site, and "state" is extra data you can send when navigating.
+        // What happens here:
+        // 1) React Router sees you want to go to "/".
+        // 2) It attaches { toast: "Successfully logged out!" } to the new location.state.
+        // 3) When the app renders the "/" page, you can read that value from location.state
+        //    and use it to show a snackbar/notification.   
+        navigate("/", { state: { toast: "Successfully logged out!" } });
+      // if at any point the try block fails then catch will run
       } catch (e) {
-        console.log(e.response);
-        }
-    }
+        if (import.meta.env.DEV) {
+          console.error(e?.response || e);
+        } // only runs if in development
+        alert("Logout failed. Please try again.");
+        navigate("/", { state: { toast: "Logout failed. Please try again." } });
+      }
   }
 
   function handleProfile() {
@@ -257,7 +309,7 @@ function Navigation() {
                   <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/users"); }}>
                     <Typography textAlign="center">Users</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>
+                  <MenuItem onClick={() => { handleCloseUserMenu(); openLogout(); }}>
                     <Typography textAlign="center">Logout</Typography>
                   </MenuItem>
                 </>
@@ -282,7 +334,36 @@ function Navigation() {
           </Box>
         </Toolbar>
       </Container>
+
+      <Dialog
+        open={openLogoutDialog}
+        onClose={closeLogout}
+        aria-labelledby="logout-dialog-title"
+        aria-describedby="logout-dialog-description"
+      >
+        <DialogTitle id="logout-dialog-title">Confirm Logout</DialogTitle>
+        <DialogContent>
+          <Typography id="logout-dialog-description">
+            Are you sure you want to log out?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeLogout}>Cancel</Button>
+          <Button
+            onClick={() => {
+              handleLogout();
+              closeLogout();
+            }}
+            color="error"
+            autoFocus
+          >
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </AppBar>
+
+    
   );
 }
 

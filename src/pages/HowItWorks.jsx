@@ -69,7 +69,7 @@ function HowItWorks() {
                             component="img"
                             src={profileIconUrl}
                             alt="Profile icon"
-                            sx={{ width: 60, height: 60 }}
+                            sx={{ width: 50, height: 50 }}
                         /> 
                     </Box>
                 </Box>
@@ -113,7 +113,7 @@ function HowItWorks() {
                             component="img"
                             src={mapIconUrl}
                             alt="map icon"
-                            sx={{ width: 60, height: 60 }}
+                            sx={{ width: 50, height: 50 }}
                         />
                     </Box>
                 </Box>
@@ -152,7 +152,7 @@ function HowItWorks() {
                             component="img"
                             src={magnifyingIconUrl}
                             alt="magnifying glass icon"
-                            sx={{ width: 60, height: 60 }}
+                            sx={{ width: 50, height: 50 }}
                         /> 
                     </Box>
                 </Box>
@@ -191,7 +191,7 @@ function HowItWorks() {
                             component="img"
                             src={recordIconUrl}
                             alt="record icon"
-                            sx={{ width: 60, height: 60 }}
+                            sx={{ width: 50, height: 50 }}
                         /> 
                     </Box>
                 </Box>
@@ -230,7 +230,7 @@ function HowItWorks() {
                             component="img"
                             src={completedRecordIconUrl}
                             alt="completed record icon"
-                            sx={{ width: 60, height: 60 }}
+                            sx={{ width: 50, height: 50 }}
                         />
                     </Box>
                 </Box>    

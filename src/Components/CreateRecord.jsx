@@ -145,27 +145,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
         setSnackbarOpen(false);
     };
 
-
-    // useEffect(() => {
-    //     if (
-    //       GlobalState.markerPosition &&
-    //       typeof GlobalState.markerPosition.latitudeValue !== "undefined" &&
-    //       typeof GlobalState.markerPosition.longitudeValue !== "undefined"
-    //     ) {
-    //       dispatch({
-    //         type: "catchLatitudeChange",
-    //         latitudeChosen: GlobalState.markerPosition.latitudeValue
-    //       });
-    //       dispatch({
-    //         type: "catchLongitudeChange",
-    //         longitudeChosen: GlobalState.markerPosition.longitudeValue
-    //       });
-    //     }
-    //   }, [
-    //     GlobalState.markerPosition.latitudeValue,
-    //     GlobalState.markerPosition.longitudeValue
-    //   ]);
-
     const initialstate = {
         titleValue: "",
         prnValue: "",
