@@ -1,12 +1,13 @@
 import * as React from 'react';
-import Modal from '@mui/joy/Modal';
-import ModalClose from '@mui/joy/ModalClose';
-import ModalDialog from '@mui/joy/ModalDialog';
-import DialogTitle from '@mui/joy/DialogTitle';
-import List from '@mui/joy/List';
-import ListItem from '@mui/joy/ListItem';
-import Typography from '@mui/joy/Typography';
-import Box from '@mui/joy/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 // Components
 import FeatureMap from '../Components/FeatureMap'; 
@@ -19,25 +20,35 @@ export default function RecordDetail({ open, onClose, record }) {
   const getImageUrl = (url) =>
     url?.startsWith("http") ? url : `${BASE_URL}${url}`;
 
-  console.log("Picture1:", record.picture1);
+   const hasPhotos = Boolean(
+        record.picture1 || record.picture2 || record.picture3 || record.picture4 || record.picture5
+    );
+
   return (
     
-    <Modal open={open} onClose={onClose}>
-      <ModalDialog layout="center" sx={{ width: "90%", maxWidth: 800, height: "90vh" }}>
-        <ModalClose onClick={onClose} />
-        
-        <DialogTitle>{record.title}</DialogTitle>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <DialogTitle sx={{ pr: 6 }}>
+        {record.title}
+          <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{ position: 'absolute', right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers sx={{ maxHeight: '80vh' }}>
 
         <List
           sx={{
-            maxHeight: "60vh",
-            overflowY: "auto",
-            mx: 'calc(-1 * var(--ModalDialog-padding))',
-            px: 'var(--ModalDialog-padding)',
+            maxHeight: '50vh',
+            overflowY: 'auto',
+            mx: 0,
+            px: 0,
           }}
         >
           <ListItem>
-            <Typography level="body-md">
+            <Typography level="body1">
               <strong>Description:</strong> {record.description}
             </Typography>
           </ListItem>
@@ -66,19 +77,21 @@ export default function RecordDetail({ open, onClose, record }) {
           {/* Pictures */}
           {(record.picture1 || record.picture2 || record.picture3 || record.picture4 || record.picture5) && (
             <ListItem>
-              <Box sx={{ display: "flex", flexWrap: "nowrap", gap: 2 }}>
+              <Box 
+                sx={{ 
+                  display: "flex", 
+                  flexWrap: 'nowrap', 
+                  gap: 2 
+                }}>
                 {record.picture1 && (
                   <a href={getImageUrl(record.picture1)} target="_blank" rel="noopener noreferrer">
-                    <img src={getImageUrl(record.picture1)}
+                    <img
+                      src={getImageUrl(record.picture1)}
                       alt="Feature"
-                      style={{
-                        width: "120px",
-                        height: "90px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        objectFit: "cover",
-                        display: "block"
-                      }}
+                      style={{ 
+                        width: '120px', 
+                        height: '90px', borderRadius: 8, 
+                        cursor: 'pointer', objectFit: 'cover', display: 'block' }}
                     />
                   </a>
                 )}
@@ -151,11 +164,12 @@ export default function RecordDetail({ open, onClose, record }) {
           )}
         </List>
 
-        <ListItem>
-          <FeatureMap coordinates={record.polygonCoordinate} />
-        </ListItem>
         
-      </ModalDialog>
-    </Modal>
+        <Box sx={{ mt: 2 }}>
+          <FeatureMap coordinates={record.polygonCoordinate} />
+        </Box>
+      </DialogContent>
+    </Dialog>
+        
   );
 }

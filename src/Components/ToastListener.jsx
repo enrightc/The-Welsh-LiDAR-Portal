@@ -3,6 +3,22 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MySnackbar from "./MySnackbar";
 
+// useEffect & useState from react
+// These are react hooks, Hooks are special functions that let you add features to your components.
+// 1) useState - lets components remember values between re-renders. 
+// 2) useEffect - Lets components run side effects (things that happen outside of rendering, like fetching data, logging or timers)
+
+// useNavigate & useLocation
+// These are React Router Hooks. They give info and control over navigation.
+// 1) useLocation - Tells you the current "location" in React Router.
+// 2) useNavigate - Gives you a function (navigate) that lets you move to a different page in code.
+
+// In simple terms:
+	// useState → remember something.
+	// useEffect → do something when the component renders/changes.
+	// useLocation → see where you are and read data passed along.
+	// useNavigate → go somewhere new in code.
+
 function ToastListener() {
   const location = useLocation();
   const navigate = useNavigate();

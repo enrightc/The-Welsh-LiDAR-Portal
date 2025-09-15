@@ -1,43 +1,30 @@
-// Import Routes and Route from React Router to handle page navigation
+// React and related hooks
+import { useEffect } from "react";
+
+// Third-party libraries
 import { Routes, Route } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
-import React, { useEffect, useState } from "react";
 
+// App components
 import Navigation from "./Components/Navigation";
 import ToastListener from "./Components/ToastListener";
 
-
-// useEffect & useState from react
-// These are react hooks, Hooks are special functions that let you add features to your components.
-// 1) useState - lets components remember values between re-renders. 
-// 2) useEffect - Lets components run side effects (things that happen outside of rendering, like fetching data, logging or timers)
-
-// useNavigate & useLocation
-// These are React Router Hooks. They give info and control over navigation.
-// 1) useLocation - Tells you the current "location" in React Router.
-// 2) useNavigate - Gives you a function (navigate) that lets you move to a different page in code.
-
-// In simple terms:
-	// useState → remember something.
-	// useEffect → do something when the component renders/changes.
-	// useLocation → see where you are and read data passed along.
-	// useNavigate → go somewhere new in code.
-
-// Import the pages that will be displayed
-import Home from "./pages/Home";
+// App pages
 import About from "./pages/About";
-import LidarPortal from "./pages/LidarPortal";
-import Register from "./pages/Register"; 
-import Login from "./pages/Login"; 
-import Profile from "./pages/Profile";
-import Users from "./pages/Users";
-import ProfileDetail from "./pages/ProfileDetail";
+import Home from "./pages/Home";
 import HowItWorks from "./pages/HowItWorks";
+import LidarPortal from "./pages/LidarPortal";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import ProfileDetail from "./pages/ProfileDetail";
+import Register from "./pages/Register";
+import Users from "./pages/Users";
 
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
 import StateContext from "./Contexts/StateContext";
 
+// Styles
 import './App.css';
 
 // the main App component

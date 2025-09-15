@@ -15,6 +15,7 @@ import StateContext from '../Contexts/StateContext';
 
 function Login() {
     const navigate = useNavigate()
+    const [errorMessage, setErrorMessage] = useState("");  // new state for error message
 
     // Get the value of VITE_BACKEND_URL from the environment variables available at build time.
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -100,12 +101,15 @@ function Login() {
             tokenValue: response.data.auth_token
         }); // Dispatch an action to update the global token in the context
        // navigate("/"); // Redirect to the home page after successful registration
+
+       setErrorMessage("");  // clear any previous errors
         
+      // Error messages
       } catch (error) {
-        if (error.response) {
-          console.log("Server responded with:", error.response.status, error.response.data);
+        if (error.response && error.response.status === 400) { // bad request (wrong username or password)
+          setErrorMessage("Invalid username or password");
         } else {
-          console.log("Error:", error.message);
+          setErrorMessage("Something went wrong. Please try again.");
         }
       }
     }
@@ -220,6 +224,13 @@ function Login() {
           </Grid>
           
           <Grid>
+            {errorMessage && (
+            <Grid>
+              <Typography color="error" align="center">
+                {errorMessage}
+              </Typography>
+            </Grid>
+          )}
             <Button variant="contained" xs={8}
                 style={{
                     marginLeft: 'auto',

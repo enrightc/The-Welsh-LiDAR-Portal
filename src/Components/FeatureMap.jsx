@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-loading';
 
+ import CustomLayerControl from "./CustomLayerControl";
+
 function FitPolygon({ coordinates }) { // Function to draw the polygon on the map and zoom the map to fit the extent of the polygon
   const map = useMap(); // gives access to map after its loaded
 
@@ -15,7 +17,8 @@ function FitPolygon({ coordinates }) { // Function to draw the polygon on the ma
   return <Polygon positions={coordinates} />; // draws the polygon on the map
 }
 
-function FeatureMap({ coordinates }) { // Main map component
+// This is the function to display the "mini amp view" in the user profiles and record details.
+function FeatureMap({ coordinates }) { 
   
   return (
     <MapContainer
@@ -23,10 +26,9 @@ function FeatureMap({ coordinates }) { // Main map component
         scrollWheelZoom={true}
         style={{ height: '450px', width: '100%' }}
     >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <CustomLayerControl/>
       <FitPolygon coordinates={coordinates} /> 
+      
     </MapContainer>
   );
 }

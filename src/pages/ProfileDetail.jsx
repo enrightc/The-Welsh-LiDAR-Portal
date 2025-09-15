@@ -209,6 +209,17 @@ function ProfileDetail() {
         GetProfileInfo();
     }, []);
 
+        // if at least one of these values is truthy (nut " " or null), hasSocialLinks becomes true
+        // if none of them exist, hasSocialLinks is false
+    const hasSocialLinks = Boolean(
+        state.userProfile.website ||
+        state.userProfile.facebook ||
+        state.userProfile.twitter ||
+        state.userProfile.linkedin ||
+        state.userProfile.bluesky
+    );
+
+
     if (state.dataIsLoading === true) {
       return (
         <Grid
@@ -279,7 +290,7 @@ function ProfileDetail() {
                 {/* Bio */}
                 
                 <Typography  
-                    variant="h4" sx={{ fontWeight: "bold", color: "green" }}>
+                    variant="h2" sx={{ fontWeight: "bold", color: "green" }}>
                     @{state.userProfile.user_username}
                 </Typography>
                     
@@ -287,6 +298,7 @@ function ProfileDetail() {
                     sx={{
                         display: "flex",
                         flexDirection: { xs: "column", sm: "row" },
+                        gap: {xs: 2},
                         mt: 2,
                         alignItems: { xs: "flex-start", sm: "center" },
                         justifyContent: "space-between",
@@ -339,8 +351,20 @@ function ProfileDetail() {
                 flexDirection: { xs: "column", sm: "row" },
             }}
         >
-            <Box sx={{mt: 2, display: "flex", justifyContent: "center", gap: 10, }}>
-                <Typography variant="body1" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+            <Box 
+                sx={{
+                    mt: 2, 
+                    display: "flex",
+                    flexDirection: {xs: "column", sm: "row"},
+                    justifyContent: "center", 
+                    textAlign: "center",
+                    gap: {xs: 2, sm: 10 }
+                }}>
+                <Typography variant="body1" 
+                sx={{ 
+                    display: "flex", 
+                    flexDirection: "column", alignItems: "center", 
+                    gap: 1 }}>
                     <SearchIcon fontSize="large" />
                     Records Submitted: {" "}  
                     {state.userProfile.record_count}
@@ -367,10 +391,17 @@ function ProfileDetail() {
                 backgroundColor: "white",
             }}
         >
-            <Box sx={{mt: 2, display: "flex", justifyContent: "center", gap: 6}}>
-                {/* users website */}
-                {state.userProfile.website && (
-                    <Typography
+            <Box sx={{
+                mt: 2, 
+                display: "flex", 
+                justifyContent: "center", 
+                gap: 6
+            }}>
+                {hasSocialLinks ? (
+                  <>
+                    {/* Website */}
+                    {state.userProfile.website && (
+                      <Typography
                         variant="body1"
                         sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}
                     >
@@ -455,8 +486,14 @@ function ProfileDetail() {
                         >
                             <img src={blueskyLogo} alt="Bluesky Logo" style={{ width: "32px", height: "32px" }} />
                         </a>
-                    </Typography>
-                )} 
+                        </Typography>
+                    )}
+                  </>
+                ) : (
+                  <Typography variant="body2">
+                    This user hasn’t added any social links yet.
+                  </Typography>
+                )}
             </Box>             
         </Box>
 
