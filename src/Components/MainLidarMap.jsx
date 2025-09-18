@@ -37,10 +37,12 @@ export default function MainLidarMap({
 }) {
 
     const [selectedPeriod, setSelectedPeriod] = React.useState('');
-    
+
+    const [selectedSiteType, setSelectedSiteType] = React.useState('');
+
     const [showCommunity, setShowCommunity] = React.useState(true); // start ON
 
-    const PERIODS = [
+    const periods = [
         "Prehistoric",
         "Neolithic",
         "Bronze Age",
@@ -50,6 +52,20 @@ export default function MainLidarMap({
         "Medieval",
         "Post-Medieval",
         "Modern",
+    ];
+
+    const siteTypes = [
+        "Bank",
+        "Ditch",
+        "Enclosure",
+        "Field System",
+        "Industrial",
+        "Mound",
+        "Pit",
+        "Settlement",
+        "Trackway",
+        "Other",
+        "Unknown",
     ];
 
     // Fallback to prevent map crash if allRecords isn't ready
@@ -73,9 +89,12 @@ export default function MainLidarMap({
             />
 
             <FilterPanelComponent 
-                periodOptions={PERIODS}
+                periodOptions={periods}
                 period={selectedPeriod}
-                onChangePeriod={setSelectedPeriod} 
+                onChangePeriod={setSelectedPeriod}
+                siteTypeOptions={siteTypes}
+                siteType={selectedSiteType}
+                onChangeSiteType={setSelectedSiteType}
             />
 
             <FeatureGroup ref={featureGroupRef}>
