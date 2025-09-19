@@ -23,16 +23,13 @@ const Home = () => {
         <div className="container">
           <div className="hero-content">
             <div className="hero__text">
-              <h1 className="hero__title">Discover the Past, <span className="accent">Shape the Record</span></h1>
+              <p className="eyebrow-text">The Welsh LiDAR Portal</p>
+              <h1 className="hero__title">Discover the <span className="accent">Past, </span>Shape<span className="accent"> the Record</span></h1>
               <p className="hero__tagline">Search, explore and contribute to the map of Wales’ archaeological heritage.</p>
               <div className="hero__btns">
-                <a href="#" className="btn btn--primary">Start Exploring</a>
+                <a href="/lidarPortal" className="btn btn--primary">Start Exploring</a>
               </div> 
-            </div>
-            {/* This stays hidden on mobile; only shows on desktop */}
-            <div className="hero__image">
-              <img src={mapScreen} alt="LiDAR landscape showing terrain"/>
-            </div>
+            </div>         
           </div>
           
         </div>
@@ -53,8 +50,6 @@ const Home = () => {
           </div>
         </section>
 
-        
-
         <section className="explore-heritage" aria-labelledby="explore-heritage-title">
           <div className="container content content">
             <div className="explore-heritage__text">
@@ -74,7 +69,8 @@ const Home = () => {
             <ul className="cards content">
               <li>
                 <article className="card explore">
-                  <img className="card-icon" src={mapMarkerIcon} alt="" aria-hidden="true"/>
+                  <img className="card-icon" src={mapMarkerIcon} alt="" aria-hidden="true"
+                  />
                   <h3>Explore the map</h3>
                   <p>View the LiDAR map of Wales and find hidden archaeological sites.</p>
                 </article>
@@ -95,6 +91,7 @@ const Home = () => {
               </li> 
             </ul>
           </div>
+          <a href="/howItWorks" className="btn btn--secondary how-it-works-link">Read More</a>
         </section>
 
         <section className="what-is-lidar" aria-labelledby="what-is-lidar-title">

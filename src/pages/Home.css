@@ -5,13 +5,15 @@
 :root {
   --bg: #1A2D3A;
   --second-bg: #F8F9F6;
-  --accent: yellow;
+  --accent: #5AC6CD;
   --text-light: #ffffff;
   --text-dark: #1A2D3A;
   --primary: #5AC6CD;
   --muted: #C8C8D0;
-  --card: white;;
+  --card: white;
   --border:#4F4D5F;
+   --section-slate: #EEF3F4;   /* background for bands */
+  --section-line:  #D9E6E8;   /* thin separators */
 }
 
 /* Base Reset */
@@ -43,12 +45,12 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-  font-size: 3rem;   /* 48x */
+  font-size: 5.5rem;
   line-height: 1.2;
 }
 
 h2 {
-  font-size: 1.5rem; /* 24px */
+  font-size: 2rem; /* 24px */
   line-height: 1.3;
 }
 
@@ -76,42 +78,100 @@ p {
   color: var(--accent); 
 }
 
-/* Buttons */
+/* ------Buttons------ */
+
+/* CSS from https://getcssscan.com/css-buttons-examples button 71 */
 .btn {
-  text-decoration: none;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-  display: flex;
-  justify-content: center;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 12px 24px;
-  border-radius: 25px;
   border: 0;
+  margin-top: 2rem;
+  border-radius: 56px;
   cursor: pointer;
-  transition: background-color .2s ease, transform .8s ease;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 600;
+  outline: 0;
+  padding: 12px 17px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
-.btn:focus-visible {
-  outline: 2px solid #fff;
+.btn:before {
+  background-image: linear-gradient(#fff 0, rgba(255, 255, 255, 0) 100%);
+  border-radius: 125px;
+  content: "";
+  height: 50%;
+  left: 4%;
+  opacity: .5;
+  position: absolute;
+  top: 0;
+  transition: all .3s;
+  width: 92%;
+}
+
+.btn:hover {
+  box-shadow: rgba(255, 255, 255, .2) 0 3px 15px inset, rgba(0, 0, 0, .1) 0 3px 5px, rgba(0, 0, 0, .1) 0 10px 13px;
+  transform: scale(1.05);
+}
+
+@media (min-width: 768px) {
+  .btn-71 {
+    padding: 16px 48px;
+  }
+}
+
+:root{
+  --btn-bg: #0E8890;
+  --btn-text: #ffffff;
+  --btn-hover: #0B6E74;
+  --btn-ring: #7FE3E8;
+
+  --btn-ghost-text: white;
+  --btn-ghost-border: white;
+  --btn-ghost-hover-bg: #0E8890;
+}
+
+/* Ghost / outline for dark backgrounds */
+.btn--primary{
+  background: #0B6E74;
+  color: var(--btn-ghost-text);
+  border: 4px solid var(--btn-ghost-border);
+}
+
+.btn--primary:hover{ 
+  background: var(--btn-ghost-hover-bg); }
+
+.btn--primary:before {
+  background-image: linear-gradient(#c9c8c8 0, rgba(255, 255, 255, 0) 100%);
+}
+
+/* Solid - for light backgrounds */
+.btn--secondary{
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 0;
+}
+.btn--secondary:hover
+{ background: var(--btn-hover); }
+
+.btn--secondary:focus-visible,
+.btn--secondary:focus-visible{
+  outline: 3px solid var(--btn-ring);
   outline-offset: 2px;
 }
 
-.btn--primary {
-  width: 200px;
-  background-color: var(--primary); 
-  color: #000;
-  margin: 0 auto;
-}
-
-/* Hero */
+/* ------Hero------ */
 .hero {
   background: url('../Components/Assets/heroMedia.webp') no-repeat  center/cover;
   padding: 40px 20px;
   position: relative;
 }
 
-.hero::before {
+.hero:before {
   content: "";
   position: absolute;
   top: 0;
@@ -136,33 +196,53 @@ p {
   gap: 2em;
 }
 
+.eyebrow-text {
+  z-index: 1;
+  color: var(--muted);
+  border: 2px solid var(--muted);
+  text-align: center;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 4px;
+}
+
 .hero__title {
   text-align: center;
   z-index: 1;
 }
 
 .hero__tagline {
-  font-weight: 700;
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--muted);
   text-align: center;
   z-index: 1;
 }
 
 .hero__btns {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
   margin-bottom: 2em;
-  align-items: center;
   z-index: 1;
+  margin: 0 auto;
 }
 
 
-/* About */
+/* ------About------ */
 .about {
   text-align: center;
   padding: 4rem 0;
   color: var(--text-dark);
-  background-color: var(--second-bg)
+  background-color: var(--section-slate);
+  position: relative;
+}
+
+/* Optional 1px separators */
+.about::before {
+  content:"";
+  position:absolute; inset:0 auto auto 0;
+  height:1px; width:100%;
+  background: var(--section-line);
+  top:0;
 }
 
 .about-text__title {
@@ -173,14 +253,28 @@ p {
   margin-bottom: 2rem;
 }
 
-
 .about-image img {
   border-radius: 10px;
 }
 
-/* How it works */
+/* ------Explore Heritage------ */
+.explore-heritage {
+  padding: 4rem 0;
+  text-align: center;
+  color: var(--text-dark);
+}
+
+.explore-heritage__title {
+  margin-bottom: 2rem;
+}
+
+.explore-heritage img {
+  border-radius: 10px;
+}
+
+/* ------How it works------ */
 .how-it-works {
-  background-color: var(--second-bg);;
+  background-color: var(--section-slate);
   padding: 4rem 0;
   text-align: center;
 }
@@ -214,22 +308,8 @@ p {
   height: 50px;
 }
 
-/* Explore Heritage */
-.explore-heritage {
-  padding: 4rem 0;
-  text-align: center;
-  color: var(--text-dark);
-}
 
-.explore-heritage__title {
-  margin-bottom: 2rem;
-}
-
-.explore-heritage img {
-  border-radius: 10px;
-}
-
-/* What is LiDAR */
+/* ------What is LiDAR------ */
 .what-is-lidar {
   padding: 4rem 0;
   text-align: center;
@@ -239,8 +319,12 @@ p {
   margin-bottom: 2rem;
 }
 
+.lidar-info {
+  margin-bottom: 2rem;
+}
 
-/* Contribute */
+
+/* ------Contribute------ */
 .contribute {
   background-color: var(--bg);
   color: var(--text-light);
@@ -256,11 +340,10 @@ p {
 }
 
 
-
+/* ------Media Queries------ */
 @media (min-width: 900px) {
   .hero-content{
     display: flex;
-    gap: 3rem;
   }
   .hero__image {
     display: block; 
@@ -269,6 +352,7 @@ p {
   }
   .hero__title, .hero__tagline {
     text-align: left;
+    max-width: 65%;
   }
   .hero__text {
     display: flex;
@@ -277,17 +361,20 @@ p {
     margin-bottom: 2em;
     align-items: flex-start;
   }
+  .hero__btns {
+    margin: 0;
+  }
 }
 
 @media (min-width: 700px) {
   .content{
     display: flex;
-    gap: 3rem;
+    gap: 10rem;
     align-items: center;
   }
   .reverse-content {
     flex-direction: row-reverse;
-    gap: 3rem;
+    gap: 10rem;
   }
   .about-text, .about-image {
     flex: 1;
@@ -302,6 +389,9 @@ p {
   }
   li {
     flex: 1;
+  }
+  .cards {
+    gap: 3rem;
   }
   .explore-heritage__text, .explore-heritage__img {
     flex: 1;

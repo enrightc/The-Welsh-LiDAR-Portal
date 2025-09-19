@@ -8,6 +8,8 @@ import { useImmerReducer } from "use-immer";
 // App components
 import Navigation from "./Components/Navigation";
 import ToastListener from "./Components/ToastListener";
+import Box from "@mui/material/Box";
+import Typography from '@mui/material/Typography';
 
 // App pages
 import About from "./pages/About";
@@ -95,6 +97,14 @@ useEffect(() => {
     <>
       <StateContext.Provider value={state}>
         <DispatchContext.Provider value={dispatch}>
+          <Box sx={{
+            backgroundColor: "green",
+          }}>
+            <Typography sx={{
+              mx: 2,
+              textAlign: "center"
+            }}>Beta v1.0 — Work in progress. Expect updates and tweaks as we improve the Welsh LiDAR Portal.</Typography>
+          </Box>
           <Navigation /> {/* Navbar appears on all pages */}
           <main className="page-content">
             <Routes>
