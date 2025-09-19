@@ -334,7 +334,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
 
                 } catch(e){
                     console.log(e.response)
-                    navigate(".", { state: { toast: "There was a problem creating your record. Please try again." } });
                 }
             }
             AddRecord()

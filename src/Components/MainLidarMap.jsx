@@ -22,7 +22,6 @@ import 'leaflet-loading'; // Leaflet plugin: shows a small spinner (top-left) wh
 import { EditControl } from "react-leaflet-draw"
 
 import CustomLayerControl from "./CustomLayerControl";
-import FilterPanelComponent from "./FilterPanelComponent";
 import '../assets/styles/map.css';
 
 export default function MainLidarMap({
@@ -35,48 +34,17 @@ export default function MainLidarMap({
     setSelectedFeature,
     setModalOpen,
 }) {
-
-    const [selectedPeriod, setSelectedPeriod] = React.useState('');
-
-    const [selectedSiteType, setSelectedSiteType] = React.useState('');
-
-    const [showCommunity, setShowCommunity] = React.useState(true); // start ON
-
-    const periods = [
-        "Prehistoric",
-        "Neolithic",
-        "Bronze Age",
-        "Iron Age",
-        "Roman",
-        "Early Medieval",
-        "Medieval",
-        "Post-Medieval",
-        "Modern",
-    ];
-
-    const siteTypes = [
-        "Bank",
-        "Ditch",
-        "Enclosure",
-        "Field System",
-        "Industrial",
-        "Mound",
-        "Pit",
-        "Settlement",
-        "Trackway",
-        "Other",
-        "Unknown",
-    ];
-
     // Fallback to prevent map crash if allRecords isn't ready
     if (!Array.isArray(allRecords)) return null;
+
+    const [showCommunity, setShowCommunity] = React.useState(true); // start ON
 
     return (
 
         <MapContainer
             center={[
-                52.1307, 
-                -3.7837
+            52.1307, 
+            -3.7837
             ]} 
             zoom={8.5} 
             scrollWheelZoom={true} 
@@ -86,15 +54,6 @@ export default function MainLidarMap({
             <CustomLayerControl
                 showCommunity={showCommunity}
                 setShowCommunity={setShowCommunity}
-            />
-
-            <FilterPanelComponent 
-                periodOptions={periods}
-                period={selectedPeriod}
-                onChangePeriod={setSelectedPeriod}
-                siteTypeOptions={siteTypes}
-                siteType={selectedSiteType}
-                onChangeSiteType={setSelectedSiteType}
             />
 
             <FeatureGroup ref={featureGroupRef}>
