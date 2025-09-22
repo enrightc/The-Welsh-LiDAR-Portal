@@ -21,6 +21,8 @@ import Profile from "./pages/Profile";
 import ProfileDetail from "./pages/ProfileDetail";
 import Register from "./pages/Register";
 import Users from "./pages/Users";
+import Account from "./pages/Account";
+import Dashboard from "./pages/Dashboard";
 
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
@@ -117,6 +119,10 @@ useEffect(() => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/user/:username" element={<ProfileDetail />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                
+                
             </Routes>
             <ToastListener />
           </main>

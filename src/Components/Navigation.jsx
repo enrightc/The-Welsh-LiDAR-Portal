@@ -300,10 +300,10 @@ function Navigation() {
                   <MenuItem onClick={handleProfile}>
                     <Typography textAlign="center">Profile</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/account"); }}>
                     <Typography textAlign="center">Account</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/dashboard"); }}>
                     <Typography textAlign="center">Dashboard</Typography>
                   </MenuItem>
                   <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/users"); }}>
