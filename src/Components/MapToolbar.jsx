@@ -28,7 +28,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
             zIndex: 1000,
-            bottom: 20,
+            bottom: 40,
             left: { xs: 20, sm: '50%' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
             bgcolor: 'rgba(255, 255, 255, 0.6)',
