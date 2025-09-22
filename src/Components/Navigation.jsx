@@ -24,6 +24,9 @@ import DialogActions from '@mui/material/DialogActions';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 
+import logo from "./Assets/mainLogoWhite.png"; 
+
+
 // Contexts
 import StateContext from "../Contexts/StateContext"; // Import the StateContext for accessing global state
 import DispatchContext from "../Contexts/DispatchContext";
@@ -149,24 +152,25 @@ function Navigation() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Desktop Logo */}
-          <Typography
-            variant="h6"
-            noWrap
+          <Box
             component={Link}
             to="/"
+            aria-label="Go to homepage"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
+              alignItems: "center",
               textDecoration: "none",
               paddingRight: "65px",
             }}
           >
-            The Welsh LiDAR Portal
-          </Typography>
+            <Box
+              component="img"
+              src={logo}
+              alt="The Welsh LiDAR Portal logo"
+              sx={{ height: 50, width: "auto", display: "block" }}
+            />
+          </Box>
 
           {/* Mobile Menu Button */}
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -196,23 +200,24 @@ function Navigation() {
           </Box>
 
           {/* Mobile Logo */}
-          <Typography
-            variant="h5"
-            noWrap
+          <Box
             component={Link}
             to="/"
+            aria-label="Go to homepage"
             sx={{
               flexGrow: 1,
               display: { xs: "flex", md: "none" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
+              alignItens: "center",
               textDecoration: "none",
             }}
           >
-            LiDAR Portal
-          </Typography>
+            <Box
+              component="img"
+              src={logo}
+              alt="The Welsh LiDAR Portal logo"
+              sx={{ height: 50, width: "auto", display: "block" }}
+            />
+          </Box>
 
           {/* Desktop Navigation */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>

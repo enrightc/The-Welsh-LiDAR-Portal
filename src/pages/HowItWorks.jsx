@@ -74,7 +74,7 @@ function HowItWorks() {
                     </Box>
                 </Box>
 
-                <Box sx={{ bgcolor: "#EEF3F4" }}>
+                <Box sx={{ bgcolor: "#F8F9F6" }}>
                     <Box
                         sx={{
                             borderBottom: '2px solid black',
