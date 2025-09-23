@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 
 // Third-party libraries
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
 
 // App components
@@ -23,6 +23,7 @@ import Register from "./pages/Register";
 import Users from "./pages/Users";
 import Account from "./pages/Account";
 import Dashboard from "./pages/Dashboard";
+import WhatIsLidar from "./pages/WhatIsLidar";
 
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
@@ -121,6 +122,9 @@ useEffect(() => {
                 <Route path="/user/:username" element={<ProfileDetail />} />
                 <Route path="/account" element={<Account />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/what-is-lidar" element={<WhatIsLidar />} />
+                <Route path="/whatIsLidar" element={<Navigate to="/what-is-lidar" replace />} />
+                
                 
                 
             </Routes>

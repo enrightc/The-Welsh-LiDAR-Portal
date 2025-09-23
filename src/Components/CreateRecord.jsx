@@ -16,6 +16,17 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import FormHelperText from '@mui/material/FormHelperText';
+
+// Icons
+import InfoIcon from '@mui/icons-material/Info';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 // Contexts
 import StateContext from '../Contexts/StateContext';
@@ -396,7 +407,17 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                         } 
                         error={Boolean(errors.title)}
                         helperText={errors.title}
-                        /> 
+                        />
+                        <InputAdornment position="start">
+                            <Tooltip title={<Typography sx={{
+                                fontSize: '1rem' }}>
+                            Give your record a clear, engaging title. Instead of “Round Barrow”, try “Round Barrow near Greenwood Forest” so others can find and recognise it easily.</Typography>}
+                            >
+                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <InfoIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </InputAdornment>     
                     </Grid>
                         
                     {/* PRN */} 
@@ -413,7 +434,17 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             prnChosen: e.target.value 
                             })
                         } 
-                        /> 
+                        />
+                        <InputAdornment position="start">
+                            <Tooltip title={<Typography sx={{
+                                fontSize: '1rem' }}>
+                            A PRN is a site’s unique ID in the Historic Environment Record (HER). If your site already has one, add it here..</Typography>}
+                            >
+                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <InfoIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </InputAdornment>
                     </Grid>
                     
                     {/* Description */}
@@ -434,33 +465,52 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                         } 
                         error={Boolean(errors.description)}
                         helperText={errors.description}
-                        /> 
+                        />
+                        <InputAdornment position="start">
+                            <Tooltip title={<Typography sx={{
+                                fontSize: '1rem' }}>
+                            Describe the site’s character, shape, and form. Include dimensions if you can, and compare with similar sites to add context.</Typography>}
+                            >
+                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <InfoIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </InputAdornment> 
                     </Grid>
 
                     {/* site type */}
                     <Grid>
                         <TextField 
-                            style={errors.site ? {  borderRadius: '5px', padding: 4 } : {}}
-                            id="site" 
-                            fullWidth 
-                            label="Site Type *" 
+                            style={errors.site ? { borderRadius: '5px', padding: 4 } : {}}
+                            id="site"
+                            fullWidth
+                            label="Site Type *"
                             variant="outlined"
                             value={state.siteValue}
-                            onChange = {(e) => {
-                                dispatch({ type: "catchSiteChange", siteChosen: e.target.value });
-                                dispatch({ type: "catchMonumentChange", monumentChosen: "" }); // Reset monument type
-                                }} 
+                            onChange={(e) => {
+                            dispatch({ type: 'catchSiteChange', siteChosen: e.target.value });
+                            dispatch({ type: 'catchMonumentChange', monumentChosen: '' });
+                            }}
                             select
                             error={Boolean(errors.site)}
                             helperText={errors.site}
                         >
-                            {siteOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
+                        {siteOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
                                 {option.label}
-                                </MenuItem>
+                            </MenuItem>
                             ))}
-                            
                         </TextField>
+                        <InputAdornment position="start">
+                            <Tooltip title={<Typography sx={{
+                                    fontSize: '1rem' }}>
+                                Choose the broad category of the feature (e.g., ditch, mound, enclosure). This helps narrow the monument options.</Typography>}
+                                >
+                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                    <InfoIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </InputAdornment>
                     </Grid>
 
                     {/* monument type */}
@@ -504,6 +554,16 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 </MenuItem>
                             ))}
                         </TextField>
+                        <InputAdornment position="start">
+                            <Tooltip title={<Typography sx={{
+                                    fontSize: '1rem' }}>
+                                Choose the specific monument type that best fits the site.</Typography>}
+                                >
+                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                    <InfoIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </InputAdornment>
                     </Grid>
 
                     {/* period */}
@@ -528,6 +588,28 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 </MenuItem>
                             ))}
                         </TextField>
+                        <InputAdornment position="start">
+                          <Tooltip
+                            title={
+                              <Typography component="div" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
+                                <div>Select the period that best matches the site. Choose ‘Unknown’ if you’re unsure.</div>
+                                <ul style={{ margin: 0, paddingLeft: '1rem' }}>
+                                  <li>Prehistoric (to AD 43)</li>
+                                  <li>Roman (AD 43–c.410)</li>
+                                  <li>Early Medieval (c.410–1086)</li>
+                                  <li>Medieval (1086–1536)</li>
+                                  <li>Post-Medieval (1536–1750)</li>
+                                  <li>Industrial (1750–1899)</li>
+                                  <li>Modern (1900+)</li>
+                                </ul>
+                              </Typography>
+                            }
+                          >
+                            <IconButton aria-label="About the period field" edge="end" size="small" tabIndex={-1}>
+                              <InfoIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
                     </Grid>
 
                    {/* Photo upload */}

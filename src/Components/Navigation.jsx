@@ -161,15 +161,18 @@ function Navigation() {
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               textDecoration: "none",
-              paddingRight: "65px",
+              paddingRight: 5,
+              paddingLeft: 20,
             }}
           >
-            <Box
-              component="img"
-              src={logo}
-              alt="The Welsh LiDAR Portal logo"
-              sx={{ height: 50, width: "auto", display: "block" }}
-            />
+            <Tooltip title="The Welsh LiDAR Portal - Home">
+              <Box
+                component="img"
+                src={logo}
+                alt="The Welsh LiDAR Portal logo"
+                sx={{ height: 50, width: "auto", display: "block" }}
+              />
+            </Tooltip>
           </Box>
 
           {/* Mobile Menu Button */}
@@ -234,7 +237,10 @@ function Navigation() {
           </Box>
 
           {/* User Profile Menu */}
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0,
+          mr: { xs: 0, sm: 0, md: 2, lg: 20 },
+            
+           }}>
             <Tooltip title="Open settings">
               {GlobalState.userIsLoggedIn ?
                 <Button 
@@ -247,6 +253,7 @@ function Navigation() {
                     border: '1px solid transparent', // invisible border for layout stability
                     '&:hover': {
                     backgroundColor: 'rgba(255,255,255,0.08)', // light overlay
+                    
                     },
                   }}
                 >
@@ -254,7 +261,8 @@ function Navigation() {
                     display: "flex", 
                     flexDirection: "row",
                     gap: 0.5,
-                    alignItems: "flex-start" }}>
+                    alignItems: "flex-start",
+                    }}>
                     <Typography sx={{ fontWeight: 500 }}>
                       {GlobalState.userUsername}
                     </Typography>
