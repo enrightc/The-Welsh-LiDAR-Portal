@@ -82,7 +82,7 @@ export const monumentOptions = {
     ],
 };
 
-const periodOptions = [
+export const periodOptions = [
     { value: 'neolithic', label: 'Neolithic' },
     { value: 'bronze_age', label: 'Bronze Age' },
     { value: 'iron_age', label: 'Iron Age' },
