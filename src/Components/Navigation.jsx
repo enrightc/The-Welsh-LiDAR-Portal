@@ -165,13 +165,13 @@ function Navigation() {
               paddingLeft: 20,
             }}
           >
-            <Tooltip title="The Welsh LiDAR Portal - Home">
-              <Box
-                component="img"
-                src={logo}
-                alt="The Welsh LiDAR Portal logo"
-                sx={{ height: 50, width: "auto", display: "block" }}
-              />
+            <Tooltip
+              title="The Welsh LiDAR Portal - Home"
+              slotProps={{
+                tooltip: { sx: { fontSize: '1rem', lineHeight: 1.3 } }
+              }}
+            >
+              <Box component="img" src={logo} alt="The Welsh LiDAR Portal logo" sx={{ height: 50, width: "auto", display: "block" }} />
             </Tooltip>
           </Box>
 

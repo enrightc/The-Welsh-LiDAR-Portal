@@ -48,7 +48,7 @@ export default function RecordDetail({ open, onClose, record }) {
           }}
         >
           <ListItem>
-            <Typography level="body1">
+            <Typography>
               <strong>Description:</strong> {record.description}
             </Typography>
           </ListItem>
