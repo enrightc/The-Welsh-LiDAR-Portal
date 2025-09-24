@@ -6,7 +6,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-import { Tooltip, IconButton, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack } from "@mui/material";
+import { Tooltip, IconButton, Typography, Stack } from "@mui/material";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 function FilterPanelComponent({ periodOptions= [], period, onChangePeriod, siteTypeOptions= [], siteType, onChangeSiteType }) {
@@ -109,11 +109,6 @@ function FilterPanelComponent({ periodOptions= [], period, onChangePeriod, siteT
         </Box>
       )}
     </Box>
-
-
-
-    
-    
   );
 }
 
