@@ -26,6 +26,7 @@ import StateContext from '../Contexts/StateContext';
 
 // Components
 import ToastListener from './ToastListener.jsx';
+import SiteMonumentHelpModal from './SiteMonumentHelpModal';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -122,16 +123,13 @@ const periodOptions = [
     { value: 'unknown', label: 'Unknown' },
   ];
 
-// const confidenceOptions = [
-// { value: 'certain', label: 'Certain' },
-// { value: 'probable', label: 'Probable' },
-// { value: 'possible', label: 'Possible' },
-// ];
-
 export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) {
-    const [open, setOpen] = React.useState(false);
+    // Modal state (controls the Site/Monument help dialog)
+    // helpOpen - true/false flag (whether modal is visible)
+    // setHelpOpen - function to update helpOpen
+    const [helpOpen, setHelpOpen] = React.useState(false);
+
     const navigate = useNavigate()
-    const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
 
     const [errors, setErrors] = React.useState({});
 
@@ -708,6 +706,11 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
 
             <ToastListener />
 
+            {/* insert reusable dialog into the jsx */}
+            <SiteMonumentHelpModal 
+                open={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+            />
         </div> 
     </div>
     );
