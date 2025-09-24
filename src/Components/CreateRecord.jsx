@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
@@ -9,136 +9,35 @@ import {useImmerReducer} from "use-immer";
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
 // MUI imports
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import FormHelperText from '@mui/material/FormHelperText';
+import Link from '@mui/material/Link';
 
 // Icons
 import InfoIcon from '@mui/icons-material/Info';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 
-// Contexts
-import StateContext from '../Contexts/StateContext';
-
 // Components
 import ToastListener from './ToastListener.jsx';
+import SiteMonumentHelpModal from './SiteMonumentHelpModal';
+
+// Constants
+import { siteOptions, monumentOptions, periodOptions } from '../Constants/Options.js';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-const siteOptions = [
-    { value: '', label: '' },
-    { value: 'enclosure', label: 'Enclosure' },
-    { value: 'mound', label: 'Mound' },
-    { value: 'field_system', label: 'Field system' },
-    { value: 'settlement', label: 'Settlement' },
-    { value: 'trackway', label: 'Trackway' },
-    { value: 'industrial', label: 'Industrial' },
-    { value: 'pit', label: 'Pit' },
-    { value: 'bank', label: 'Bank' },
-    { value: 'ditch', label: 'Ditch' },
-    { value: 'other', label: 'Other' },
-    { value: 'unknown', label: 'Unknown' },
-  ];
-
-const monumentOptions = {
-enclosure: [
-    { value: 'banjo_enclosure', label: 'Banjo enclosure' },
-    { value: 'curvilinear_enclosure', label: 'Curvilinear enclosure' },
-    { value: 'defended_enclosure', label: 'Defended enclosure' },
-    { value: 'causewayed_enclosure', label: 'Causewayed enclosure' },
-    { value: 'rectilinear_enclosure', label: 'Rectilinear enclosure' },
-    { value: 'hillfort', label: 'Hillfort' },
-    { value: 'promontory_fort', label: 'Promontory fort' },
-],
-mound: [
-    { value: 'round_barrow', label: 'Round barrow' },
-    { value: 'cairn', label: 'Cairn' },
-    { value: 'platform_mound', label: 'Platform mound' },
-    { value: 'burial_mound', label: 'Burial mound' },
-],
-field_system: [
-    { value: 'field_system', label: 'Field system' },
-    { value: 'ridge_and_furrow', label: 'Ridge and furrow' },
-    { value: 'lynchet', label: 'Lynchet' },
-    { value: 'strip_field_system', label: 'Strip field system' },
-],
-settlement: [
-    { value: 'hillfort', label: 'Hillfort' },
-    { value: 'roman_villa', label: 'Roman villa' },
-    { value: 'farmstead', label: 'Farmstead' },
-    { value: 'hamlet', label: 'Hamlet' },
-    { value: 'deserted_medieval_village', label: 'Deserted medieval village' },
-],
-trackway: [
-    { value: 'hollow_way', label: 'Hollow way' },
-    { value: 'trackway', label: 'Trackway' },
-    { value: 'causeway', label: 'Causeway' },
-],
-industrial: [
-    { value: 'tramway', label: 'Tramway' },
-    { value: 'quarry', label: 'Quarry' },
-    { value: 'mine_shaft', label: 'Mine shaft' },
-    { value: 'leat', label: 'Leat' },
-    { value: 'mill', label: 'Mill' },
-],
-pit: [
-    { value: 'quarry_pit', label: 'Quarry pit' },
-    { value: 'extraction_pit', label: 'Extraction pit' },
-
-],
-bank: [
-    { value: 'boundary_bank', label: 'Boundary bank' },
-    { value: 'defensive_bank', label: 'Defensive bank' },
-    { value: 'field_boundary', label: 'Field boundary' },
-],
-ditch: [
-    { value: 'defensive_ditch', label: 'Defensive ditch' },
-    { value: 'drainage_ditch', label: 'Drainage ditch' },
-    { value: 'boundary_ditch', label: 'Boundary ditch' },
-],
-other: [
-    { value: 'earthwork', label: 'Earthwork' },
-    { value: 'cropmark', label: 'Cropmark' },
-    { value: 'structure', label: 'Structure (undefined)' },
-    { value: 'other', label: 'Other' },
-],
-unknown: [
-    { value: 'unknown', label: 'Unknown' },
-],
-};
-
-const periodOptions = [
-    { value: 'neolithic', label: 'Neolithic' },
-    { value: 'bronze_age', label: 'Bronze Age' },
-    { value: 'iron_age', label: 'Iron Age' },
-    { value: 'roman', label: 'Roman' },
-    { value: 'medieval', label: 'Medieval' },
-    { value: 'post_medieval', label: 'Post Medieval' },
-    { value: 'modern', label: 'Modern' },
-    { value: 'unknown', label: 'Unknown' },
-  ];
-
-// const confidenceOptions = [
-// { value: 'certain', label: 'Certain' },
-// { value: 'probable', label: 'Probable' },
-// { value: 'possible', label: 'Possible' },
-// ];
-
 export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) {
-    const [open, setOpen] = React.useState(false);
+    // Modal state (controls the Site/Monument help dialog)
+    // helpOpen - true/false flag (whether modal is visible)
+    // setHelpOpen - function to update helpOpen
+    const [helpOpen, setHelpOpen] = React.useState(false);
+
     const navigate = useNavigate()
-    const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
 
     const [errors, setErrors] = React.useState({});
 
@@ -440,7 +339,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 fontSize: '1rem' }}>
                             A PRN is a site’s unique ID in the Historic Environment Record (HER). If your site already has one, add it here..</Typography>}
                             >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the PRN field" edge="end" size="small" tabIndex={-1}>
                                 <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -471,7 +370,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 fontSize: '1rem' }}>
                             Describe the site’s character, shape, and form. Include dimensions if you can, and compare with similar sites to add context.</Typography>}
                             >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the description field" edge="end" size="small" tabIndex={-1}>
                                 <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -502,11 +401,29 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             ))}
                         </TextField>
                         <InputAdornment position="start">
-                            <Tooltip title={<Typography sx={{
+                            <Tooltip 
+                                disableInteractive={false} // keeps pointer events active inside the tooltip so the link is clickable.
+                                 slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }} // give the user time to move from icon → tooltip
+                                title=
+                                {<Typography sx={{
                                     fontSize: '1rem' }}>
-                                Choose the broad category of the feature (e.g., ditch, mound, enclosure). This helps narrow the monument options.</Typography>}
+                                    Choose the broad category of the feature (e.g., ditch, mound, enclosure). This helps narrow the monument options. {" "}
+                                    <Link
+                                        component="button" // makes link clickable without needing a href
+                                            underline="always"
+                                            sx={{ fontSize: 'inherit', color: 'blue' }}
+                                            onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation(); // don’t let the click bubble back to the icon
+                                            setHelpOpen(true);   //  open your modal
+                                            }}
+                                            aria-label="Open detailed help on site and monument types"
+                                    >
+                                        More help
+                                    </Link>
+                                </Typography>}
                                 >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the monument type field" edge="end" size="small" tabIndex={-1}>
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -555,11 +472,29 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             ))}
                         </TextField>
                         <InputAdornment position="start">
-                            <Tooltip title={<Typography sx={{
+                            <Tooltip 
+                                disableInteractive={false} // keeps pointer events active inside the tooltip so the link is clickable.
+                                 slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }} // give the user time to move from icon → tooltip
+                                title={
+                                <Typography sx={{
                                     fontSize: '1rem' }}>
-                                Choose the specific monument type that best fits the site.</Typography>}
+                                Choose the specific monument type that best fits the site. {" "}
+                                    <Link
+                                        component="button" // makes link clickable without needing a href
+                                            underline="always"
+                                            sx={{ fontSize: 'inherit', color: 'blue' }}
+                                            onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation(); // don’t let the click bubble back to the icon
+                                            setHelpOpen(true);   //  open your modal
+                                            }}
+                                            aria-label="Open detailed help on site and monument types"
+                                    >
+                                        More help
+                                    </Link>
+                                </Typography>}
                                 >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the monument type field" edge="end" size="small" tabIndex={-1}>
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -590,6 +525,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                         </TextField>
                         <InputAdornment position="start">
                           <Tooltip
+                          
                             title={
                               <Typography component="div" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
                                 <div>Select the period that best matches the site. Choose ‘Unknown’ if you’re unsure.</div>
@@ -715,6 +651,11 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
 
             <ToastListener />
 
+            {/* insert reusable dialog into the jsx */}
+            <SiteMonumentHelpModal 
+                open={helpOpen} 
+                onClose={() => setHelpOpen(false)} 
+            />
         </div> 
     </div>
     );
