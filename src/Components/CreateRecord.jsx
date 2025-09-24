@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
@@ -15,14 +15,12 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
+import Link from '@mui/material/Link';
 
 // Icons
 import InfoIcon from '@mui/icons-material/Info';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
-
-// Contexts
-import StateContext from '../Contexts/StateContext';
 
 // Components
 import ToastListener from './ToastListener.jsx';
@@ -431,7 +429,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 fontSize: '1rem' }}>
                             A PRN is a site’s unique ID in the Historic Environment Record (HER). If your site already has one, add it here..</Typography>}
                             >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the PRN field" edge="end" size="small" tabIndex={-1}>
                                 <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -462,7 +460,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 fontSize: '1rem' }}>
                             Describe the site’s character, shape, and form. Include dimensions if you can, and compare with similar sites to add context.</Typography>}
                             >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the description field" edge="end" size="small" tabIndex={-1}>
                                 <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -493,11 +491,29 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             ))}
                         </TextField>
                         <InputAdornment position="start">
-                            <Tooltip title={<Typography sx={{
+                            <Tooltip 
+                                disableInteractive={false} // keeps pointer events active inside the tooltip so the link is clickable.
+                                 slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }} // give the user time to move from icon → tooltip
+                                title=
+                                {<Typography sx={{
                                     fontSize: '1rem' }}>
-                                Choose the broad category of the feature (e.g., ditch, mound, enclosure). This helps narrow the monument options.</Typography>}
+                                    Choose the broad category of the feature (e.g., ditch, mound, enclosure). This helps narrow the monument options. {" "}
+                                    <Link
+                                        component="button" // makes link clickable without needing a href
+                                            underline="always"
+                                            sx={{ fontSize: 'inherit', color: 'blue' }}
+                                            onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation(); // don’t let the click bubble back to the icon
+                                            setHelpOpen(true);   //  open your modal
+                                            }}
+                                            aria-label="Open detailed help on site and monument types"
+                                    >
+                                        More help
+                                    </Link>
+                                </Typography>}
                                 >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the monument type field" edge="end" size="small" tabIndex={-1}>
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -546,11 +562,29 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             ))}
                         </TextField>
                         <InputAdornment position="start">
-                            <Tooltip title={<Typography sx={{
+                            <Tooltip 
+                                disableInteractive={false} // keeps pointer events active inside the tooltip so the link is clickable.
+                                 slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }} // give the user time to move from icon → tooltip
+                                title={
+                                <Typography sx={{
                                     fontSize: '1rem' }}>
-                                Choose the specific monument type that best fits the site.</Typography>}
+                                Choose the specific monument type that best fits the site. {" "}
+                                    <Link
+                                        component="button" // makes link clickable without needing a href
+                                            underline="always"
+                                            sx={{ fontSize: 'inherit', color: 'blue' }}
+                                            onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation(); // don’t let the click bubble back to the icon
+                                            setHelpOpen(true);   //  open your modal
+                                            }}
+                                            aria-label="Open detailed help on site and monument types"
+                                    >
+                                        More help
+                                    </Link>
+                                </Typography>}
                                 >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                                <IconButton aria-label="About the monument type field" edge="end" size="small" tabIndex={-1}>
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -581,6 +615,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                         </TextField>
                         <InputAdornment position="start">
                           <Tooltip
+                          
                             title={
                               <Typography component="div" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
                                 <div>Select the period that best matches the site. Choose ‘Unknown’ if you’re unsure.</div>
