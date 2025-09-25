@@ -591,12 +591,20 @@ function Profile() {
                     type="file"
                     accept="image/png, image/gif, image/jpeg"
                     hidden
-                    onChange={e =>
+                    onChange={e => {
+                      const newFiles = Array.from(e.target.files);
+                      const maxSizeMB = 2;
+                      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+                      const tooLarge = newFiles.some(file => file.size > maxSizeBytes);
+                        if (tooLarge) {
+                          alert(`Each file must be under ${maxSizeMB}MB.`);
+                          return;
+                        }
                       dispatch({
                         type: "catchUploadedPictureChange",
                         uploadedPictureChosen: e.target.files,
                       })
-                    }
+                    }}
                   />
                 </Button>
               </Grid>

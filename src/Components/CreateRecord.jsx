@@ -574,6 +574,13 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                                 hidden  
                                 onChange={(e) => {
                                     const newFiles = Array.from(e.target.files);
+                                    const maxSizeMB = 2;
+                                    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+                                    const tooLarge = newFiles.some(file => file.size > maxSizeBytes);
+                                    if (tooLarge) {
+                                      alert(`Each file must be under ${maxSizeMB}MB.`);
+                                      return;
+                                    }
                                     const updatedFiles = [...state.uploadedPictures, ...newFiles].slice(0, 5); // Limit to 5
                                     dispatch({
                                         type: 'catchUploadedPictures',
