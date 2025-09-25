@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { useEffect } from 'react';
+import { useEffect, useContext, useState } from 'react';
 
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
@@ -16,11 +16,18 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import Link from '@mui/material/Link';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 // Icons
 import InfoIcon from '@mui/icons-material/Info';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+
+// Contexts
+import StateContext from '../Contexts/StateContext';
 
 // Components
 import ToastListener from './ToastListener.jsx';
@@ -37,7 +44,13 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
     // setHelpOpen - function to update helpOpen
     const [helpOpen, setHelpOpen] = React.useState(false);
 
+    // State for database full dialog
+    const [dbFullDialogOpen, setDbFullDialogOpen] = useState(false);
+
+
     const navigate = useNavigate()
+
+    const GlobalState = useContext(StateContext) // Get global state, specfically for lat/lng of marker
 
     const [errors, setErrors] = React.useState({});
 
@@ -179,48 +192,48 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
     
         // If no errors, submit as normal
         dispatch({type: 'changeSendRequest'})
-        handleSnackbarOpen();
+        
     }
 
-    useEffect(()=>{
-        if (state.sendRequest){
-            async function AddRecord(){
+    useEffect(() => {
+        if (state.sendRequest) {
+            async function AddRecord() {
                 console.log([
                     state.titleValue, state.descriptionValue, state.prnValue,
                     state.siteValue, state.monumentValue, state.periodValue,
                     // state.latitudeValue, state.longitudeValue, state.picture1Value,
                     state.picture2Value, state.picture3Value, state.picture4Value, state.picture5Value,
                     GlobalState.userId
-                  ]);
+                ]);
                 const formData = new FormData();
-                    formData.append(
-                        "title", state.titleValue);
-                    formData.append(
-                        "description", state.descriptionValue);
-                    formData.append(
-                        "PRN", state.prnValue);
-                    formData.append(
-                        "site_type", state.siteValue);
-                    formData.append(
-                        "monument_type", state.monumentValue);
-                    formData.append(
-                        "period", state.periodValue);
-                    // formData.append(
-                    //     "latitude", state.latitudeValue);
-                    // formData.append(
-                    //     "longitude", state.longitudeValue);
-                    formData.append(
-                        "picture1", state.picture1Value);
-                    formData.append(
-                        "picture2", state.picture2Value);
-                    formData.append(
-                        "picture3", state.picture3Value);
-                    formData.append(
-                        "picture4", state.picture4Value);
-                    formData.append(
-                        "picture5", state.picture5Value);
-                    
-                    formData.append("polygonCoordinate", JSON.stringify(GlobalState.polygonValue));  
+                formData.append(
+                    "title", state.titleValue);
+                formData.append(
+                    "description", state.descriptionValue);
+                formData.append(
+                    "PRN", state.prnValue);
+                formData.append(
+                    "site_type", state.siteValue);
+                formData.append(
+                    "monument_type", state.monumentValue);
+                formData.append(
+                    "period", state.periodValue);
+                // formData.append(
+                //     "latitude", state.latitudeValue);
+                // formData.append(
+                //     "longitude", state.longitudeValue);
+                formData.append(
+                    "picture1", state.picture1Value);
+                formData.append(
+                    "picture2", state.picture2Value);
+                formData.append(
+                    "picture3", state.picture3Value);
+                formData.append(
+                    "picture4", state.picture4Value);
+                formData.append(
+                    "picture5", state.picture5Value);
+                
+                formData.append("polygonCoordinate", JSON.stringify(GlobalState.polygonValue));  
                 try {
                     const response = await Axios.post(
                         `${BASE_URL}/api/records/create/`,
@@ -239,15 +252,31 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                     fetchRecords(); // Fetch the updated records after adding a new one
                     // if onSuccess provided tell sidebar to close.
                     if (typeof onSuccess === "function") {
-                      onSuccess();
+                        onSuccess();
                     }
 
-                } catch(e){
-                    console.log(e.response)
-                    navigate(".", { state: { toast: "There was a problem creating your record. Please try again." } });
+                } catch (e) {
+                    if (
+                        e.response &&
+                        e.response.data &&
+                        e.response.data.detail &&
+                        e.response.data.detail.includes("database is currently full")
+                    ) {
+                        setDbFullDialogOpen(true); // Open the custom dialog instead of using alert
+                        return; // Stop here — don't show the fallback toast
+                    }
+
+                    // 👇 Fallback for any other kind of error
+                    console.log(e.response);
+                    navigate(".", {
+                        state: {
+                            toast: "There was a problem creating your record. Please try again.",
+                        },
+                    });
                 }
             }
-            AddRecord()
+
+            AddRecord();
         }
     }, [state.sendRequest]); // watch for changes in state.sendRequest
 
@@ -663,6 +692,22 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                 open={helpOpen} 
                 onClose={() => setHelpOpen(false)} 
             />
+
+            {/* Custom Database Full Dialog */}
+            <Dialog open={dbFullDialogOpen} onClose={() => setDbFullDialogOpen(false)}>
+                <DialogTitle>Database Full</DialogTitle>
+                <DialogContent>
+                  <Typography sx={{ fontSize: '1rem', color: 'black' }}>
+                    Oops, it looks like the database is currently full. We can’t save your record right now.
+                    Please bear with us — we're working on it.
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setDbFullDialogOpen(false)} sx={{ color: 'black' }}>
+                    Close
+                  </Button>
+                </DialogActions>
+            </Dialog>
         </div> 
     </div>
     );
