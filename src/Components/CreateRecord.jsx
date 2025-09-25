@@ -175,7 +175,14 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
     
         let newErrors = {};
     
+        // state.titleValue.trim() checks if user has typed something
+        // .trim() removes trailing whitespaces
+        // isNaN(state.prnValue) checks if it is not a number
+        // newErrors.title adds an error message specfically to that field. it is a temporary object. Later it is passed to the form state (setErrors(newErrors);)
         if (!state.titleValue.trim()) newErrors.title = "Title is required";
+        if (state.prnValue.trim() && isNaN(state.prnValue)) {
+        newErrors.prn = "PRN must be a number";
+        }
         if (!state.descriptionValue.trim()) newErrors.description = "Description is required";
         if (!state.siteValue) newErrors.site = "Site type is required";
         if (!state.monumentValue) newErrors.monument = "Monument type is required";
@@ -361,7 +368,9 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             type: "catchPrnChange", 
                             prnChosen: e.target.value 
                             })
-                        } 
+                        }
+                        error={Boolean(errors.prn)}
+                        helperText={errors.prn}
                         />
                         <InputAdornment position="start">
                             <Tooltip title={<Typography sx={{
