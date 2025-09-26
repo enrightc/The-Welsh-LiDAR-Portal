@@ -2,7 +2,9 @@ import React from 'react' // Import React library
 
 
 // Importing CSS for styling
-import './Home.css';
+import '../assets/styles/Home.css';
+import LidarFooter from "../Components/LidarFooter";
+import SignUpCTA from "../Components/SignUpCTA";
 
 // Image Imports
 import mapScreen from '../Components/Assets/mapScreen.webp';
@@ -109,21 +111,10 @@ const Home = () => {
             </div>
           </div>
         </section>
-
-        <section className="contribute" aria-labelledby="contribute-title">
-          <div className="container content reverse-content">
-            <div className="contribute__text">
-              <h2 class="contribute_title" id="contribute-title">Help improve the map</h2>
-              <p>Sign up to contribute! You can help identify and classify archaeological sites, add information, and make Wales' heritage accessible to all.</p>
-              <a href="/Register" className="btn btn--primary">Sign Up</a>
-            </div>
-            <div className="contribute__img">
-              <img src={walesHighlightMap} alt="Wales map highlighted with discoveries" loading="lazy"/>
-            </div>
-          </div>
-        </section>
-
       </main> 
+
+      <SignUpCTA />
+      <LidarFooter />
       
     </>
   )

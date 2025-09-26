@@ -12,6 +12,9 @@ import recordIconUrl from '../assets/icons/recordIcon.svg';
 import mapIconUrl from '../assets/icons/mapIcon.svg';
 import completedRecordIconUrl from '../assets/icons/completedRecordIcon.svg';
 
+import LidarFooter from "../Components/LidarFooter";
+import SignUpCTA from "../Components/SignUpCTA";
+
 function HowItWorks() {
   return (
     <div>
@@ -237,6 +240,8 @@ function HowItWorks() {
             </Container>
         </main>
 
+        <SignUpCTA />
+        <LidarFooter />
 
     </div>
   )

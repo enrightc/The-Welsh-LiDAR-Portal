@@ -22,6 +22,14 @@ const theme = createTheme({
       fontFamily: '"Outfit", sans-serif',
       fontSize: "1.125rem", // 18px
     },
+    body1: {
+    fontSize: "1.125rem",   // default is 1rem (16px)
+    lineHeight: 1.6,
+  },
+  body2: {
+    fontSize: "0.95rem",  // default is 0.875rem (14px)
+    lineHeight: 1.5,
+  },
   },
   palette: {
     text: {

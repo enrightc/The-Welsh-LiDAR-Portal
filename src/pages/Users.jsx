@@ -23,6 +23,8 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 
+import LidarFooter from "../Components/LidarFooter";
+
 function Users() {
   function Profile() {
     const navigate = useNavigate();
@@ -79,12 +81,13 @@ function Users() {
     }
 
     return (
-      <Grid container justifyContent="center"
+      <>
+        <Grid container justifyContent="center"
       spacing={4} 
       style={{
         padding: "4rem"
       }} 
-    >
+      >
           {state.profilesList.map((profile) => {
             return (
                 <Grid 
@@ -138,8 +141,11 @@ function Users() {
                 
             );
         })}
-        
-      </Grid>
+        </Grid>
+
+      <LidarFooter />
+      </>
+      
     );
   }
 

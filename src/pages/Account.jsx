@@ -1,8 +1,11 @@
 import React from 'react'
 import { Box, Typography, List, ListItem, ListItemText } from '@mui/material'
 
+import LidarFooter from "../Components/LidarFooter";
+
 function Account() {
   return (
+    <>
     <Box sx={{ p: 4, textAlign: 'center' }}>
       <Typography variant="h4" gutterBottom>
         Account Page – Under Construction
@@ -17,7 +20,13 @@ function Account() {
         <ListItem><ListItemText primary="Delete your account" /></ListItem>
       </List>
     </Box>
+    
+    <LidarFooter />
+
+    </>
+    
   )
 }
+
 
 export default Account;

@@ -25,6 +25,8 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 
+import LidarFooter from "../Components/LidarFooter";
+
 function Profile() {
     const navigate = useNavigate()
     const GlobalState = useContext(StateContext)
@@ -642,6 +644,9 @@ function Profile() {
           />
         </Box>
       </Grid>
+
+      <LidarFooter />
+
     </>
   );
 }

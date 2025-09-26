@@ -7,6 +7,10 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 
+import LidarFooter from "../Components/LidarFooter";
+import SignUpCTA from "../Components/SignUpCTA";
+
+
 const About = () => {
   return (
     <>
@@ -24,7 +28,7 @@ const About = () => {
       <main>
         <Container 
           maxWidth="md">
-          <Box className="">
+          <Box>
             <Typography
             sx={{
                 mt: 8,
@@ -166,10 +170,7 @@ const About = () => {
                   </ListItem>
               </List>
             </Box>
-
           </Box>
-
-          
 
           <Box className="">
             <Typography variant="h1" component="h2" color="text.primary"
@@ -184,6 +185,7 @@ const About = () => {
             <List
               sx={{
                 mt: 4,
+                mb: 4,
               }}>
                 <ListItem>
                   <ListItemText
@@ -226,15 +228,12 @@ const About = () => {
                 />
               </ListItem>
             </List> 
-          </Box>
-          
-
-          
-
-          
+          </Box> 
         </Container>
-
       </main>
+
+      <SignUpCTA />
+      <LidarFooter />
       
     </>
         
