@@ -38,6 +38,7 @@ const pages = [
   { name: "About", path: "/about" },
   { name: "How It Works", path: "/HowItWorks" },
   { name: "Lidar Portal", path: "/LidarPortal" },
+  { name: "Feedback", path: "/feedback" },
 ];
 
 
@@ -158,7 +159,7 @@ function Navigation() {
             aria-label="Go to homepage"
             sx={{
               mr: 2,
-              display: { xs: "none", md: "flex" },
+              display: { xs: "none", lg: "flex" },
               alignItems: "center",
               textDecoration: "none",
               paddingRight: 5,
@@ -176,7 +177,7 @@ function Navigation() {
           </Box>
 
           {/* Mobile Menu Button */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", lg: "none" } }}>
             <IconButton size="large" onClick={handleOpenNavMenu} color="inherit">
               <MenuIcon />
             </IconButton>
@@ -209,7 +210,7 @@ function Navigation() {
             aria-label="Go to homepage"
             sx={{
               flexGrow: 1,
-              display: { xs: "flex", md: "none" },
+              display: { xs: "flex", lg: "none" },
               alignItens: "center",
               textDecoration: "none",
             }}
@@ -223,7 +224,7 @@ function Navigation() {
           </Box>
 
           {/* Desktop Navigation */}
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", lg: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page.name} // ✅ Fixed key

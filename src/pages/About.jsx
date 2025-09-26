@@ -27,7 +27,7 @@ const About = () => {
 
       <main>
         <Container 
-          maxWidth="md">
+          maxWidth="lg">
           <Box>
             <Typography
             sx={{
@@ -140,6 +140,31 @@ const About = () => {
                     primary="Track Your Journey"
                     secondary="Keep a personal record of everything you’ve found — and return to it anytime."/>
                   </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Create Customised Profiles"
+                    secondary="Personalise your profile with a bio, profile picture, and track your discoveries in your own style."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Zoom and Switch Views"
+                    secondary="Navigate the LiDAR map by zooming, panning, and switching between different map backgrounds."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Sign Up and Log In"
+                    secondary="Create an account to start recording and saving your own discoveries."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="View Other People’s Records"
+                    secondary="See what others have found and explore a growing community dataset."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Give Feedback"
+                    secondary="Send ideas, bug reports, or suggestions to help improve the portal."/>
+                  </ListItem>
               </List>
             </Box>
 
@@ -167,6 +192,26 @@ const About = () => {
                   <ListItemText
                     primary="Additional mapping layers"
                     secondary="(LiDAR DTM, OS maps, Historic maps)."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Create Drafts"
+                    secondary="Save unfinished records as drafts and return to complete them later."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Export & Share"
+                    secondary="Download your discoveries as GeoJSON, shapefiles, or images to share with others."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Mobile Uploads"
+                    secondary="Take photos in the field and link them directly to your recorded finds."/>
+                  </ListItem>
+                  <ListItem>
+                  <ListItemText
+                    primary="Gamification / Badges"
+                    secondary="Earn badges for contributions, like “First Find” or “100 Records Added.”"/>
                   </ListItem>
               </List>
             </Box>

@@ -64,6 +64,7 @@ export default function LidarFooter() {
               <li><a href="/about">About</a></li>
               <li><a href="/howItWorks">How it works</a></li>
               <li><a href="/LidarPortal">Explore the map</a></li>
+              <li><a href="/feedback">Feedback</a></li>
             </ul>
           </nav>
 

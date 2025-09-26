@@ -24,6 +24,7 @@ import Users from "./pages/Users";
 import Account from "./pages/Account";
 import Dashboard from "./pages/Dashboard";
 import WhatIsLidar from "./pages/WhatIsLidar";
+import Feedback from "./Components/Feedback";
 
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
@@ -124,6 +125,7 @@ useEffect(() => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/what-is-lidar" element={<WhatIsLidar />} />
                 <Route path="/whatIsLidar" element={<Navigate to="/what-is-lidar" replace />} />
+                <Route path="/feedback" element={<Feedback />} />
                 
                 
                 

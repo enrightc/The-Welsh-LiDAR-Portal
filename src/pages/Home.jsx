@@ -1,10 +1,12 @@
 import React from 'react' // Import React library
 
 
-// Importing CSS for styling
+// Importing CSS for styling and components
 import '../assets/styles/Home.css';
 import LidarFooter from "../Components/LidarFooter";
 import SignUpCTA from "../Components/SignUpCTA";
+import BetaNoticeModal from "../Components/BetaNoticeModal";
+
 
 // Image Imports
 import mapScreen from '../Components/Assets/mapScreen.webp';
@@ -16,11 +18,15 @@ import mapMarkerIcon from '../Components/Assets/map_marker.svg';
 import addIcon from '../Components/Assets/add.svg';
 import speechIcon from '../Components/Assets/speech.svg';
 import lidarMapWales from '../Components/Assets/lidarMapWales.webp';
-import walesHighlightMap from '../Components/Assets/walesHighlightMap.webp';
 
 const Home = () => {
   return (
     <>
+    <BetaNoticeModal
+        storage="session"                 // once per tab/session
+        storageKey="wlidar_seen_beta_v1"  // bump to _v2 to re-show after updates
+      />
+
       <header className="hero">
         <div className="container">
           <div className="hero-content">
