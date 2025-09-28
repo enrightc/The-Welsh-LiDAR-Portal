@@ -16,7 +16,7 @@ export default function Sidebar({ open, onClose, resetPolygon, fetchRecords }) {
         background: "white",
         color: "#fff",
         height: "100vh",
-        paddingTop: 10,
+        paddingTop: 50,
         boxSizing: "border-box",
       }}
     >

@@ -21,14 +21,12 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
     const [openConfirm, setOpenConfirm] = React.useState(false);
 
     return (
-
-        
         <Box sx={{
             width: { xs: 2, sm: 'auto' },
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
             zIndex: 1000,
-            bottom: 40,
+            bottom: { xs: 80, sm: 50 },
             left: { xs: 20, sm: '50%' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
             bgcolor: 'rgba(255, 255, 255, 0.6)',
@@ -48,7 +46,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-label="Draw polygon"
                     color="black"
                     onClick={handleStartPolygon}
-                    disabled={!isLoggedIn || isMobileDevice}
+                    disabled={!isLoggedIn}
                 >
                     <EditIcon />
                 </IconButton>
@@ -59,7 +57,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
-                    disabled={!isLoggedIn || isMobileDevice}
+                    disabled={!isLoggedIn }
                 >
                     <DeleteIcon />
                 </IconButton>

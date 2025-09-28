@@ -20,6 +20,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 
 // Icons
 import InfoIcon from '@mui/icons-material/Info';
@@ -37,6 +39,7 @@ import SiteMonumentHelpModal from './SiteMonumentHelpModal';
 import { siteOptions, monumentOptions, periodOptions } from '../Constants/Options.js';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+const isTouchDevice = (typeof window !== 'undefined') && (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
 
 export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) {
     // Modal state (controls the Site/Monument help dialog)
@@ -289,435 +292,482 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
 
 
     return (
-    <div>
-        <div
-            style={{
-                width: '400px',
-                maxWidth: '800px',
-                margin: '1rem auto',
-                padding: '2rem', 
-                maxHeight: '80vh',         // Set a maximum height (e.g., 80% of viewport height)
-                overflowY: 'auto',         // Enable vertical scrolling when content overflows
-                background: '#fff',        // (optional) background for clarity
-                borderRadius: '8px',       // (optional) rounded corners
-                boxShadow: '0 2px 8px #0001', // (optional) subtle shadow  
-            }}
-        >
-            <form onSubmit={FormSubmit}>
-                <Grid container direction="column"
-                 spacing={3} >
-                
-                    {/* Heading */}
-                    <Grid>
-                        <Typography 
-                            variant="h4" 
-                            align="center"
-                            color="black"
-                        >
-                        Submit a new record
-                        </Typography>
-                    </Grid>
+    <Box sx={{ px: { xs: 1, md: 0 } }}>
+      <Box
+        sx={{
+          width: '100%',
+          mx: 'auto',
+          p: { xs: 1.25, md: 2 },
+          maxHeight: { xs: 'unset', md: '80vh' },
+          overflowY: { xs: 'visible', md: 'auto' },
+          bgcolor: 'transparent',
+          borderRadius: { xs: 1, md: 2 },
+          boxShadow: { xs: '0 1px 3px #0002', md: '0 2px 8px #0001' }
+        }}
+      >
+        <form onSubmit={FormSubmit} autoComplete="on">
+          <Grid container direction="column" spacing={2}>
+            {/* Heading */}
+            <Grid>
+              <Typography 
+                variant="h5" 
+                align="center"
+                color="black"
+                sx={{ fontWeight: 600, mb: 0.5 }}
+              >
+                Submit a new record
+              </Typography>
+              <Typography
+                variant="body2"
+                align="center"
+                color="text.secondary"
+                sx={{ display: { xs: 'block', md: 'none' } }}
+              >
+                Fields marked * are required
+              </Typography>
+            </Grid>
 
-                    {/* Title */}
-                    <Grid>
-                        <TextField style={errors.title ? {  borderRadius: '5px', padding: 4 } : {}}
-                        id="title" 
-                        fullWidth 
-                        label="Title *" 
-                        variant="outlined"
-                        value={state.titleValue}
+            {/* Title */}
+            <Grid>
+              <TextField
+                style={errors.title ? { borderRadius: '5px', padding: 4 } : {}}
+                id="title"
+                fullWidth
+                label="Title *"
+                variant="outlined"
+                size="small"
+                autoComplete="on"
+                value={state.titleValue}
+                onChange={(e) =>
+                  dispatch({
+                    type: "catchTitleChange",
+                    titleChosen: e.target.value
+                  })
+                }
+                error={Boolean(errors.title)}
+                helperText={errors.title}
+              />
+              {!isTouchDevice ? (
+                <InputAdornment position="start">
+                  <Tooltip title={<Typography sx={{ fontSize: '1rem' }}>
+                    Give your record a clear, engaging title. Instead of “Round Barrow”, try “Round Barrow near Greenwood Forest” so others can find and recognise it easily.
+                  </Typography>}>
+                    <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
+                      <InfoIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ) : (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                  Tip: Write a clear title, e.g. “Round Barrow near Greenwood Forest”.
+                </Typography>
+              )}
+            </Grid>
                         
-                        // When the user types in the input field, onChange function runs.
-                        // When the user types in the Username input:
-                        // 1. Grab the new value (e.target.value)
-                        // 2. Send it to the reducer using dispatch()
-                        // 3. The reducer updates 'usernameValue' in the state
-                        // This keeps the input in sync with the app state (a controlled input)
-                        onChange = {(e)=> 
-                            // When the user types in the Confirm Password input, do the following:
-                            dispatch({
-                            type: "catchTitleChange", // Action that tells the reducer what to update
-                            titleChosen: e.target.value // This is the new value from the input field
-                            })
-                        } 
-                        error={Boolean(errors.title)}
-                        helperText={errors.title}
-                        />
-                        <InputAdornment position="start">
-                            <Tooltip title={<Typography sx={{
-                                fontSize: '1rem' }}>
-                            Give your record a clear, engaging title. Instead of “Round Barrow”, try “Round Barrow near Greenwood Forest” so others can find and recognise it easily.</Typography>}
-                            >
-                                <IconButton aria-label="About the title field" edge="end" size="small" tabIndex={-1}>
-                                <InfoIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </InputAdornment>     
-                    </Grid>
-                        
-                    {/* PRN */} 
-                    <Grid>
-                        <TextField 
-                        id="PRN" 
-                        fullWidth 
-                        label="PRN (if known)" 
-                        variant="outlined"
-                        value={state.prnValue}
-                        onChange = {(e)=> 
-                            dispatch({
-                            type: "catchPrnChange", 
-                            prnChosen: e.target.value 
-                            })
-                        }
-                        error={Boolean(errors.prn)}
-                        helperText={errors.prn}
-                        />
-                        <InputAdornment position="start">
-                            <Tooltip title={<Typography sx={{
-                                fontSize: '1rem' }}>
-                            A PRN is a site’s unique ID in the Historic Environment Record (HER). If your site already has one, add it here..</Typography>}
-                            >
-                                <IconButton aria-label="About the PRN field" edge="end" size="small" tabIndex={-1}>
-                                <InfoIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </InputAdornment>
-                    </Grid>
+            {/* PRN */}
+            <Grid>
+              <TextField
+                id="PRN"
+                fullWidth
+                label="PRN (if known)"
+                variant="outlined"
+                size="small"
+                value={state.prnValue}
+                onChange={(e) =>
+                  dispatch({
+                    type: "catchPrnChange",
+                    prnChosen: e.target.value
+                  })
+                }
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                autoComplete="off"
+                error={Boolean(errors.prn)}
+                helperText={errors.prn}
+              />
+              {!isTouchDevice ? (
+                <InputAdornment position="start">
+                  <Tooltip title={<Typography sx={{ fontSize: '1rem' }}>
+                    A PRN is a site’s unique ID in the Historic Environment Record (HER). If your site already has one, add it here.
+                  </Typography>}>
+                    <IconButton aria-label="About the PRN field" edge="end" size="small" tabIndex={-1}>
+                      <InfoIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ) : (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                  Optional: PRN is the HER ID if known.
+                </Typography>
+              )}
+            </Grid>
                     
-                    {/* Description */}
-                    <Grid>
-                        <TextField style={errors.description ? {  borderRadius: '5px', padding: 4 } : {}}
-                        id="description" 
-                        fullWidth 
-                        label="Description *" 
-                        variant="outlined"
-                        multiline
-                        rows="3"
-                        value={state.descriptionValue}
-                        onChange = {(e)=>     
-                            dispatch({
-                            type: "catchDescriptionChange", 
-                            descriptionChosen: e.target.value 
-                            })
-                        } 
-                        error={Boolean(errors.description)}
-                        helperText={errors.description}
-                        />
-                        <InputAdornment position="start">
-                            <Tooltip title={<Typography sx={{
-                                fontSize: '1rem' }}>
-                            Describe the site’s character, shape, and form. Include dimensions if you can, and compare with similar sites to add context.</Typography>}
-                            >
-                                <IconButton aria-label="About the description field" edge="end" size="small" tabIndex={-1}>
-                                <InfoIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </InputAdornment> 
-                    </Grid>
+            {/* Description */}
+    <Grid>
+    <TextField
+        style={errors.description ? { borderRadius: '5px', padding: 4 } : {}}
+        id="description"
+        fullWidth
+        label="Description *"
+        variant="outlined"
+        multiline
+        size="small"
+        rows={4}
+        value={state.descriptionValue}
+        onChange={(e) =>
+        dispatch({
+            type: "catchDescriptionChange",
+            descriptionChosen: e.target.value
+        })
+        }
+        error={Boolean(errors.description)}
+        helperText={errors.description}
+    />
+    {!isTouchDevice ? (
+        <InputAdornment position="start">
+        <Tooltip title={<Typography sx={{ fontSize: '1rem' }}>
+            Describe the site’s character, shape, and form. Include dimensions if you can, and compare with similar sites to add context.
+        </Typography>}>
+            <IconButton aria-label="About the description field" edge="end" size="small" tabIndex={-1}>
+            <InfoIcon fontSize="small" />
+            </IconButton>
+        </Tooltip>
+        </InputAdornment>
+    ) : (
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+        Describe the site’s character, shape, form, and any measurements. Comparisons help too.
+        </Typography>
+    )}
+    </Grid>
 
-                    {/* site type */}
-                    <Grid>
-                        <TextField 
-                            style={errors.site ? { borderRadius: '5px', padding: 4 } : {}}
-                            id="site"
-                            fullWidth
-                            label="Site Type *"
-                            variant="outlined"
-                            value={state.siteValue}
-                            onChange={(e) => {
-                            dispatch({ type: 'catchSiteChange', siteChosen: e.target.value });
-                            dispatch({ type: 'catchMonumentChange', monumentChosen: '' });
-                            }}
-                            select
-                            error={Boolean(errors.site)}
-                            helperText={errors.site}
+            {/* site type */}
+            <Grid>
+              <TextField
+                style={errors.site ? { borderRadius: '5px', padding: 4 } : {}}
+                id="site"
+                fullWidth
+                label="Site Type *"
+                variant="outlined"
+                size="small"
+                value={state.siteValue}
+                onChange={(e) => {
+                  dispatch({ type: 'catchSiteChange', siteChosen: e.target.value });
+                  dispatch({ type: 'catchMonumentChange', monumentChosen: '' });
+                }}
+                select
+                error={Boolean(errors.site)}
+                helperText={errors.site}
+              >
+                {siteOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+              {!isTouchDevice ? (
+                <InputAdornment position="start">
+                  <Tooltip 
+                    disableInteractive={false}
+                    slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }}
+                    title={
+                      <Typography sx={{ fontSize: '1rem' }}>
+                        Choose the broad category of the feature (e.g., ditch, mound, enclosure). This helps narrow the monument options.{" "}
+                        <Link
+                          component="button"
+                          underline="always"
+                          sx={{ fontSize: 'inherit', color: 'blue' }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setHelpOpen(true);
+                          }}
+                          aria-label="Open detailed help on site and monument types"
                         >
-                        {siteOptions.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                            ))}
-                        </TextField>
-                        <InputAdornment position="start">
-                            <Tooltip 
-                                disableInteractive={false} // keeps pointer events active inside the tooltip so the link is clickable.
-                                 slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }} // give the user time to move from icon → tooltip
-                                title=
-                                {<Typography sx={{
-                                    fontSize: '1rem' }}>
-                                    Choose the broad category of the feature (e.g., ditch, mound, enclosure). This helps narrow the monument options. {" "}
-                                    <Link
-                                        component="button" // makes link clickable without needing a href
-                                            underline="always"
-                                            sx={{ fontSize: 'inherit', color: 'blue' }}
-                                            onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation(); // don’t let the click bubble back to the icon
-                                            setHelpOpen(true);   //  open your modal
-                                            }}
-                                            aria-label="Open detailed help on site and monument types"
-                                    >
-                                        More help
-                                    </Link>
-                                </Typography>}
-                                >
-                                <IconButton aria-label="About the monument type field" edge="end" size="small" tabIndex={-1}>
-                                    <InfoIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </InputAdornment>
-                    </Grid>
-
-                    {/* monument type */}
-                    <Grid>
-                        <TextField 
-                            style={errors.monument ? {  borderRadius: '5px', padding: 4 } : {}} 
-                            id="monument" 
-                            fullWidth 
-                            label="Monument Type *" 
-                            variant="outlined"
-                            value={state.monumentValue}
-                            onChange = {(e)=> 
-                                dispatch({
-                                type: "catchMonumentChange", monumentChosen: e.target.value,
-                            })
-                        } 
-                            select
-                            disabled={!state.siteValue} // <-- disables if site type is not selected
-                            error={Boolean(errors.monument)}
-                            helperText={
-                                !state.siteValue
-                                  ? "Please select a site type first"
-                                  : errors.monument // Will show the error if site type is selected but no monument is picked
-                              }
-                        >
-                            <MenuItem 
-                                value="">
-                                    Select a monument type
-                            </MenuItem>
-                            {/* This code generates the dropdown options for the "Monument Type" select field,
-                            based on what the user has chosen for "Site Type". */}
-                            {/* Look up the array of monument options for the selected site type.
-                            // If nothing is selected, use an empty array (so nothing breaks). */}
-                            {(monumentOptions[state.siteValue] || [])
-                                // For each monument option in that array, do the following:
-                            .map((option) => (
-                                // Create a MenuItem for the dropdown:
-                                <MenuItem 
-                                    key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <InputAdornment position="start">
-                            <Tooltip 
-                                disableInteractive={false} // keeps pointer events active inside the tooltip so the link is clickable.
-                                 slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }} // give the user time to move from icon → tooltip
-                                title={
-                                <Typography sx={{
-                                    fontSize: '1rem' }}>
-                                Choose the specific monument type that best fits the site. {" "}
-                                    <Link
-                                        component="button" // makes link clickable without needing a href
-                                            underline="always"
-                                            sx={{ fontSize: 'inherit', color: 'blue' }}
-                                            onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation(); // don’t let the click bubble back to the icon
-                                            setHelpOpen(true);   //  open your modal
-                                            }}
-                                            aria-label="Open detailed help on site and monument types"
-                                    >
-                                        More help
-                                    </Link>
-                                </Typography>}
-                                >
-                                <IconButton aria-label="About the monument type field" edge="end" size="small" tabIndex={-1}>
-                                    <InfoIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </InputAdornment>
-                    </Grid>
-
-                    {/* period */}
-                    <Grid>
-                        <TextField 
-                            style={errors.period ? {  borderRadius: '5px', padding: 4 } : {}}
-                            id="period" 
-                            fullWidth 
-                            label="Period *" 
-                            variant="outlined"
-                            value={state.periodValue}
-                            onChange = {(e)=> 
-                                dispatch({
-                                type: "catchPeriodChange", periodChosen: e.target.value})}
-                            select
-                            error={Boolean(errors.period)}
-                            helperText={errors.period}
-                        >
-                            {periodOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <InputAdornment position="start">
-                          <Tooltip
-                          
-                            title={
-                              <Typography component="div" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
-                                <div>Select the period that best matches the site. Choose ‘Unknown’ if you’re unsure.</div>
-                                <ul style={{ margin: 0, paddingLeft: '1rem' }}>
-                                  <li>Prehistoric (to AD 43)</li>
-                                  <li>Roman (AD 43–c.410)</li>
-                                  <li>Early Medieval (c.410–1086)</li>
-                                  <li>Medieval (1086–1536)</li>
-                                  <li>Post-Medieval (1536–1750)</li>
-                                  <li>Industrial (1750–1899)</li>
-                                  <li>Modern (1900+)</li>
-                                </ul>
-                              </Typography>
-                            }
-                          >
-                            <IconButton aria-label="About the period field" edge="end" size="small" tabIndex={-1}>
-                              <InfoIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                    </Grid>
-
-                   {/* Photo upload */}
-                    <Grid>
-                        <Button 
-                            variant="contained" 
-                            xs={6}
-                            component="label"
-                            style={{
-                                marginLeft: 'auto',
-                                marginRight: 'auto',
-                            }}
-                            sx= {{
-                                color: "black",
-                                border: "1px solid black",
-                                fontSize: { xs: '0.8rem', md: '0.8rem' },
-                                borderRadius: "5px",
-                                backgroundColor: "",
-                                }} 
-                        >
-                            Upload Pictures (Max. 5)
-                            <input
-                                type="file"
-                                multiple
-                                accept="image/png, image/gif, image/jpeg"
-                                hidden  
-                                onChange={(e) => {
-                                    const newFiles = Array.from(e.target.files);
-                                    const maxSizeMB = 2;
-                                    const maxSizeBytes = maxSizeMB * 1024 * 1024;
-                                    const tooLarge = newFiles.some(file => file.size > maxSizeBytes);
-                                    if (tooLarge) {
-                                      alert(`Each file must be under ${maxSizeMB}MB.`);
-                                      return;
-                                    }
-                                    const updatedFiles = [...state.uploadedPictures, ...newFiles].slice(0, 5); // Limit to 5
-                                    dispatch({
-                                        type: 'catchUploadedPictures',
-                                        picturesChosen: updatedFiles,
-                                    });
-                                }}
-                            />
-                        </Button>
-                    </Grid>
-
-                    {/* Picture uploaded feedback */}
-                    <Grid 
-                        container
-                        sx= {{
-                            color: "black",
-                        }}>
-                        <ul>
-                            {state.picture1Value ? <li>{state.picture1Value.name}</li> : ""}
-                            {state.picture2Value ? <li>{state.picture2Value.name}</li> : ""}
-                            {state.picture3Value ? <li>{state.picture3Value.name}</li> : ""}
-                            {state.picture4Value ? <li>{state.picture4Value.name}</li> : ""}
-                            {state.picture5Value ? <li>{state.picture5Value.name}</li> : ""}
-                        </ul>       
-                    </Grid>
-
-                    {/* Submit Button */}
-                    <Grid>
-                        {/* Display error message if polygon is not drawn */}
-                        {errors.polygon && (
-                        <Typography color="error" align="left" sx={{ marginBottom: 2 }}>
-                            {errors.polygon}
-                        </Typography>
-                    )}
-                    {/* Display error message if there are any errors */}
-                    {Object.keys(errors).length > 0 && (
-                        <Typography color="error" align="left" sx={{ marginBottom: 1 }}>
-                            Please make sure all required fields are complete
-                        </Typography>
-                    )}
-                        <Button 
-                        variant="contained" 
-                        xs={8}
-                        style={{
-                            marginLeft: 'auto',
-                            marginRight: 'auto',
-                        }}
-                        sx= {{
-                            color: "black",
-                            border: "none",
-                            fontSize: { xs: '0.8rem', md: '1rem' },
-                            borderRadius: "5px",
-                            backgroundColor: "#FFD034",
-                            }} 
-                        type="submit">Submit
-                        
-                        </Button>
-                    </Grid>
-
-                    {/* display capatured coords in the form */}  
-                    {/* <Grid container style={{ marginTop: "2rem" }}>
-                        <TextField
-                            id="polygon"
-                            label="Polygon Coordinates"
-                            variant="standard"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={JSON.stringify(GlobalState.polygonValue)}
-                            InputProps={{ readOnly: true }}
-                        />
-                    </Grid> */}
-
-                </Grid>
-            </form>
-
-            <ToastListener />
-
-            {/* insert reusable dialog into the jsx */}
-            <SiteMonumentHelpModal 
-                open={helpOpen} 
-                onClose={() => setHelpOpen(false)} 
-            />
-
-            {/* Custom Database Full Dialog */}
-            <Dialog open={dbFullDialogOpen} onClose={() => setDbFullDialogOpen(false)}>
-                <DialogTitle>Database Full</DialogTitle>
-                <DialogContent>
-                  <Typography sx={{ fontSize: '1rem', color: 'black' }}>
-                    Oops, it looks like the database is currently full. We can’t save your record right now.
-                    Please bear with us — we're working on it.
+                          More help
+                        </Link>
+                      </Typography>
+                    }
+                  >
+                    <IconButton aria-label="About the site type field" edge="end" size="small" tabIndex={-1}>
+                      <InfoIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ) : (
+                <Stack direction="row" spacing={1} sx={{ mt: 0.5 }} alignItems="center">
+                  <Typography variant="caption" color="text.secondary">
+                    Pick a broad category (e.g., ditch, mound).
                   </Typography>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setDbFullDialogOpen(false)} sx={{ color: 'black' }}>
-                    Close
-                  </Button>
-                </DialogActions>
-            </Dialog>
-        </div> 
-    </div>
+                  <Link
+                    component="button"
+                    underline="always"
+                    sx={{ fontSize: '0.75rem' }}
+                    onClick={(e) => { e.preventDefault(); setHelpOpen(true); }}
+                    aria-label="Open detailed help on site and monument types"
+                  >
+                    More help
+                  </Link>
+                </Stack>
+              )}
+            </Grid>
+
+            {/* monument type */}
+            <Grid>
+              <TextField
+                style={errors.monument ? { borderRadius: '5px', padding: 4 } : {}}
+                id="monument"
+                fullWidth
+                label="Monument Type *"
+                variant="outlined"
+                size="small"
+                value={state.monumentValue}
+                onChange={(e) =>
+                  dispatch({
+                    type: "catchMonumentChange", monumentChosen: e.target.value,
+                  })
+                }
+                select
+                disabled={!state.siteValue}
+                error={Boolean(errors.monument)}
+                helperText={
+                  !state.siteValue
+                    ? "Please select a site type first"
+                    : errors.monument
+                }
+              >
+                <MenuItem value="">
+                  Select a monument type
+                </MenuItem>
+                {(monumentOptions[state.siteValue] || []).map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+              {!isTouchDevice ? (
+                <InputAdornment position="start">
+                  <Tooltip 
+                    disableInteractive={false}
+                    slotProps={{ tooltip: { sx: { pointerEvents: 'auto' } } }}
+                    title={
+                      <Typography sx={{ fontSize: '1rem' }}>
+                        Choose the specific monument type that best fits the site.
+                        {" "}
+                        <Link
+                          component="button"
+                          underline="always"
+                          sx={{ fontSize: 'inherit', color: 'blue' }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setHelpOpen(true);
+                          }}
+                          aria-label="Open detailed help on site and monument types"
+                        >
+                          More help
+                        </Link>
+                      </Typography>
+                    }
+                  >
+                    <IconButton aria-label="About the monument type field" edge="end" size="small" tabIndex={-1}>
+                      <InfoIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ) : (
+                <Stack direction="row" spacing={1} sx={{ mt: 0.5 }} alignItems="center">
+                  <Typography variant="caption" color="text.secondary">
+                    Then choose the specific monument type.
+                  </Typography>
+                  <Link
+                    component="button"
+                    underline="always"
+                    sx={{ fontSize: '0.75rem' }}
+                    onClick={(e) => { e.preventDefault(); setHelpOpen(true); }}
+                    aria-label="Open detailed help on site and monument types"
+                  >
+                    More help
+                  </Link>
+                </Stack>
+              )}
+            </Grid>
+
+            {/* period */}
+            <Grid>
+              <TextField
+                style={errors.period ? { borderRadius: '5px', padding: 4 } : {}}
+                id="period"
+                fullWidth
+                label="Period *"
+                variant="outlined"
+                size="small"
+                value={state.periodValue}
+                onChange={(e) =>
+                  dispatch({
+                    type: "catchPeriodChange", periodChosen: e.target.value
+                  })}
+                select
+                error={Boolean(errors.period)}
+                helperText={errors.period}
+              >
+                {periodOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+              {!isTouchDevice ? (
+                <InputAdornment position="start">
+                  <Tooltip
+                    title={
+                      <Typography component="div" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
+                        <div>Select the period that best matches the site. Choose ‘Unknown’ if you’re unsure.</div>
+                        <ul style={{ margin: 0, paddingLeft: '1rem' }}>
+                          <li>Prehistoric (to AD 43)</li>
+                          <li>Roman (AD 43–c.410)</li>
+                          <li>Early Medieval (c.410–1086)</li>
+                          <li>Medieval (1086–1536)</li>
+                          <li>Post-Medieval (1536–1750)</li>
+                          <li>Industrial (1750–1899)</li>
+                          <li>Modern (1900+)</li>
+                        </ul>
+                      </Typography>
+                    }
+                  >
+                    <IconButton aria-label="About the period field" edge="end" size="small" tabIndex={-1}>
+                      <InfoIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ) : (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                  Pick the best-fit period. Choose “Unknown” if unsure.
+                </Typography>
+              )}
+            </Grid>
+
+            {/* Photo upload */}
+            <Grid>
+              <Button
+                variant="contained"
+                component="label"
+                fullWidth
+                style={{
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                }}
+                sx={{
+                  color: "black",
+                  border: "1px solid black",
+                  fontSize: { xs: '0.8rem', md: '0.8rem' },
+                  borderRadius: "5px",
+                  backgroundColor: "",
+                  mt: 0.5
+                }}
+              >
+                Upload Pictures (Max. 5)
+                <input
+                  type="file"
+                  multiple
+                  accept="image/png, image/gif, image/jpeg"
+                  hidden
+                  onChange={(e) => {
+                    const newFiles = Array.from(e.target.files);
+                    const maxSizeMB = 2;
+                    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+                    const tooLarge = newFiles.some(file => file.size > maxSizeBytes);
+                    if (tooLarge) {
+                      alert(`Each file must be under ${maxSizeMB}MB.`);
+                      return;
+                    }
+                    const updatedFiles = [...state.uploadedPictures, ...newFiles].slice(0, 5); // Limit to 5
+                    dispatch({
+                      type: 'catchUploadedPictures',
+                      picturesChosen: updatedFiles,
+                    });
+                  }}
+                />
+              </Button>
+            </Grid>
+
+            {/* Picture uploaded feedback */}
+            <Grid
+              container
+              sx={{
+                color: "black",
+              }}>
+              <ul style={{ margin: '0.25rem 0 0', paddingLeft: '1rem', fontSize: '0.875rem' }}>
+                {state.picture1Value ? <li>{state.picture1Value.name}</li> : ""}
+                {state.picture2Value ? <li>{state.picture2Value.name}</li> : ""}
+                {state.picture3Value ? <li>{state.picture3Value.name}</li> : ""}
+                {state.picture4Value ? <li>{state.picture4Value.name}</li> : ""}
+                {state.picture5Value ? <li>{state.picture5Value.name}</li> : ""}
+              </ul>
+            </Grid>
+
+            {/* Submit Button */}
+            <Grid>
+              {/* Display error message if polygon is not drawn */}
+              {errors.polygon && (
+                <Typography color="error" align="left" sx={{ mb: 1 }}>
+                  {errors.polygon}
+                </Typography>
+              )}
+              {/* Display error message if there are any errors */}
+              {Object.keys(errors).length > 0 && (
+                <Typography color="error" align="left" sx={{ mb: 1 }}>
+                  Please make sure all required fields are complete
+                </Typography>
+              )}
+              <Box
+                sx={{
+                  position: { xs: 'sticky', md: 'static' },
+                  bottom: 0,
+                  pt: 1,
+                  mt: 1,
+                  background: { xs: 'linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 40%)', md: 'transparent' }
+                }}
+              >
+                <Button
+                  variant="contained"
+                  type="submit"
+                  fullWidth
+                  sx={{
+                    color: 'black',
+                    border: 'none',
+                    fontSize: { xs: '1rem', md: '1rem' },
+                    borderRadius: '8px',
+                    backgroundColor: '#FFD034',
+                    py: 1.25
+                  }}
+                >
+                  Submit
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </form>
+
+        <ToastListener />
+        {/* Modals */}
+        <SiteMonumentHelpModal 
+          open={helpOpen} 
+          onClose={() => setHelpOpen(false)} 
+        />
+        <Dialog open={dbFullDialogOpen} onClose={() => setDbFullDialogOpen(false)}>
+          <DialogTitle>Database Full</DialogTitle>
+          <DialogContent>
+            <Typography sx={{ fontSize: '1rem', color: 'black' }}>
+              Oops, it looks like the database is currently full. We can’t save your record right now.
+              Please bear with us — we're working on it.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDbFullDialogOpen(false)} sx={{ color: 'black' }}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Box>
     );
 }

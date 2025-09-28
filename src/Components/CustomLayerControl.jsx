@@ -3,19 +3,27 @@ import { useMap } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the map is "loading"
 
-import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack } from "@mui/material";
+import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery, useTheme } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
 
 import '../assets/styles/map.css';
 
 export default function CustomLayerControl({ showCommunity, setShowCommunity }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // ~≤600px isMobile becomes true on small screens
+
   const map = useMap();
 
   // Base map selection
   const [base, setBase] = useState("osm"); // "osm" or "esri"
 
   // Collapsible state — default open
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') { // Safety check - checks if running in browser where window exists, if yes...
+      return window.innerWidth <= 600; // default collapsed on phones
+    }
+    return false;
+  });
 
   // Overlay toggles (each one controls whether a layer is shown)
   const [showDsmHillshade, setShowDsmHillshade] = useState(false); // true or false from the checkbox
@@ -207,20 +215,21 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
 
   return (
     <Box
-      sx={{
+      sx={{     
         position: "absolute",
         zIndex: 1000,
-        top: 20,
-        right: 20,
-        bgcolor: "rgba(255, 255, 255, 0.7)",
-        backdropFilter: "blur(10px)",
-        borderRadius: 2, // 16px
+        top: { xs: 12, sm: 20 },
+        right: { xs: 12, sm: 20 },
+        bgcolor: "rgba(255, 255, 255, 0.85)",
+        backdropFilter: "blur(8px)",
+        borderRadius: 2,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-        minWidth: 260,
+        border: "1px solid rgba(0,0,0,0.08)",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+        minWidth: { xs: 210, sm: 260 },
+        maxWidth: { xs: 260, sm: 320 },
       }}
     >
       {/* Header bar */}
@@ -258,7 +267,14 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
       </Box>
 
       {!collapsed && (
-        <Box sx={{ px: 1.5, pb: 1.5 }}>
+        <Box 
+          sx={{
+            px: { xs: 1,  sm: 1.5 },
+            pb: { xs: 1,  sm: 1.5 },
+            maxHeight: { xs: '50vh', sm: 'unset' }, // phones: cap height on phones never exceed half the screen height.
+            overflowY: { xs: 'auto',  sm: 'visible' }, // If there is more content the inner area scrolls instead of covering map
+          }}
+        >
           {/* Base maps */}
           <Typography variant="caption" sx={{ opacity: 0.8, display: "block", mb: 0 }}>
             Base
@@ -276,6 +292,9 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               },
               "& .MuiFormControlLabel-root:hover": {
                 backgroundColor: "rgba(0,0,0,0.04)",
+              },
+              "& .MuiFormControlLabel-label": {
+                fontSize: { xs: '0.92rem', sm: '1rem' },
               },
             }}
           >
@@ -303,9 +322,13 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               label="Community Finds"
               sx={{
                 m: 0,
-                p: 0.25,
+                p: { xs: 0.25, sm: 0.25 },
                 borderRadius: 1,
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+                "& .MuiFormControlLabel-label": {
+                  fontSize: { xs: '0.92rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                },
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
               }}
             />
 
@@ -320,9 +343,13 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               label="Cadw Scheduled Monuments"
               sx={{
                 m: 0,
-                p: 0.25,
+                p: { xs: 0.25, sm: 0.25 },
                 borderRadius: 1,
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+                "& .MuiFormControlLabel-label": {
+                  fontSize: { xs: '0.92rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                },
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
               }}
             />
             
@@ -337,9 +364,13 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               label="LiDAR DSM Hillshade"
               sx={{
                 m: 0,
-                p: 0.25,
+                p: { xs: 0.25, sm: 0.25 },
                 borderRadius: 1,
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+                "& .MuiFormControlLabel-label": {
+                  fontSize: { xs: '0.92rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                },
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
               }}
             />
 
@@ -354,12 +385,25 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               label="LiDAR DSM Multi-directional"
               sx={{
                 m: 0,
-                p: 0.25,
+                p: { xs: 0.25, sm: 0.25 },
                 borderRadius: 1,
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+                "& .MuiFormControlLabel-label": {
+                  fontSize: { xs: '0.92rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                },
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
               }}
             />
           </Stack>
+
+          {/* Scroll for more hint */}
+          {isMobile && !collapsed && (
+            <Box sx={{ px: 1, pb: 0.75, pt: 0.25 }}>
+              <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                Scroll for more
+              </Typography>
+            </Box>
+          )}
         </Box>
       )}
     </Box>
