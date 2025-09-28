@@ -1,4 +1,11 @@
 import * as React from 'react';
+import * as L from 'leaflet';
+
+// Workaround for Leaflet.draw touch adding vertices on drag (GH #935)
+// https://github.com/Leaflet/Leaflet.draw/issues/935
+if (L?.Draw?.Polyline) {
+  L.Draw.Polyline.prototype._onTouch = L.Util.falseFn;
+}
 
 // MUI Imports
 import Button from '@mui/material/Button';
@@ -39,6 +46,20 @@ export default function MainLidarMap({
 
     const [showCommunity, setShowCommunity] = React.useState(true); // start ON
 
+    function MapActionsRegistrar({ onRegister }) {
+        const map = useMap();
+
+        React.useEffect(() => {
+            if (map && onRegister) onRegister(map);
+            // Also defensively disable Tap handler if present (matches GH #935 note)
+            if (map && map.tap && map.tap.disable) {
+            try { map.tap.disable(); } catch (_) {}
+            }
+        }, [map, onRegister]);
+
+        return null;
+    }
+
     return (
 
         <MapContainer
@@ -49,7 +70,10 @@ export default function MainLidarMap({
             zoom={8.5} 
             scrollWheelZoom={true} 
             loadingControl={true} // shows the little spinner control
+            tap={false}
         >
+
+            <MapActionsRegistrar />
 
             <CustomLayerControl
                 showCommunity={showCommunity}
@@ -163,4 +187,5 @@ export default function MainLidarMap({
     
     )
 }
+
  
