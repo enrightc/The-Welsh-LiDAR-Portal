@@ -19,7 +19,6 @@ import RecordDetail from '../Components/RecordDetail';
 
 // Icons 
 import LocationPinIcon from '@mui/icons-material/LocationPin';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import StarIcon from '@mui/icons-material/Star';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -32,17 +31,11 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 // MUI imports
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
+
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 
 function ProfileDetail() {
 
@@ -174,7 +167,6 @@ function ProfileDetail() {
         async function GetProfileInfo() {
             try {
                 const response = await Axios.get(`${BASE_URL}/api/profiles/username/${username}/`);
-                console.log(response.data);
                 const expertiseRaw = response.data.expertise_level || "";
                 const expertiseFormatted = expertiseRaw.charAt(0).toUpperCase() + expertiseRaw.slice(1).toLowerCase();
 

@@ -24,6 +24,7 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Typography from '@mui/material/Typography';
 
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
@@ -192,17 +193,20 @@ useEffect(() => {
   if (dataIsLoading === true) {
     return (
       <Grid 
-        container 
-        justifyContent="center" 
-        alignItems="center" 
-        color="red"
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
         style={{ height: "100vh", width: "100vw" }}
         // Set width: "100vw" to make sure the Grid takes up the full screen width,
         // so the loading spinner can be perfectly centered horizontally
       >
         <CircularProgress />
+        <Typography variant="body2" align="center" sx={{ mt: 2, maxWidth: 560, px: 2, opacity: 0.9 }}>
+          If this is your first visit in a while, our free backend may be waking up. Loading can take up to <strong>50 seconds</strong> after inactivity. Thanks for your patience.
+        </Typography>
       </Grid>
-    )
+    );
   }
 
   const handleDrawCreate = (e) => {

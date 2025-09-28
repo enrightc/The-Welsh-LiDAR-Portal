@@ -174,7 +174,6 @@ function Profile() {
         async function GetProfileInfo() {
             try {
                 const response = await Axios.get(`${BASE_URL}/api/profiles/${GlobalState.userId}/`);
-                console.log(response.data);
                 const expertiseRaw = response.data.expertise_level || "";
                 const expertiseFormatted = expertiseRaw.charAt(0).toUpperCase() + expertiseRaw.slice(1).toLowerCase();
 
@@ -245,14 +244,10 @@ function Profile() {
               `${BASE_URL}/api/profiles/${GlobalState.userId}/update/`,
               formData
             );
-            console.log(response);
             handleSnackbarOpen("Profile updated!");
             setTimeout(() => navigate(0), 1500);
           } catch (e) {
-            console.log(e.response);
             handleSnackbarOpen("Update failed. Please try again.");
-            console.log("profilePicture from API:", e?.response?.data?.profilePicture);
-            console.log("userProfile from state:", state.userProfile);
           }
         }
         updateProfile();

@@ -50,7 +50,6 @@ function Register() {
   //   which then sends the registration request to the backend
   function FormSubmit(e){
     e.preventDefault() // prevents the default form submission behavior/page reload
-    console.log("Form submitted");
     dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
   }
 
@@ -80,7 +79,7 @@ function Register() {
           },
         );
         // If the request is successful, the response will contain the data
-        console.log(response)
+
         // Automatically log the user in after successful registration
         const loginResponse = await Axios.post(
           `${BASE_URL}/api-auth-djoser/token/login/`,

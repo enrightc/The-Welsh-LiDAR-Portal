@@ -1,6 +1,5 @@
 import * as React from 'react';
-import Modal from '@mui/joy/Modal';
-import ModalClose from '@mui/joy/ModalClose';
+import Modal from '@mui/joy/Modal'
 import ModalDialog from '@mui/joy/ModalDialog';
 import Button from '@mui/joy/Button';
 import Box from '@mui/joy/Box';
@@ -8,8 +7,6 @@ import Typography from '@mui/joy/Typography';
 
 
 // Components
-
-
 import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.webp";
 
 // Icons 

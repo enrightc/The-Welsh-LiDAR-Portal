@@ -9,11 +9,8 @@ import BetaNoticeModal from "../Components/BetaNoticeModal";
 
 
 // Image Imports
-import mapScreen from '../Components/Assets/mapScreen.webp';
 import mapScreenImage from '../Components/Assets/MapScreenImage.webp';
 import rhydBrownCamp from '../Components/Assets/RhydBrownCamp.webp';
-import rudbaxtonRath from '../Components/Assets/RudbaxtonRath.webp';
-import walesHighlight from '../Components/Assets/walesHightlight.webp';
 import mapMarkerIcon from '../Components/Assets/map_marker.svg';
 import addIcon from '../Components/Assets/add.svg';
 import speechIcon from '../Components/Assets/speech.svg';

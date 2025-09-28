@@ -205,13 +205,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
     useEffect(() => {
         if (state.sendRequest) {
             async function AddRecord() {
-                console.log([
-                    state.titleValue, state.descriptionValue, state.prnValue,
-                    state.siteValue, state.monumentValue, state.periodValue,
-                    // state.latitudeValue, state.longitudeValue, state.picture1Value,
-                    state.picture2Value, state.picture3Value, state.picture4Value, state.picture5Value,
-                    GlobalState.userId
-                ]);
                 const formData = new FormData();
                 formData.append(
                     "title", state.titleValue);
@@ -251,11 +244,9 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             }
                         }
                     );
-                    console.log(response)
                     dispatch({ type: "resetForm" }); // <--- Reset form
                     resetPolygon(); // Reset the polygon in the parent component
                     navigate("/LidarPortal", { state: { toast: "New record successfully created" } });
-                    console.log("Called resetPolygon from CreateRecord!");
                     fetchRecords(); // Fetch the updated records after adding a new one
                     // if onSuccess provided tell sidebar to close.
                     if (typeof onSuccess === "function") {
@@ -274,7 +265,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                     }
 
                     // 👇 Fallback for any other kind of error
-                    console.log(e.response);
                     navigate(".", {
                         state: {
                             toast: "There was a problem creating your record. Please try again.",

@@ -63,7 +63,6 @@ function Login() {
     //   which then sends the registration request to the backend */}
     function FormSubmit(e){
         e.preventDefault() // prevents the default form submission behavior/page reload
-        console.log("Form submitted");
         dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
     }
 
@@ -92,7 +91,6 @@ function Login() {
         );
         // If the request is successful, the response will contain the data
 
-        console.log(response)
         dispatch({
             type: 'catchToken', 
             tokenValue: response.data.auth_token}); // Dispatch an action to update the token in the state
@@ -146,7 +144,6 @@ function Login() {
             
             // If the request is successful, the response will contain the data
 
-            console.log(response)
             GlobalDispatch({
                 type: 'userSignsIn', 
                 usernameInfo: response.data.username, emailInfo: response.data.email, 

@@ -4,8 +4,6 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import profileIconUrl from '../assets/icons/profileIcon.svg';
 import magnifyingIconUrl from '../assets/icons/magnifyingIcon.svg';
 import recordIconUrl from '../assets/icons/recordIcon.svg';

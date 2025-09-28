@@ -10,13 +10,10 @@ import StateContext from '../Contexts/StateContext';
 import defaultProfilePicture from "../Components/Assets/defaultProfilePicture.webp";
 
 // MUI imports
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
+
 import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -54,7 +51,6 @@ function Users() {
         try {
           const BASE_URL = import.meta.env.VITE_BACKEND_URL;
           const response = await Axios.get(`${BASE_URL}/api/profiles/`);
-          console.log(response.data);
           dispatch({
             type: "catchProfiles",
             profilesArray: response.data,
@@ -70,12 +66,16 @@ function Users() {
     if (state.dataIsLoading === true) {
       return (
         <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
           style={{ height: "100vh" }}
         >
           <CircularProgress />
+          <Typography variant="body2" align="center" sx={{ mt: 2, maxWidth: 560, px: 2, opacity: 0.9 }}>
+            If this is your first visit in a while, our free backend may be waking up. Loading can take up to <strong>50 seconds</strong> after inactivity. Thanks for your patience.
+          </Typography>
         </Grid>
       );
     }
