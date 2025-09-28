@@ -229,11 +229,11 @@ p {
 }
 
 .hero__text {
-  margin: 2em 0;
+  margin: 1.5em 0;
   color: var(--text-light);
   display: flex;
   flex-direction: column;
-  gap: 2em;
+  gap: 1em;
 }
 
 .eyebrow-text {
@@ -263,7 +263,7 @@ p {
 .hero__btns {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   margin-bottom: 2em;
   z-index: 1;
   margin: 0 auto;

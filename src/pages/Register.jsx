@@ -89,10 +89,12 @@ function Register() {
           }
         );
 
-        // Store token in localStorage
-        localStorage.setItem("authToken", loginResponse.data.auth_token);
+        // Store token and set default auth header for future requests
+        const token = loginResponse.data.auth_token;
+        localStorage.setItem("authToken", token); // Keeps the token in the browser so it persists across page refreshes
+        Axios.defaults.headers.common["Authorization"] = `Token ${token}`;
 
-        navigate("/"); // Redirect to the home page after successful registration and login
+        navigate("profile"); // Redirect to the home page after successful registration and login
 
 
       } catch (error) {
