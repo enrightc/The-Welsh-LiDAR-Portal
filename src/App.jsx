@@ -105,6 +105,7 @@ useEffect(() => {
             backgroundColor: "green",
           }}>
             <Typography sx={{
+              fontSize: { xs: "1rem"},
               mx: 2,
               textAlign: "center"
             }}>Beta v1.0 — Work in progress. Expect updates and tweaks as we improve the Welsh LiDAR Portal.</Typography>

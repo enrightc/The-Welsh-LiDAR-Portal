@@ -219,7 +219,7 @@ function Navigation() {
               component="img"
               src={logo}
               alt="The Welsh LiDAR Portal logo"
-              sx={{ height: 50, width: "auto", display: "block" }}
+              sx={{ height: 40, width: "auto", display: "block" }}
             />
           </Box>
 

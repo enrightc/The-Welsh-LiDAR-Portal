@@ -12,6 +12,7 @@ import Sidebar from '../Components/Sidebar';
 import RecordDetail from '../Components/RecordDetail';
 import MiniProfile from '../Components/MiniProfile';  
 import MainLidarMap from '../Components/MainLidarMap';
+import CreateRecordMobile from '../Components/CreateRecordMobile';
 
 // MUI Imports
 import CircularProgress from '@mui/material/CircularProgress';
@@ -19,6 +20,10 @@ import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import StateContext from "../Contexts/StateContext";
 import DispatchContext from "../Contexts/DispatchContext";
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
@@ -32,6 +37,17 @@ const LidarPortal = () => {
   // Selected Record Modal
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedFeature, setSelectedFeature] = React.useState(null);
+
+  // Record form for mobile
+  const [panelOpen, setPanelOpen] = React.useState(false);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md')); // ≤ md treated as handheld
+  const isTouchDevice = (typeof window !== 'undefined') && (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+  const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
+  const isHandheld = isSmallScreen || isTouchDevice || isMobileDevice; // broader check than screen width alone
+
+  const openPanel = () => setPanelOpen(true);
+  const closePanel = () => setPanelOpen(false);
     
   // Profile view Modal
   // State in LiDARPortal.jsx
@@ -66,7 +82,6 @@ const LidarPortal = () => {
   const dispatch = React.useContext(DispatchContext);
 
   const isLoggedIn = !!state.userId;
-  const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
 
   // Use the useState hook to create a state variable called allRecords
   // It starts as an empty array []
@@ -151,7 +166,6 @@ const handleActivateRuler = () => {
   // This function will be passed to the Sidebar component
   // so it can be called when the user submits the form
   function resetPolygon() {
-    console.log("resetPolygon called");
     setPolygonDrawn(false);  // Allow drawing again
     dispatch({ type: "catchPolygonCoordinateChange", polygonChosen: [] }); // Clear global polygon
   }
@@ -196,9 +210,14 @@ useEffect(() => {
     if (layerType === "polygon") {
       const latlngs = layer.getLatLngs()[0].map((latlng) => [latlng.lat, latlng.lng]);
       dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: latlngs });
-      console.log("Polygon Coordinates:", latlngs);
       setPolygonDrawn(true); // Set flag so user can't draw more
-      setSidebarOpen(true);
+
+      // Open the correct panel depending on screen size
+      if (isHandheld) {
+        setPanelOpen(true);   // bottom sheet on touch/small devices
+      } else {
+        setSidebarOpen(true); // right sidebar on desktop
+      }
     }
   };
   
@@ -214,6 +233,7 @@ useEffect(() => {
         overflow: "hidden",
       }}
     >
+      {/* Desktop */}
       {/* Sidebar */}
       {/* Sidebar: appears on the left, pushes map content over */}
       {/* The Sidebar component is imported from the Components folder */}
@@ -221,17 +241,16 @@ useEffect(() => {
       {/* 'resetPolygon' prop is passed to reset polygon drawing state */}
      
       <Sidebar 
-        open={sidebarOpen} 
+        open={!isHandheld && sidebarOpen}
         onClose={() => setSidebarOpen(false)} 
         resetPolygon={resetPolygon}
         fetchRecords={fetchRecords}
       />
-      
-      
+
       {/* Main content (map), shrinks when sidebar is open */}
       <div style={{ flex: 1, position: "relative" }}>
         {/* Show menu button only when user is logged in, not on mobile, and sidebar is closed */}
-        {isLoggedIn && !isMobileDevice && !sidebarOpen && (
+        {isLoggedIn && !isHandheld && !sidebarOpen && (
           <Tooltip title="Click to open record form" arrow>
             <button
               onClick={() => setSidebarOpen(true)}
@@ -256,9 +275,36 @@ useEffect(() => {
           </Tooltip>
         )}
 
+
+        {/* Mobile */}
+        {/* Floating “Add Record” button on mobile */}
+        {isHandheld && (
+          <Fab
+            color="primary"
+            aria-label="Add record"
+            onClick={openPanel}
+            sx={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1000 }}
+          >
+            <AddIcon />
+          </Fab>
+        )}
+
+        {/* If you already have a desktop button in the toolbar, wire it to openPanel() */}
+
+        <CreateRecordMobile
+          open={panelOpen}
+          onOpen={openPanel}
+          onClose={closePanel}
+          resetPolygon={resetPolygon}
+          fetchRecords={fetchRecords}
+          onSuccess={closePanel}  // close when submit succeeds
+          hideBackdrop // Do not render backdrop that blicks clicks on map.
+        />
+      
+
         <CornerHelpBox 
           isLoggedIn={isLoggedIn}
-          isMobileDevice={isMobileDevice}
+          
         />
 
         <MapToolbar 
