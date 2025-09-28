@@ -183,9 +183,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
         // isNaN(state.prnValue) checks if it is not a number
         // newErrors.title adds an error message specfically to that field. it is a temporary object. Later it is passed to the form state (setErrors(newErrors);)
         if (!state.titleValue.trim()) newErrors.title = "Title is required";
-        if (state.prnValue.trim() && isNaN(state.prnValue)) {
-        newErrors.prn = "PRN must be a number";
-        }
         if (!state.descriptionValue.trim()) newErrors.description = "Description is required";
         if (!state.siteValue) newErrors.site = "Site type is required";
         if (!state.monumentValue) newErrors.monument = "Monument type is required";
@@ -379,7 +376,6 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                     prnChosen: e.target.value
                   })
                 }
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 autoComplete="off"
                 error={Boolean(errors.prn)}
                 helperText={errors.prn}
