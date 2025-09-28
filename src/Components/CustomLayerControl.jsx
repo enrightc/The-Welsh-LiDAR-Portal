@@ -116,7 +116,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
           opacity: 1,
           attribution: "© DataMapWales / Welsh Government",
           pane: "lidarPane",
-          zIndex: 350,
+          zIndex: 340,
         });
       }
       if (!map.hasLayer(multiHillshadeRef.current)) multiHillshadeRef.current.addTo(map);
@@ -129,7 +129,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
   useEffect(() => {
   if (!map.getPane("lidarPane")) { // checks if leaflet already has a pane called "lidarPane". If it doesnt exist yet (! means "not"), then it creates one
     const pane = map.createPane("lidarPane"); // creates new pane in leaflet called "lidarPane"
-    pane.style.zIndex = 350; // above basemap (200), below vectors (400)
+    pane.style.zIndex = 340; // above basemap (200), below vectors (400)
     pane.style.pointerEvents = "none"; // Make LiDAR tiles ignore mouse/touch events. 
     // This way they don't block clicks, drags, or hovers on the map and vector layers.
   }
