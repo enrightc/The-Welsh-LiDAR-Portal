@@ -89,7 +89,7 @@ function Navigation() {
   // Runs the actual logout request (no UI confirm here; the Dialog handles that)
   // Because function is marked async it knows it may need to pause somewhere
   async function handleLogout() {
-    setAnchorElUser(null); // Close the user menu by removing the anchor element.”
+    setAnchorElUser(null); // Close the user menu
     
       try {
         // This sends a POST request to `${BASE_URL}/api-auth-djoser/token/logout/` this is the djosser logout route.

@@ -302,7 +302,7 @@ useEffect(() => {
           resetPolygon={resetPolygon}
           fetchRecords={fetchRecords}
           onSuccess={closePanel}  // close when submit succeeds
-          hideBackdrop // Do not render backdrop that blicks clicks on map.
+          hideBackdrop // Do not render backdrop that blocks clicks on map.
         />
       
 

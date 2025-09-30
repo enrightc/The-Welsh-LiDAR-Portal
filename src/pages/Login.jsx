@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // Contexts
 import DispatchContext from '../Contexts/DispatchContext'; // Import the DispatchContext for state management
@@ -16,6 +17,7 @@ import StateContext from '../Contexts/StateContext';
 function Login() {
     const navigate = useNavigate()
     const [errorMessage, setErrorMessage] = useState("");  // new state for error message
+    const [submitting, setSubmitting] = useState(false);
 
     // Get the value of VITE_BACKEND_URL from the environment variables available at build time.
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -63,6 +65,9 @@ function Login() {
     //   which then sends the registration request to the backend */}
     function FormSubmit(e){
         e.preventDefault() // prevents the default form submission behavior/page reload
+
+        if (submitting) return;      //  already sending, ignore extra taps/clicks/Enter
+        setSubmitting(true); // lock the form
         dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
     }
 
@@ -104,7 +109,18 @@ function Login() {
         
       // Error messages
       } catch (error) {
-        if (error.response && error.response.status === 400) { // bad request (wrong username or password)
+        if (Axios.isCancel?.(error)) return;
+
+        const status = error.response?.status;
+
+        // check for wake-up type errors (prod only)
+        if (import.meta.env.PROD && 
+            (error.code === "ECONNABORTED" || [502,503,504].includes(status))) {
+          setErrorMessage("Waking the server… please try again in a few seconds.");
+          return;
+        } // Friendly message if server is waking up.
+
+        if (status === 400) {
           setErrorMessage("Invalid username or password");
         } else {
           setErrorMessage("Something went wrong. Please try again.");
@@ -152,13 +168,14 @@ function Login() {
             setLoginComplete(true); // Set this after dispatch
             navigate("/profile"); // Redirect to the home page after successful registration
             
-        } catch (error) {
+          } catch (error) {
+            if (Axios.isCancel?.(error)) return; // do nothing on cancel
             if (error.response) {
             console.log("Server responded with:", error.response.status, error.response.data);
             } else {
             console.log("Error:", error.message);
             }
-        }
+          }
         }
         // Call the function we just defined
         GetUserInfo();
@@ -228,19 +245,24 @@ function Login() {
               </Typography>
             </Grid>
           )}
-            <Button variant="contained" xs={8}
-                style={{
+            <Button 
+              variant="contained" 
+              xs={8}
+              disabled={submitting}
+              style={{
                     marginLeft: 'auto',
                     marginRight: 'auto',
                 }}
-                sx= {{
-                    color: "black",
-                    border: "none",
-                    fontSize: { xs: '0.8rem', md: '1rem' },
-                    borderRadius: "5px",
-                    backgroundColor: "#FFD034",
-                  }} 
-                type="submit">Login</Button>
+              sx= {{
+                  color: "black",
+                  border: "none",
+                  fontSize: { xs: '0.8rem', md: '1rem' },
+                  borderRadius: "5px",
+                  backgroundColor: "#FFD034",
+                }} 
+              type="submit">
+              {submitting ? <CircularProgress size={20} color="inherit" /> : "Login"}
+            </Button>
           </Grid>
 
           <Grid>
