@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import Axios from "axios";
+import api from "../api";
 import { Link } from "react-router-dom"; // ✅ Use React Router for navigation
 import { useNavigate } from "react-router-dom";
 // MUI Imports
@@ -30,8 +30,6 @@ import logo from "./Assets/mainLogoWhite.png";
 import StateContext from "../Contexts/StateContext"; // Import the StateContext for accessing global state
 import DispatchContext from "../Contexts/DispatchContext";
 import { Global } from "@emotion/react";
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const pages = [
   { name: "About", path: "/about" },
@@ -89,53 +87,56 @@ function Navigation() {
   // Runs the actual logout request (no UI confirm here; the Dialog handles that)
   // Because function is marked async it knows it may need to pause somewhere
   async function handleLogout() {
-    setAnchorElUser(null); // Close the user menu
-    
-      try {
-        // This sends a POST request to `${BASE_URL}/api-auth-djoser/token/logout/` this is the djosser logout route.
-        // when djosser receives the request it looks at the authorization header, checks which user the token belongs to and then invalidates that token in the database.
-        // Axios.post(url, data, config)
-        // - url: where to send the request (our Djoser logout endpoint)
-        // - data: request body (not needed for Djoser logout → pass {})
-        // - config: extra options (we send an Authorization header so the backend
-        //   knows which user's token to invalidate)
+  // 1) Close the little avatar menu so the UI feels responsive.
+  setAnchorElUser(null);
 
-        // Important:
-        // - Axios.post returns a Promise.
-        // - 'await' pauses this function here until the server replies.
-        //   Only then will it move on to the next lines.
-        const response = await Axios.post(
-          `${BASE_URL}/api-auth-djoser/token/logout/`,  // 1) URL 
-          GlobalState.userToken, // 2) data (request body) // not actually required, currently sending user token twice.
-          { // 3) config (extra options) 
-            headers: {
-              Authorization: `Token ${GlobalState.userToken}`, // header with your token
-            }
-          }
-        );
-        // once Axios.post finishes the promise is resolved.
+  try {
+    // 2) Get the token. Prefer the one in global state,
+    //    but fall back to localStorage if needed.
+    const token = GlobalState.userToken || localStorage.getItem("authToken");
 
-        // This line tells the app's global state the user has logged out, update everything to reflect that. 
-        GlobalDispatch({ type: "Logout" }); 
+    // 3) If we have a token, TELL THE SERVER to invalidate it.
+    //    (Djoser doesn't need a body → pass `null`.)
+    if (token) {
+      await api.post(
+        "/api-auth-djoser/token/logout/",
+        null,
+        { headers: { Authorization: `Token ${token}` } }
+      );
+    }
+    // If no token, we skip the server call — we’ll still clean up locally.
 
-        // Redirect to the home page after logout
-        // We also pass a "toast" message using React Router's location.state.
-        // React Router keeps track of where you are on the site, and "state" is extra data you can send when navigating.
-        // What happens here:
-        // 1) React Router sees you want to go to "/".
-        // 2) It attaches { toast: "Successfully logged out!" } to the new location.state.
-        // 3) When the app renders the "/" page, you can read that value from location.state
-        //    and use it to show a snackbar/notification.   
-        navigate("/", { state: { toast: "Successfully logged out!" } });
-      // if at any point the try block fails then catch will run
-      } catch (e) {
-        if (import.meta.env.DEV) {
-          console.error(e?.response || e);
-        } // only runs if in development
-        alert("Logout failed. Please try again.");
-        navigate("/", { state: { toast: "Logout failed. Please try again." } });
+  } catch (e) {
+    // Handle server wake or token already invalid gracefully.
+    const status = e?.response?.status;
+    if (!status || [502, 503, 504].includes(status)) {
+      // Likely server waking up or transient network error.
+      // still log out locally in finally().
+    } else if (status === 401) {
+      // Token already invalid on the server — fine; will clear locally.
+    } else {
+      // Other server error — still proceed to local logout in finally().
+      if (import.meta.env.DEV) {
+        console.error("Logout error:", e?.response || e);
       }
+    }
+  } finally {
+    // 5) The GUARANTEE: client is logged out no matter what.
+    //    (This is the fix for being “stuck logged in”.)
+    localStorage.removeItem("authToken");
+
+    // Also remove the default Authorization header from our Axios instance
+    if (api?.defaults?.headers?.common?.Authorization) {
+      delete api.defaults.headers.common["Authorization"];
+    }
+
+    // 6) Tell global state “we’re logged out”
+    GlobalDispatch({ type: "Logout" });
+
+    // 7) Send the user home with a happy toast.
+    navigate("/", { state: { toast: "Successfully logged out!" } });
   }
+}
 
   function handleProfile() {
     setAnchorElNav(null);

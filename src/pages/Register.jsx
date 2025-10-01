@@ -1,4 +1,4 @@
-import React, {use, useEffect, useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import Axios from 'axios';  // Import Axios for making HTTP requests
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer"; // Import useImmerReducer for state management
@@ -94,7 +94,7 @@ function Register() {
         localStorage.setItem("authToken", token); // Keeps the token in the browser so it persists across page refreshes
         Axios.defaults.headers.common["Authorization"] = `Token ${token}`;
 
-        navigate("profile"); // Redirect to the home page after successful registration and login
+        navigate("/profile"); // Redirect to the home page after successful registration and login
 
 
       } catch (error) {

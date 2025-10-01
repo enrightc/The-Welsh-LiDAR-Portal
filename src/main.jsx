@@ -12,6 +12,7 @@ import "./index.css";
 
 // Import the main App component
 import App from "./App.jsx";
+import "./api";
 
 // Theme
 import { ThemeProvider } from '@mui/material/styles';

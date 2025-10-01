@@ -263,6 +263,16 @@ function Login() {
               type="submit">
               {submitting ? <CircularProgress size={20} color="inherit" /> : "Login"}
             </Button>
+
+            {submitting && (
+              <Typography 
+                variant="body2" 
+                align="center" 
+                sx={{ mt: 1, opacity: 0.8 }}
+              >
+                If this takes a while, the server might be waking up.
+              </Typography>
+            )}
           </Grid>
 
           <Grid>
