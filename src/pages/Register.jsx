@@ -1,31 +1,37 @@
-import React, { useEffect, useState} from 'react'
-import Axios from 'axios';  // Import Axios for making HTTP requests
+import React, { useEffect, useContext } from 'react'
+import Axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import {useImmerReducer} from "use-immer"; // Import useImmerReducer for state management
+import { useImmerReducer } from "use-immer";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+// Import contexts
+import DispatchContext from '../Contexts/DispatchContext';
 
 // MUI Imports
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Register() {
   const navigate = useNavigate()
+  const GlobalDispatch = useContext(DispatchContext);
+  const [submitting, setSubmitting] = React.useState(false);
   
   const initialstate = {
       usernameValue: "",
       emailValue: "",
       passwordValue: "",
       password2Value: "",
-      sendRequest: 0, // State to control when to send the request
+      sendRequest: 0,
     };
   
     function ReducerFunction(draft, action){
       switch (action.type){
         case "catchUsernameChange":
-          draft.usernameValue = action.usernameChosen; // Update usernameValue in the state
+          draft.usernameValue = action.usernameChosen;
           break;
         case "catchEmailChange":
           draft.emailValue = action.emailChosen; 
@@ -37,35 +43,27 @@ function Register() {
           draft.password2Value = action.password2Chosen; 
           break;
         case "changeSendRequest":
-          draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
-          break; // This action will trigger the useEffect to send the request
+          draft.sendRequest = draft.sendRequest + 1
+          break;
       }
     }
   
     const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
 
-  // Handles the form submission event:
-  // - Prevents the default page reload behaviour
-  // - Triggers the `useEffect` hook by incrementing sendRequest
-  //   which then sends the registration request to the backend
   function FormSubmit(e){
-    e.preventDefault() // prevents the default form submission behavior/page reload
-    dispatch({type: 'changeSendRequest'}) // Dispatch an action to change the sendRequest state
+    e.preventDefault()
+    if (submitting) return; // Prevent multiple submissions
+    setSubmitting(true); // Lock the form
+    dispatch({type: 'changeSendRequest'})
   }
 
-  // useEffect hook to handle the registration API call:
-  // - When `sendRequest` becomes true, it triggers a POST request to the backend to register a new user
-  // - If the request is successful, the backend returns a response with the created user data
-  // - Includes a cleanup function that cancels the request if the component unmounts before completion
   useEffect(() => {
     if (state.sendRequest) {
-      const source = Axios.CancelToken.source(); // Create a cancel token for Axios requests
+      const source = Axios.CancelToken.source();
     
     async function SignUp() {
-      // Define an async function to register a new user by sending a POST request to the backend
-      
       try {
-        // Make a Post request to  Django backend to register new user
+        // Register the user
         const response = await Axios.post(
           `${BASE_URL}/api-auth-djoser/users/`,
           {
@@ -75,12 +73,13 @@ function Register() {
             re_password: state.password2Value,
           },
           {
-            cancelToken: source.token // Attach the cancel token so it cancel the request if the component unmounts
+            cancelToken: source.token
           },
         );
-        // If the request is successful, the response will contain the data
 
-        // Automatically log the user in after successful registration
+        console.log("Registration successful:", response.data);
+
+        // Log the user in
         const loginResponse = await Axios.post(
           `${BASE_URL}/api-auth-djoser/token/login/`,
           {
@@ -89,13 +88,38 @@ function Register() {
           }
         );
 
-        // Store token and set default auth header for future requests
         const token = loginResponse.data.auth_token;
-        localStorage.setItem("authToken", token); // Keeps the token in the browser so it persists across page refreshes
+        
+        // Set Axios default header for future requests
         Axios.defaults.headers.common["Authorization"] = `Token ${token}`;
 
-        navigate("/profile"); // Redirect to the home page after successful registration and login
+        // Get user information
+        const userInfoResponse = await Axios.get(
+          `${BASE_URL}/api-auth-djoser/users/me/`,
+          {
+            headers: { Authorization: `Token ${token}` }
+          }
+        );
 
+        console.log("User info retrieved:", userInfoResponse.data);
+
+        // Set localStorage BEFORE dispatching (critical for immediate state sync)
+        localStorage.setItem("theUserUsername", userInfoResponse.data.username);
+        localStorage.setItem("theUserEmail", userInfoResponse.data.email);
+        localStorage.setItem("theUserId", userInfoResponse.data.id);
+        localStorage.setItem("theUserToken", token);
+
+        // Update global state
+        GlobalDispatch({
+          type: "userSignsIn",
+          usernameInfo: userInfoResponse.data.username,
+          emailInfo: userInfoResponse.data.email,
+          IdInfo: userInfoResponse.data.id,
+          tokenInfo: token,
+        });
+
+        // Navigate to home
+        navigate("/profile", { replace: true });
 
       } catch (error) {
         if (error.response) {
@@ -103,17 +127,17 @@ function Register() {
         } else {
           console.log("Error:", error.message);
         }
+      } finally {
+        setSubmitting(false); // Unlock the form on error
       }
     }
-    // Call the function we just defined
+    
     SignUp();
     return () => {
-      // Cleanup function to run when the component unmounts
-      // This is where you can cancel any ongoing requests or clean up resources
-      source.cancel(); // Cancel the Axios request if the component unmounts
+      source.cancel();
     };
   }
-}, [state.sendRequest]); // ← This empty array makes sure it runs only once when the component loads
+}, [state.sendRequest]);
 
   return (
     <div
@@ -142,17 +166,10 @@ function Register() {
               label="Username" 
               variant="outlined"
               value={state.usernameValue}
-              // When the user types in the input field, onChange function runs.
-              // When the user types in the Username input:
-              // 1. Grab the new value (e.target.value)
-              // 2. Send it to the reducer using dispatch()
-              // 3. The reducer updates 'usernameValue' in the state
-              // This keeps the input in sync with the app state (a controlled input)
               onChange = {(e)=> 
-                // When the user types in the Confirm Password input, do the following:
                 dispatch({
-                  type: "catchUsernameChange", // Action that tells the reducer what to update
-                  usernameChosen: e.target.value // This is the new value from the input field
+                  type: "catchUsernameChange",
+                  usernameChosen: e.target.value
                 })
               } 
             /> 
@@ -198,6 +215,7 @@ function Register() {
             <Button 
               variant="contained" 
               xs={8}
+              disabled={submitting}
               style={{
                   marginLeft: 'auto',
                   marginRight: 'auto',
@@ -209,8 +227,19 @@ function Register() {
                   borderRadius: "5px",
                   backgroundColor: "#FFD034",
                 }} 
-              type="submit">Register
+              type="submit">
+              {submitting ? <CircularProgress size={20} color="inherit" /> : "Register"}
             </Button>
+
+            {submitting && (
+              <Typography 
+                variant="body2" 
+                align="center" 
+                sx={{ mt: 1, opacity: 0.8 }}
+              >
+                If this takes a while, the server might be waking up.
+              </Typography>
+            )}
           </Grid>
 
           <Grid>

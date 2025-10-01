@@ -203,7 +203,7 @@ useEffect(() => {
       >
         <CircularProgress />
         <Typography variant="body2" align="center" sx={{ mt: 2, maxWidth: 560, px: 2, opacity: 0.9 }}>
-          If this is your first visit in a while, our free backend may be waking up. Loading can take up to <strong>50 seconds</strong> after inactivity. Thanks for your patience.
+          If this takes a while, the server might be waking up.
         </Typography>
       </Grid>
     );

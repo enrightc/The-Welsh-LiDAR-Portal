@@ -59,6 +59,7 @@ function App() {
         draft.userUsername = action.usernameInfo; // Update username in the state
         draft.userEmail = action.emailInfo; // Update email in the state
         draft.userId = action.IdInfo; // Update user ID in the state
+        draft.userToken = action.tokenInfo; 
         draft.userIsLoggedIn = true; // Set userIsLoggedIn to true
         break; // This action will update the user information in the state
       case "Logout":
