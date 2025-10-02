@@ -11,7 +11,14 @@
   display: block;
   color: #b30000;  /* rich red for titles */
   font-size: 16px;
-  margin-bottom: 6px;
+  margin-bottom: 1px;
+}
+
+.parks-popup strong {
+  display: block;
+  color: #006d2c;  /* deep green for titles */
+  font-size: 16px;
+  margin-bottom: 1px;
 }
 
 .custom-popup, .cadw-popup em {

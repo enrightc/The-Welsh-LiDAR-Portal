@@ -120,6 +120,8 @@ function Register() {
 
         // Navigate to home
         navigate("/profile", { replace: true });
+        
+
 
       } catch (error) {
         if (error.response) {

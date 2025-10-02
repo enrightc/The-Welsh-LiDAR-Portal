@@ -25,20 +25,23 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
     return false;
   });
 
-  // Overlay toggles (each one controls whether a layer is shown)
-  const [showDsmHillshade, setShowDsmHillshade] = useState(false); // true or false from the checkbox
+  // Overlay toggles (each one controls whether a layer is shown). This gives a checkbox-controlled-boolean - when true the layer shows; when fallse it hides.
+  const [showDsmHillshade, setShowDsmHillshade] = useState(false); 
   const [showMultiHillshade, setShowMultiHillshade] = useState(false);
-  const [showCadwWfs, setShowCadwWfs] = useState(false);
+  const [showCadwSm, setShowCadwSm] = useState(false);
+  const [showParksWfs, setShowParksWfs] = useState(false);
 
-// Refs for Leaflet layers (stores the actual Leaflet layer objects here)
-// Using refs lets us add/remove the same layer without rebuilding it every render.
+// This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
   const osmRef = useRef(null);
   const esriRef = useRef(null);
   const dsmHillshadeRef = useRef(null);
   const multiHillshadeRef = useRef(null);
-  const cadwRef = useRef(null); // WFS -> GeoJSON layer (created once, reused)
+  const cadwSmRef = useRef(null); 
+  const parksRef = useRef(null);
 
-  const CADW_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
+  // Attributes
+  const CADW_SM_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
+  const PARKS_ATTR = 'Registered Historic Parks & Gardens © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
 
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
@@ -146,24 +149,24 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
   // --- Vector Layers ---
   // --- WFS: Cadw Scheduled Monuments ---
   useEffect(() => {
-    const CADW_WFS_URL =
+    const CADW_SM_URL =
       "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=inspire-wg:Cadw_SAM&srsName=EPSG:4326&outputFormat=application/json";
 
     async function addCadw() {
       // If already created once, just re-add it
-      if (cadwRef.current) {
-        if (!map.hasLayer(cadwRef.current)) cadwRef.current.addTo(map);
+      if (cadwSmRef.current) {
+        if (!map.hasLayer(cadwSmRef.current)) cadwSmRef.current.addTo(map);
         return;
       }
       try {
         // Tell the Leaflet.loading plugin a data request is starting
         // This makes the small top-left spinner appear while the WFS loads
         map.fire('dataloading'); // start spinner
-        const res = await fetch(CADW_WFS_URL);
+        const res = await fetch(CADW_SM_URL);
         const data = await res.json();
 
         // Build the GeoJSON layer from the fetched data
-        cadwRef.current = L.geoJSON(data, {
+        cadwSmRef.current = L.geoJSON(data, {
           style: {
             color: "#e60000",
             weight: 2,
@@ -189,8 +192,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
             );
           },
         });
-        cadwRef.current.addTo(map);
-        if (map.attributionControl) map.attributionControl.addAttribution(CADW_ATTR);
+        cadwSmRef.current.addTo(map);
+        if (map.attributionControl) map.attributionControl.addAttribution(CADW_SM_ATTR);
       } catch (e) {
         console.error("Failed to load Cadw WFS:", e);
       } finally {
@@ -200,17 +203,92 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
       }
     }
 
-    if (showCadwWfs) { // state boolean controlled by checkbox: "Cadw Scheduled Monuments".
-      addCadw(); // if showCadwWfs is true call addCadw function.
-    } else if (cadwRef.current // Otherwise, if the checkbox is OFF and... 
-        && map.hasLayer(cadwRef.current)) { // ...the Cadw layer is currently on the map
-      map.removeLayer(cadwRef.current); // Remove the layer from the map
+    if (showCadwSm) { // state boolean controlled by checkbox: "Cadw Scheduled Monuments".
+      addCadw(); // if showCadwSm is true call addCadw function.
+    } else if (cadwSmRef.current // Otherwise, if the checkbox is OFF and... 
+        && map.hasLayer(cadwSmRef.current)) { // ...the Cadw layer is currently on the map
+      map.removeLayer(cadwSmRef.current); // Remove the layer from the map
       if (map.attributionControl) {
-        map.attributionControl.removeAttribution(CADW_ATTR);
+        map.attributionControl.removeAttribution(CADW_SM_ATTR);
       }
     }
-  }, [showCadwWfs, map]);
+  }, [showCadwSm, map]);
 
+  // --- WFS: Registered Historic Parks & Gardens ---
+  useEffect(() => {
+  
+    const PARKS_WFS_URL = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:cadw_rhpg_registeredareas&srsName=EPSG:4326&outputFormat=application/json";
+
+    async function addParks() {
+      // If already built once, just re-add it
+      if (parksRef.current) {
+        if (!map.hasLayer(parksRef.current)) parksRef.current.addTo(map);
+        return;
+      }
+      try {
+        // Show the small top-left spinner while loading
+        map.fire('dataloading');
+
+        const res = await fetch(PARKS_WFS_URL); // Fetch the WFS
+        const data = await res.json(); // Parse as a GeoJSON
+
+        // Helpful for discovering actual property names in your dataset
+        if (data?.features?.[0]?.properties) {
+          // Open DevTools console to see this once
+          // and then tailor the popup fields below
+          console.log('[Parks & Gardens WFS] example properties:', data.features[0].properties);
+        }
+
+        parksRef.current = L.geoJSON(data, { // Build the leaflet layer
+          style: {
+            color: '#006d2c',       // outline
+            weight: 2,
+            fillColor: '#c7e9c0',   // light green fill
+            fillOpacity: 0.35,
+          },
+          onEachFeature: (f, layer) => {
+            const p = f?.properties || {};
+            // Try common field names; adjust once you check the console log above
+            // Map to the real fields from DataMapWales
+            const name = p.site_name_en || p.site_name_cy || 'Unknown site';
+            const grade = p.grade_gradd || p.grade || 'N/A';
+            const main_phase = p.main_phase_en || 'N/A';
+            const reportLink = p.report_en
+              ? `<a href="${p.report_en}" target="_blank" rel="noopener noreferrer">Cadw report</a>`
+              : 'N/A';
+
+
+            layer.bindPopup(
+              `<div class="custom-popup parks-popup">
+                 <strong>Registered Historic Park &amp; Garden</strong><br/>
+                 <strong>${name}</strong><br/>
+                 <em>Grade: </em>${grade}<br/>
+                 <em>Main Phase: </em>${main_phase}<br/>
+                 <em>Cadw Report: </em>${reportLink}
+               </div>`
+            );
+          },
+        });
+
+        parksRef.current.addTo(map); // Put the leaflet layer on the map
+        if (map.attributionControl) map.attributionControl.addAttribution(PARKS_ATTR);
+      } catch (e) {
+        console.error('Failed to load Parks & Gardens WFS:', e);
+      } finally {
+        map.fire('dataload'); // Hide the spinner
+      }
+    }
+
+    // Adds/Removes attribution as needed. 
+    if (showParksWfs) {
+      addParks();
+    } else if (parksRef.current && map.hasLayer(parksRef.current)) { // Hide the layer
+      map.removeLayer(parksRef.current);
+      if (map.attributionControl) {
+        map.attributionControl.removeAttribution(PARKS_ATTR) // Remove attribute(PARKS_ATTR);
+      }
+    }
+  }, [showParksWfs, map]);
 
 
   return (
@@ -336,11 +414,33 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               control={
                 <Checkbox
                   size="small"
-                  checked={showCadwWfs}
-                  onChange={(e) => setShowCadwWfs(e.target.checked)}
+                  checked={showCadwSm}
+                  onChange={(e) => setShowCadwSm(e.target.checked)}
                 />
               }
               label="Cadw Scheduled Monuments"
+              sx={{
+                m: 0,
+                p: { xs: 0.25, sm: 0.25 },
+                borderRadius: 1,
+                "& .MuiFormControlLabel-label": {
+                  fontSize: { xs: '0.92rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                },
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
+              }}
+            />
+
+            {/* Parks and Gardens */}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={showParksWfs}
+                  onChange={(e) => setShowParksWfs(e.target.checked)}
+                />
+              }
+              label="Registered Historic Parks and Gardens"
               sx={{
                 m: 0,
                 p: { xs: 0.25, sm: 0.25 },
