@@ -30,6 +30,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
   const [showMultiHillshade, setShowMultiHillshade] = useState(false);
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
+  const [showNMRWfs, setShowNMRWfs] = useState(false);
 
 // This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
   const osmRef = useRef(null);
@@ -38,10 +39,12 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
   const multiHillshadeRef = useRef(null);
   const cadwSmRef = useRef(null); 
   const parksRef = useRef(null);
+  const NMRRef = useRef(null);
 
   // Attributes
   const CADW_SM_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
   const PARKS_ATTR = 'Registered Historic Parks & Gardens © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
+  const NMR_ATTR = 'produced by the Royal Commission on the Ancient and Historical Monuments of Wales (RCAHMW). © Crown Database Right: RCAHMW, licensed under the Open Government Licence 3.0.'
 
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
@@ -257,7 +260,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               ? `<a href="${p.report_en}" target="_blank" rel="noopener noreferrer">Cadw report</a>`
               : 'N/A';
 
-
             layer.bindPopup(
               `<div class="custom-popup parks-popup">
                  <strong>Registered Historic Park &amp; Garden</strong><br/>
@@ -289,6 +291,81 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
       }
     }
   }, [showParksWfs, map]);
+
+  // --- WFS: National Monuments Records (NMR) ---
+  useEffect(() => {
+    const NMR_URL =
+      "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:rcahmw_nmrw_terrestrialsites_rcahmw_bng&srsName=EPSG:4326&outputFormat=application/json";
+
+    async function addNMR() {
+      // If already created once, just re-add it
+      if (NMRRef.current) {
+        if (!map.hasLayer(NMRRef.current)) NMRRef.current.addTo(map);
+        return;
+      }
+      try {
+        // Tell the Leaflet.loading plugin a data request is starting
+        // This makes the small top-left spinner appear while the WFS loads
+        map.fire('dataloading'); // start spinner
+        const res = await fetch(NMR_URL);
+        const data = await res.json();
+
+        // Helpful for discovering actual property names in your dataset
+        if (data?.features?.[0]?.properties) {
+          // Open DevTools console to see this once
+          // and then tailor the popup fields below
+          console.log('[NMR WFS] example properties:', data.features[0].properties);
+        }
+
+        // Build the GeoJSON layer from the fetched data
+        NMRRef.current = L.geoJSON(data, {
+          style: {
+            color: "#04e600ff",
+            weight: 2,
+            fillColor: "#04e600ff",
+            fillOpacity: 0.4,
+          },
+          onEachFeature: (f, layer) => {
+            const p = f?.properties || {};
+            const name = p.Name || "No name";
+            const type = p.SiteType || "N/A";
+            const period = p.Period || "N/A";
+            const report = p.Report
+              ? `<a href="${p.Report}" target="_blank" rel="noopener noreferrer">View</a>`
+              : "N/A";
+            layer.bindPopup(
+              `<div class="custom-popup cadw-popup">
+                 <strong>Scheduled Monument</strong><br/>
+                 <strong>${name}</strong><br/>
+                 <em>Site Type: </em>${type}<br/>
+                 <em>Period: </em>${period}<br/>
+                 <em>Cadw Report: </em>${report}
+               </div>`
+            );
+          },
+        });
+        NMRRef.current.addTo(map);
+        if (map.attributionControl) map.attributionControl.addAttribution(NMR_ATTR);
+      } catch (e) {
+        console.error("Failed to load NMR WFS:", e);
+      } finally {
+        // 👉 Tell the plugin that loading is finished (success OR error)
+        // This hides the small top-left spinner
+        map.fire('dataload'); // stop spinner
+      }
+    }
+
+    if (showNMRWfs) { // state boolean controlled by checkbox.
+    // Checkbox is ON ➜ ensure the layer is on the map (create it if needed, then add it)
+      addNMR(); // if showNMR is true call addNMR function.
+    } else if (NMRRef.current // Otherwise, if the checkbox is OFF and... 
+        && map.hasLayer(NMRRef.current)) { // ...the NMR layer is currently on the map
+      map.removeLayer(NMRRef.current); // Remove the layer from the map
+      if (map.attributionControl) {
+        map.attributionControl.removeAttribution(NMR_ATTR);
+      }
+    }
+  }, [showNMRWfs, map]);
 
 
   return (
@@ -441,6 +518,28 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
                 />
               }
               label="Registered Historic Parks and Gardens"
+              sx={{
+                m: 0,
+                p: { xs: 0.25, sm: 0.25 },
+                borderRadius: 1,
+                "& .MuiFormControlLabel-label": {
+                  fontSize: { xs: '0.92rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                },
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
+              }}
+            />
+
+            {/* National Monuments Record of Wales */}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={showNMRWfs}
+                  onChange={(e) => setShowNMRWfs(e.target.checked)}
+                />
+              }
+              label="National Monuments Record of Wales"
               sx={{
                 m: 0,
                 p: { xs: 0.25, sm: 0.25 },
