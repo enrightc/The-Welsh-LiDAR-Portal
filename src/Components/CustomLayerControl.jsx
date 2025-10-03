@@ -7,6 +7,7 @@ import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlL
 import LayersIcon from "@mui/icons-material/Layers";
 
 import '../assets/styles/map.css';
+import 'leaflet/dist/leaflet.css';
 
 export default function CustomLayerControl({ showCommunity, setShowCommunity }) {
   const theme = useTheme();
@@ -38,10 +39,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
   const multiHillshadeRef = useRef(null);
   const cadwSmRef = useRef(null); 
   const parksRef = useRef(null);
-
-  // Attributes
-  const CADW_SM_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
-  const PARKS_ATTR = 'Registered Historic Parks & Gardens © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
 
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
