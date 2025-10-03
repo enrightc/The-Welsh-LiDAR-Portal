@@ -25,7 +25,7 @@ export default function CreateRecordMobile({
   onSuccess,
 }) {
   // 'peek' | 'full'
-  const [position, setPosition] = React.useState('peek');
+  const [position, setPosition] = React.useState('full');
 
   const heights = {
     peek: '30vh',
@@ -65,20 +65,7 @@ export default function CreateRecordMobile({
           >
             {/* Handle / header */}
             <Box sx={{ p: 1, pb: 0.5 }}>
-              <Box
-                role="button"
-                aria-label="Drag handle"
-                onClick={toggle}
-                sx={{
-                  mx: 'auto',
-                  my: 0.5,
-                  width: 36,
-                  height: 4,
-                  borderRadius: 2,
-                  bgcolor: 'action.disabled',
-                  cursor: 'pointer',
-                }}
-              />
+              
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 0.5 }}>
                 <IconButton size="small" onClick={toggle} aria-label="Toggle size">
                   {position === 'peek' ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
