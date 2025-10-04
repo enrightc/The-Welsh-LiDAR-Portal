@@ -27,6 +27,7 @@ import Stack from '@mui/material/Stack';
 import InfoIcon from '@mui/icons-material/Info';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 // Contexts
 import StateContext from '../Contexts/StateContext';
@@ -634,8 +635,11 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
             {/* Photo upload */}
             <Grid>
               <Button
-                variant="contained"
                 component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}
                 fullWidth
                 style={{
                   marginLeft: 'auto',
@@ -647,7 +651,8 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                   fontSize: { xs: '0.8rem', md: '0.8rem' },
                   borderRadius: "5px",
                   backgroundColor: "",
-                  mt: 0.5
+                  mt: 0.5,
+                  py: 1.5
                 }}
               >
                 Upload Pictures (Max. 5)
@@ -670,6 +675,8 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                       type: 'catchUploadedPictures',
                       picturesChosen: updatedFiles,
                     });
+                    // Allow re-selecting the same files later
+                    e.target.value = null;
                   }}
                 />
               </Button>

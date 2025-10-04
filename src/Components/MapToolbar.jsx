@@ -40,7 +40,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             alignItems: 'center',
             border: '1px solid rgba(255, 255, 255, 0.3)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-            gap: 0.75,
+            gap: { xs: 0.75, sm: 2 },
             px: 2.5,
             }}>
 
@@ -66,7 +66,10 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-pressed={isDrawing}
                     
                 >
-                    <EditIcon sx={{ color: isDrawing ? 'info.main' : 'inherit' }} />
+                    <EditIcon sx={{ 
+                        color: isDrawing ? 'info.main' : 'inherit',
+                        fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' }, 
+                     }} />
                 </IconButton>
             </Tooltip>
 
@@ -78,7 +81,9 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     disabled={!isLoggedIn }
                     aria-pressed={isDrawing && polygonDrawn}
                 >
-                    <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit' }} />
+                    <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit',
+                    fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' },
+                     }} />
                 </IconButton>
             </Tooltip>
 
@@ -86,9 +91,10 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                 <IconButton
                     aria-label="Measure distance"
                     color="black"
-
                 >
-                    <StraightenIcon />
+                    <StraightenIcon sx = {{
+                        fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' },
+                    }} />
                 </IconButton>
             </Tooltip>
 
