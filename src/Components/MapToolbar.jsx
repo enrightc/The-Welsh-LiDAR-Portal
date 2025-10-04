@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import UndoIcon from '@mui/icons-material/Undo';
 import StraightenIcon from '@mui/icons-material/Straighten';
 
 import Dialog from '@mui/material/Dialog';
@@ -26,8 +26,8 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
             zIndex: 1000,
-            bottom: { xs: 500, sm: 50 },
-            left: { xs: 12, sm: '50%' },
+            bottom: { xs:100, sm: 50 },
+            left: { xs: 330, sm: '50%' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
             bgcolor: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(10px)',
@@ -62,7 +62,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     disabled={!isLoggedIn }
                     aria-pressed={isDrawing && polygonDrawn}
                 >
-                    <DeleteIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit' }} />
+                    <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit' }} />
                 </IconButton>
             </Tooltip>
 
