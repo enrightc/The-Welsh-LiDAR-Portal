@@ -44,6 +44,7 @@ export default function MainLidarMap({
     handleOpenMiniProfile,
     setSelectedFeature,
     setModalOpen,
+    layersOpen,
 }) {
     // Fallback to prevent map crash if allRecords isn't ready
     if (!Array.isArray(allRecords)) return null;
@@ -84,6 +85,7 @@ export default function MainLidarMap({
             <CustomLayerControl
                 showCommunity={showCommunity}
                 setShowCommunity={setShowCommunity}
+                layersOpen={layersOpen}
             />
 
             <FeatureGroup ref={featureGroupRef}>

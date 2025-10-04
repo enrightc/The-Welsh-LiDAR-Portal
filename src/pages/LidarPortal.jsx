@@ -34,6 +34,9 @@ function records() {
 records();
 
 const LidarPortal = () => {
+  // State to control layers
+  const [layersOpen, setLayersOpen] = React.useState(false);
+
   // Selected Record Modal
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedFeature, setSelectedFeature] = React.useState(null);
@@ -357,6 +360,8 @@ useEffect(() => {
           isMobileDevice={isMobileDevice}
           isDrawing={isDrawing}
           polygonDrawn={polygonDrawn}
+          layersOpen={layersOpen}
+          setLayersOpen={setLayersOpen}
         />
 
         <MainLidarMap
@@ -369,6 +374,7 @@ useEffect(() => {
           handleOpenMiniProfile={handleOpenMiniProfile}
           setSelectedFeature={setSelectedFeature}
           setModalOpen={setModalOpen}
+          layersOpen={layersOpen}
         />
       </div>
 
