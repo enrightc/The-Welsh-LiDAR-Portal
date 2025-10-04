@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import UndoIcon from '@mui/icons-material/Undo';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import LayersIcon from '@mui/icons-material/Layers';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -16,7 +17,8 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 
 
-export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn}) {
+
+export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn, layersOpen, setLayersOpen }) {
 
     const [openConfirm, setOpenConfirm] = React.useState(false);
 
@@ -26,8 +28,8 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
             zIndex: 1000,
-            bottom: { xs:100, sm: 50 },
-            left: { xs: 330, sm: '50%' },
+            bottom: { xs:70, sm: 50 },
+            right: { xs: 23, sm: 'calc(50% - 174px)' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
             bgcolor: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(10px)',
@@ -38,9 +40,23 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             alignItems: 'center',
             border: '1px solid rgba(255, 255, 255, 0.3)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-            gap: 2,
-            px: 2,
+            gap: 0.75,
+            px: 2.5,
             }}>
+
+            {/* Layers control Mobile only */}
+            <Tooltip title={layersOpen ? "Hide layers" : "Show layers"} arrow>
+            <IconButton
+                onClick={() => setLayersOpen(!layersOpen)}
+                color={layersOpen ? "primary" : "default"}
+                sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+                aria-label={layersOpen ? "Hide layers" : "Show layers"}
+            >
+                <LayersIcon />
+            </IconButton>
+            </Tooltip>
+
+
             <Tooltip title={isDrawing ? "Drawing… (click Clear to cancel)" : "Draw Polygon"} arrow>
                 <IconButton
                     aria-label={isDrawing ? 'Drawing in progress' : 'Draw polygon'}
@@ -65,8 +81,6 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit' }} />
                 </IconButton>
             </Tooltip>
-
-            <Divider orientation="vertical" flexItem />
 
             <Tooltip title="Measure Distance (coming Soon)" arrow>
                 <IconButton

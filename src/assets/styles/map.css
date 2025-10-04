@@ -124,5 +124,12 @@
 
 .leaflet-bottom.leaflet-right { bottom: 35px; right: 8px; }
 
+/* Hide Leaflet zoom buttons on phones */
+@media (max-width: 600px) {
+  .leaflet-control-zoom {
+    display: none !important;
+  }
+}
+
 
 
