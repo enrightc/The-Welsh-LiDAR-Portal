@@ -1,7 +1,7 @@
 // Components/DrawPolygonButton.jsx
 import React from "react";
 
-export default function DrawPolygonBtn({ onClick }) {
+export default function DrawPolygonBtn({ onClick, isDrawing }) {
   return (
     <button
       onClick={onClick}
@@ -11,7 +11,7 @@ export default function DrawPolygonBtn({ onClick }) {
             top: 100,
             right: 20,
             zIndex: 1000,
-            backgroundColor: '#1976d2',
+            backgroundColor: isDrawing ? '#d32f2f' : '#1976d2',
             color: '#fff',
             border: 'none',
             padding: '10px 15px',
@@ -19,7 +19,7 @@ export default function DrawPolygonBtn({ onClick }) {
             cursor: 'pointer',
       }}
     >
-      ✏️ Draw Polygon
+      
     </button>
   );
 }

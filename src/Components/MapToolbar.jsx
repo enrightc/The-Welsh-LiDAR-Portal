@@ -16,7 +16,7 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 
 
-export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice}) {
+export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn}) {
 
     const [openConfirm, setOpenConfirm] = React.useState(false);
 
@@ -26,8 +26,8 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
             zIndex: 1000,
-            bottom: { xs: 80, sm: 50 },
-            left: { xs: 20, sm: '50%' },
+            bottom: { xs: 500, sm: 50 },
+            left: { xs: 12, sm: '50%' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
             bgcolor: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(10px)',
@@ -41,25 +41,28 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             gap: 2,
             px: 2,
             }}>
-            <Tooltip title="Draw Polygon" arrow>
+            <Tooltip title={isDrawing ? "Drawing… (click Clear to cancel)" : "Draw Polygon"} arrow>
                 <IconButton
-                    aria-label="Draw polygon"
+                    aria-label={isDrawing ? 'Drawing in progress' : 'Draw polygon'}
                     color="black"
                     onClick={handleStartPolygon}
                     disabled={!isLoggedIn}
+                    aria-pressed={isDrawing}
+                    
                 >
-                    <EditIcon />
+                    <EditIcon sx={{ color: isDrawing ? 'info.main' : 'inherit' }} />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="Delete Polygon" arrow>
+            <Tooltip title={isDrawing ? 'Clear current drawing / Delete polygon' : 'Delete Polygon'} arrow>
                 <IconButton
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
                     disabled={!isLoggedIn }
+                    aria-pressed={isDrawing && polygonDrawn}
                 >
-                    <DeleteIcon />
+                    <DeleteIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit' }} />
                 </IconButton>
             </Tooltip>
 
@@ -81,7 +84,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     <DialogTitle>Confirm Deletion</DialogTitle>
                     <DialogContent>
                     <Typography>
-                        Are you sure you want to delete the selected polygon? You will have to draw it again.
+                        Are you sure you want to clear the polygon you have just drawn? You will have to draw it again.
                     </Typography>
                     </DialogContent>
                     <DialogActions>

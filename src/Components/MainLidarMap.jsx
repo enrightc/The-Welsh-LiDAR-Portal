@@ -76,6 +76,7 @@ export default function MainLidarMap({
             loadingControl={true} // shows the little spinner control
             tap={false}
             attributionControl={false}
+            doubleClickZoom={true}
         >
 
             <MapActionsRegistrar />
