@@ -41,6 +41,12 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
   const parksRef = useRef(null);
   const NMRRef = useRef(null);
 
+  // Ref for NMR requests
+  const nmrMoveDebounceRef = useRef(null); // waits 300ms after you stop moving
+  const nmrAbortRef = useRef(null);        // cancels an old request if a new one starts
+  const MIN_ZOOM_NMR = 11;                 // only fetch NMR when zoomed in enough 
+  const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawin
+
   // Attributes
   const CADW_SM_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
   const PARKS_ATTR = 'Registered Historic Parks & Gardens © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
@@ -294,77 +300,141 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
 
   // --- WFS: National Monuments Records (NMR) ---
   useEffect(() => {
-    const NMR_URL =
+    const NMR_BASE =
       "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:rcahmw_nmrw_terrestrialsites_rcahmw_bng&srsName=EPSG:4326&outputFormat=application/json";
 
-    async function addNMR() {
-      // If already created once, just re-add it
-      if (NMRRef.current) {
-        if (!map.hasLayer(NMRRef.current)) NMRRef.current.addTo(map);
-        return;
-      }
-      try {
-        // Tell the Leaflet.loading plugin a data request is starting
-        // This makes the small top-left spinner appear while the WFS loads
-        map.fire('dataloading'); // start spinner
-        const res = await fetch(NMR_URL);
-        const data = await res.json();
+    const addAttribution = () => {
+      if (map.attributionControl) map.attributionControl.addAttribution(NMR_ATTR);
+    };
+    const removeAttribution = () => {
+      if (map.attributionControl) map.attributionControl.removeAttribution(NMR_ATTR);
+    };
 
-        // Helpful for discovering actual property names in your dataset
-        if (data?.features?.[0]?.properties) {
-          // Open DevTools console to see this once
-          // and then tailor the popup fields below
-          console.log('[NMR WFS] example properties:', data.features[0].properties);
-        }
-
-        // Build the GeoJSON layer from the fetched data
-        NMRRef.current = L.geoJSON(data, {
-          style: {
-            color: "#04e600ff",
-            weight: 2,
-            fillColor: "#04e600ff",
-            fillOpacity: 0.4,
+    const ensureLayer = () => {
+      if (!NMRRef.current) {
+        NMRRef.current = L.geoJSON(null, {
+          // Points-only: NMR is a point dataset, so render everything as a two-layer halo + dot group for high visibility
+          pointToLayer: (feature, latlng) => {
+            // Single circleMarker with thick white stroke so it remains clickable
+            return L.circleMarker(latlng, {
+              radius: 7,                 // larger, easy to tap
+              renderer: nmrCanvasRendererRef?.current, // keep canvas performance if available
+              color: '#ffffff',          // bright white outer stroke (halo effect)
+              weight: 4,                 // thick outline for contrast
+              opacity: 1,
+              fillColor: '#ff2a6d',      // vivid magenta fill
+              fillOpacity: 0.95,
+            });
           },
           onEachFeature: (f, layer) => {
             const p = f?.properties || {};
-            const name = p.Name || "No name";
-            const type = p.SiteType || "N/A";
-            const period = p.Period || "N/A";
-            const report = p.Report
-              ? `<a href="${p.Report}" target="_blank" rel="noopener noreferrer">View</a>`
-              : "N/A";
+
+            const name = p.name || p.Name || 'No name';
+
+            // Support both `site_type` and `site_ty` (seen in your screenshots)
+            const rawSiteType = p.site_type ?? p.SiteType ?? p.type ?? '';
+            const siteType = String(rawSiteType || '')
+              .split(/[;,.]/)
+              .map(s => s.trim())
+              .filter(Boolean)
+              .filter((v, i, a) => a.indexOf(v) === i)
+              .join(', ') || 'N/A';
+
+            const period = p.period ?? p.Period ?? 'N/A';
+
+            // Coflein link
+            // Coflein URL (several possible keys)
+            const reportUrl = p.url ?? p.URL ?? p.report ?? p.Report ?? null;
+            const reportLink = reportUrl
+              ? `<a href="${reportUrl}" target="_blank" rel="noopener noreferrer">View</a>`
+              : 'N/A';
+
             layer.bindPopup(
-              `<div class="custom-popup cadw-popup">
-                 <strong>Scheduled Monument</strong><br/>
+              `<div class="custom-popup nmr-popup">
+                 <strong>NMR Record</strong><br/>
                  <strong>${name}</strong><br/>
-                 <em>Site Type: </em>${type}<br/>
+                 <em>Site Type: </em>${siteType}<br/>
                  <em>Period: </em>${period}<br/>
-                 <em>Cadw Report: </em>${report}
+                 <em>Record Link: </em>${reportLink}
                </div>`
             );
           },
+          pane: "overlayPane",
         });
-        NMRRef.current.addTo(map);
-        if (map.attributionControl) map.attributionControl.addAttribution(NMR_ATTR);
-      } catch (e) {
-        console.error("Failed to load NMR WFS:", e);
-      } finally {
-        // 👉 Tell the plugin that loading is finished (success OR error)
-        // This hides the small top-left spinner
-        map.fire('dataload'); // stop spinner
       }
+      if (!map.hasLayer(NMRRef.current)) NMRRef.current.addTo(map);
+    };
+
+    const clearLayer = () => {
+      if (NMRRef.current) NMRRef.current.clearLayers();
+    };
+
+    const buildBBoxParam = (bounds) => {
+      const bbox = bounds.toBBoxString(); // west,south,east,north
+      return `&bbox=${bbox},EPSG:4326`;
+    };
+
+    const abortInFlight = () => {
+      if (nmrAbortRef.current) {
+        try { nmrAbortRef.current.abort(); } catch (_) {}
+        nmrAbortRef.current = null;
+      }
+    };
+
+    const loadInView = async () => {
+      // Only fetch when zoomed in close enough
+      if (map.getZoom() < MIN_ZOOM_NMR) {
+        clearLayer();
+        return;
+      }
+
+      ensureLayer();
+      abortInFlight();
+
+      const url = `${NMR_BASE}${buildBBoxParam(map.getBounds())}&count=5000`;
+      const controller = new AbortController();
+      nmrAbortRef.current = controller;
+
+      map.fire('dataloading');
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        const data = await res.json();
+        clearLayer();
+        
+        // Add the new data to the layer
+        NMRRef.current.addData(data);
+      } catch (e) {
+        if (e?.name !== 'AbortError') {
+          console.error('Failed to load NMR WFS:', e);
+        }
+      } finally {
+        map.fire('dataload');
+      }
+    };
+
+    // Debounced pan/zoom handler
+    const debouncedLoad = () => {
+      if (nmrMoveDebounceRef.current) clearTimeout(nmrMoveDebounceRef.current);
+      nmrMoveDebounceRef.current = setTimeout(loadInView, 300);
+    };
+
+    if (showNMRWfs) {
+      ensureLayer();
+      addAttribution();
+      loadInView(); // initial fetch for current view
+      map.on('moveend zoomend', debouncedLoad);
+    } else {
+      map.off('moveend zoomend', debouncedLoad);
+      abortInFlight();
+      if (NMRRef.current && map.hasLayer(NMRRef.current)) map.removeLayer(NMRRef.current);
+      removeAttribution();
     }
 
-    if (showNMRWfs) { // state boolean controlled by checkbox.
-    // Checkbox is ON ➜ ensure the layer is on the map (create it if needed, then add it)
-      addNMR(); // if showNMR is true call addNMR function.
-    } else if (NMRRef.current // Otherwise, if the checkbox is OFF and... 
-        && map.hasLayer(NMRRef.current)) { // ...the NMR layer is currently on the map
-      map.removeLayer(NMRRef.current); // Remove the layer from the map
-      if (map.attributionControl) {
-        map.attributionControl.removeAttribution(NMR_ATTR);
-      }
-    }
+    // Cleanup on unmount or dependency change
+    return () => {
+      map.off('moveend zoomend', debouncedLoad);
+      abortInFlight();
+    };
   }, [showNMRWfs, map]);
 
 
@@ -487,6 +557,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
               }}
             />
 
+            {/* Cadw Scheduled Monuments */}
             <FormControlLabel
               control={
                 <Checkbox

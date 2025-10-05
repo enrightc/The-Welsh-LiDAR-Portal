@@ -1,6 +1,5 @@
 /* Modern styled popup for Scheduled Monuments */
 .custom-popup {
-  font-family: 'Segoe UI', sans-serif;
   font-size: 14px;
   color: #2e2e2e;
   max-width: 260px;
@@ -14,14 +13,21 @@
   margin-bottom: 1px;
 }
 
-.parks-popup strong {
+.custom-popup, .nmr-popup strong {
+  display: block;
+  color: #ff2a6d;
+  font-size: 16px;
+  margin-bottom: 1px;
+}
+
+.custom-popup, .parks-popup strong {
   display: block;
   color: #006d2c;  /* deep green for titles */
   font-size: 16px;
   margin-bottom: 1px;
 }
 
-.custom-popup, .cadw-popup em {
+.custom-popup, .cadw-popup, .nmr-popup, .parks-popup em {
   font-style: normal;
   font-weight: 600;
   color: #555;
@@ -105,6 +111,7 @@
   cursor: pointer;
   line-height: 1.4;
 }
+
 .layer-toggle-btn:hover {
   background: #f0f0f0;
 }
