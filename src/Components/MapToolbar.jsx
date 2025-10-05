@@ -68,7 +68,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                 >
                     <EditIcon sx={{ 
                         color: isDrawing ? 'info.main' : 'inherit',
-                        fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' }, 
+                        fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' }, 
                      }} />
                 </IconButton>
             </Tooltip>
@@ -82,7 +82,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-pressed={isDrawing && polygonDrawn}
                 >
                     <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit',
-                    fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' },
+                    fontSize: { xs: '1', sm: '1rem', md: '1.5rem' },
                      }} />
                 </IconButton>
             </Tooltip>
@@ -93,7 +93,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     color="black"
                 >
                     <StraightenIcon sx = {{
-                        fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' },
+                        fontSize: { xs: '1.25', sm: '1rem', md: '1.5rem' },
                     }} />
                 </IconButton>
             </Tooltip>

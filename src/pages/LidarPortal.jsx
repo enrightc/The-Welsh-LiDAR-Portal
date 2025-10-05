@@ -24,6 +24,12 @@ import AddIcon from '@mui/icons-material/Add';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 
 // Fetches all records from the Django backend API at /api/records/
 // Converts the response to JSON and logs the data to the browser console
@@ -79,6 +85,10 @@ const LidarPortal = () => {
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   
+  // Warning dialog state
+  const [warningOpen, setWarningOpen] = useState(false);
+  const handleWarningClose = () => setWarningOpen(false);
+
   // // 1. Get global state and dispatch from context
   const state = React.useContext(StateContext);
   const dispatch = React.useContext(DispatchContext);
@@ -112,7 +122,7 @@ const LidarPortal = () => {
   const handleStartPolygon = () => { 
     // If a polygon has already been drawn, stop here.
     if (polygonDrawn) {
-      alert("You can only draw one polygon per record.");
+      setWarningOpen(true);
       return;
     }
 
@@ -391,6 +401,18 @@ useEffect(() => {
         onClose={() => setMiniProfileOpen(false)}
         user={selectedUser}
       />
+
+      <Dialog open={warningOpen} onClose={handleWarningClose}>
+        <DialogTitle>Polygon Limit</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You can only draw one polygon per record. Please finish or delete your current polygon before starting another.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleWarningClose} autoFocus>OK</Button>
+        </DialogActions>
+      </Dialog>
 
     </div>
   )

@@ -49,6 +49,9 @@ export default function AttributesControl() {
                     <strong>Registered Historic Parks & Gardens </strong> © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>
                 </Typography>
                 <Typography variant="body2">
+                    <strong>National Monuments Record of Wales (NMRW) </strong> produced by the Royal Commission on the Ancient and Historical Monuments of Wales (RCAHMW). © Crown Database Right: RCAHMW, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>
+                </Typography>
+                <Typography variant="body2">
                     <strong>LiDAR </strong>© DataMapWales / Welsh Government
                 </Typography>
             </DialogContent>

@@ -3,7 +3,7 @@ import { useMap } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the map is "loading"
 
-import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery } from "@mui/material";
+import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery, Snackbar, Alert } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
 
 import '../assets/styles/map.css';
@@ -36,6 +36,9 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
   const [showNMRWfs, setShowNMRWfs] = useState(false);
+
+  // One-time hint when NMR is enabled but zoom is too low
+  const [nmrHintOpen, setNmrHintOpen] = useState(false);
 
 // This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
   const osmRef = useRef(null);
@@ -419,6 +422,10 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     };
 
     if (showNMRWfs) {
+      // If the user turned NMR on but is zoomed out too far, show a helpful hint
+      if (map.getZoom() < MIN_ZOOM_NMR) {
+        setNmrHintOpen(true);
+      }
       ensureLayer();
       addAttribution();
       loadInView(); // initial fetch for current view
@@ -437,9 +444,9 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     };
   }, [showNMRWfs, map]);
 
-
   return (
-    <Box
+    <>
+      <Box
       sx={{     
         position: "absolute",
         zIndex: 1000,
@@ -686,5 +693,16 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         </Box>
       )}
     </Box>
+    <Snackbar
+      open={nmrHintOpen}
+      autoHideDuration={4000}
+      onClose={() => setNmrHintOpen(false)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert onClose={() => setNmrHintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
+        Zoom in to see National Monuments Record points (zoom 11+).
+      </Alert>
+    </Snackbar>
+    </>
   );
 }
