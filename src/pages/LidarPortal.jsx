@@ -4,7 +4,6 @@ import Axios from 'axios'; // Import Axios for making HTTP requests
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Components
-import Snackbar from '../Components/MySnackbar';
 import CornerHelpBox from "../Components/CornerHelpBox";
 import MapToolbar from "../Components/MapToolbar";
 import '../assets/styles/map.css';
@@ -35,6 +34,9 @@ function records() {
 records();
 
 const LidarPortal = () => {
+  // State to control layers
+  const [layersOpen, setLayersOpen] = React.useState(false);
+
   // Selected Record Modal
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedFeature, setSelectedFeature] = React.useState(null);
@@ -77,12 +79,20 @@ const LidarPortal = () => {
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   
-  // // *Draggable Marker*
   // // 1. Get global state and dispatch from context
   const state = React.useContext(StateContext);
   const dispatch = React.useContext(DispatchContext);
 
   const isLoggedIn = !!state.userId;
+
+  // Tracks if the user is currently in the middle of drawing a polygon.
+  // true = drawing in progress, false = not drawing.
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  // Holds a reference to the active Leaflet.Draw polygon handler.
+  // This lets us call special methods like "undo last vertex" or "cancel"
+  // on the exact drawing session that's in progress.
+  const activeDrawHandlerRef = useRef(null);
 
   // Use the useState hook to create a state variable called allRecords
   // It starts as an empty array []
@@ -129,27 +139,63 @@ const LidarPortal = () => {
     showArea: true,
   });
 
+  // Save the handler so Undo/Cancel can call into it
+  activeDrawHandlerRef.current = polygonDrawer;
+
+  // Mark drawing as active
+  setIsDrawing(true);
+
+  // Disable double-click zoom during drawing (so double-tap can be used to finish)
+  const hadDoubleClickZoom = map.doubleClickZoom && map.doubleClickZoom._enabled;
+  if (hadDoubleClickZoom) map.doubleClickZoom.disable();
+
+  const onCreated = () => {
+    // Finished: hide drawing UI; re-enable dblclick zoom after this tick
+    setIsDrawing(false);
+
+    if (hadDoubleClickZoom) setTimeout(() => map.doubleClickZoom.enable(), 0);
+  };
+
+  const onDrawStop = () => {
+    // Cleanup no matter how we stop (finish or cancel)
+    setIsDrawing(false);
+    activeDrawHandlerRef.current = null;
+
+    map.off('draw:created', onCreated);
+    map.off('draw:drawstop', onDrawStop);
+
+    if (hadDoubleClickZoom) setTimeout(() => map.doubleClickZoom.enable(), 0);
+  };
+
+  map.on('draw:created', onCreated);
+  map.on('draw:drawstop', onDrawStop);
+
+
   polygonDrawer.enable(); // Activate the polygon tool so the user can start drawing.
-}; // once polygon is closed it is added to the featureGroup and onCreated={handleDrawCreate} is triggered and handleDrawCreate runs. 
+}; // once polygon is closed it is added to the featureGroup and onCreated={handleDrawCreate} is triggered and handleDrawCreate runs.
 
-// Custom function to delete a polygon once drawn
-const handleDeletePolygon = () => {
+
+// Custom function to delete a polygon once drawn or clear an incomplete active polygon
+function handleDeletePolygon() {
+  const handler = activeDrawHandlerRef.current;
+
+  // 1) Cancel if drawing is still active
+  if (handler) {
+    handler.disable(); // triggers draw:drawstop cleanup
+  }
+
+  // 2) Remove any finished polygons
   const fg = featureGroupRef.current;
+  if (fg) fg.clearLayers();
 
-  if (!fg) return;
-
-  // Remove all drawn shapes from the feature group
-  fg.clearLayers();
-
-  // Update your state to show the polygon has been deleted
+  // 3) Reset states
+  setIsDrawing(false);
   setPolygonDrawn(false);
+  activeDrawHandlerRef.current = null;
 
-  // Clear coordinates from the reducer
+  // 4) Clear coordinates in global state
   dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: [] });
-
-  // Show the snackbar
-  setSnackbarOpen(true);
-};
+}
 
 const handleActivateRuler = () => {
   const fg = featureGroupRef.current;
@@ -187,8 +233,6 @@ useEffect(() => {
   fetchRecords();
 }, []);
 
-  
-  
   // If data is still loading, show a loading message
   if (dataIsLoading === true) {
     return (
@@ -224,7 +268,7 @@ useEffect(() => {
       }
     }
   };
-  
+
   // If data is loaded, show the map
   // The MapContainer component is the main map component
   return (
@@ -293,8 +337,6 @@ useEffect(() => {
           </Fab>
         )}
 
-        {/* If you already have a desktop button in the toolbar, wire it to openPanel() */}
-
         <CreateRecordMobile
           open={panelOpen}
           onOpen={openPanel}
@@ -316,13 +358,10 @@ useEffect(() => {
           handleDeletePolygon={handleDeletePolygon}
           isLoggedIn={isLoggedIn}
           isMobileDevice={isMobileDevice}
-        />
-
-        {/* Polygon delete confirmation */}
-        <Snackbar
-          open={snackbarOpen}
-          onClose={() => setSnackbarOpen(false)}
-          message="Polygon deleted"
+          isDrawing={isDrawing}
+          polygonDrawn={polygonDrawn}
+          layersOpen={layersOpen}
+          setLayersOpen={setLayersOpen}
         />
 
         <MainLidarMap
@@ -335,6 +374,7 @@ useEffect(() => {
           handleOpenMiniProfile={handleOpenMiniProfile}
           setSelectedFeature={setSelectedFeature}
           setModalOpen={setModalOpen}
+          layersOpen={layersOpen}
         />
       </div>
 

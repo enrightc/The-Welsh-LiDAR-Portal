@@ -4,8 +4,9 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import UndoIcon from '@mui/icons-material/Undo';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import LayersIcon from '@mui/icons-material/Layers';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -16,7 +17,8 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 
 
-export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice}) {
+
+export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn, layersOpen, setLayersOpen }) {
 
     const [openConfirm, setOpenConfirm] = React.useState(false);
 
@@ -26,8 +28,8 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
             zIndex: 1000,
-            bottom: { xs: 80, sm: 50 },
-            left: { xs: 20, sm: '50%' },
+            bottom: { xs:70, sm: 50 },
+            right: { xs: 23, sm: 'calc(50% - 174px)' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
             bgcolor: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(10px)',
@@ -38,40 +40,61 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             alignItems: 'center',
             border: '1px solid rgba(255, 255, 255, 0.3)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-            gap: 2,
-            px: 2,
+            gap: { xs: 0.75, sm: 2 },
+            px: 2.5,
             }}>
-            <Tooltip title="Draw Polygon" arrow>
+
+            {/* Layers control Mobile only */}
+            <Tooltip title={layersOpen ? "Hide layers" : "Show layers"} arrow>
+            <IconButton
+                onClick={() => setLayersOpen(!layersOpen)}
+                color={layersOpen ? "primary" : "default"}
+                sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+                aria-label={layersOpen ? "Hide layers" : "Show layers"}
+            >
+                <LayersIcon />
+            </IconButton>
+            </Tooltip>
+
+
+            <Tooltip title={isDrawing ? "Drawing… (click Clear to cancel)" : "Draw Polygon"} arrow>
                 <IconButton
-                    aria-label="Draw polygon"
+                    aria-label={isDrawing ? 'Drawing in progress' : 'Draw polygon'}
                     color="black"
                     onClick={handleStartPolygon}
                     disabled={!isLoggedIn}
+                    aria-pressed={isDrawing}
+                    
                 >
-                    <EditIcon />
+                    <EditIcon sx={{ 
+                        color: isDrawing ? 'info.main' : 'inherit',
+                        fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' }, 
+                     }} />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="Delete Polygon" arrow>
+            <Tooltip title={isDrawing ? 'Clear current drawing / Delete polygon' : 'Delete Polygon'} arrow>
                 <IconButton
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
                     disabled={!isLoggedIn }
+                    aria-pressed={isDrawing && polygonDrawn}
                 >
-                    <DeleteIcon />
+                    <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit',
+                    fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' },
+                     }} />
                 </IconButton>
             </Tooltip>
-
-            <Divider orientation="vertical" flexItem />
 
             <Tooltip title="Measure Distance (coming Soon)" arrow>
                 <IconButton
                     aria-label="Measure distance"
                     color="black"
-
                 >
-                    <StraightenIcon />
+                    <StraightenIcon sx = {{
+                        fontSize: { xs: '0.8rem', sm: '1rem', md: '1.5rem' },
+                    }} />
                 </IconButton>
             </Tooltip>
 
@@ -81,7 +104,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     <DialogTitle>Confirm Deletion</DialogTitle>
                     <DialogContent>
                     <Typography>
-                        Are you sure you want to delete the selected polygon? You will have to draw it again.
+                        Are you sure you want to clear the polygon you have just drawn? You will have to draw it again.
                     </Typography>
                     </DialogContent>
                     <DialogActions>

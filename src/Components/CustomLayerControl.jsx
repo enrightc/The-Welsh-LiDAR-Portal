@@ -3,14 +3,15 @@ import { useMap } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the map is "loading"
 
-import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
 
 import '../assets/styles/map.css';
+import 'leaflet/dist/leaflet.css';
 
-export default function CustomLayerControl({ showCommunity, setShowCommunity }) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // ~≤600px isMobile becomes true on small screens
+export default function CustomLayerControl({ showCommunity, setShowCommunity, layersOpen }) {
+
+  const isMobile = useMediaQuery('(max-width:600px)'); // ~≤600px isMobile becomes true on small screens
 
   const map = useMap();
 
@@ -24,6 +25,10 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
     }
     return false;
   });
+
+  // On mobile the panels open/closed state follows the toolbar.
+  // on desk top it keeps using own collapsed state
+  const effectiveCollapsed = isMobile ? !layersOpen : collapsed;
 
   // Overlay toggles (each one controls whether a layer is shown). This gives a checkbox-controlled-boolean - when true the layer shows; when fallse it hides.
   const [showDsmHillshade, setShowDsmHillshade] = useState(false); 
@@ -46,11 +51,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
   const nmrAbortRef = useRef(null);        // cancels an old request if a new one starts
   const MIN_ZOOM_NMR = 11;                 // only fetch NMR when zoomed in enough 
   const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawin
-
-  // Attributes
-  const CADW_SM_ATTR = 'Scheduled Monuments © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
-  const PARKS_ATTR = 'Registered Historic Parks & Gardens © Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>';
-  const NMR_ATTR = 'produced by the Royal Commission on the Ancient and Historical Monuments of Wales (RCAHMW). © Crown Database Right: RCAHMW, licensed under the Open Government Licence 3.0.'
 
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
@@ -445,14 +445,16 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
         zIndex: 1000,
         top: { xs: 12, sm: 20 },
         right: { xs: 12, sm: 20 },
-        bgcolor: "rgba(255, 255, 255, 0.85)",
-        backdropFilter: "blur(8px)",
+        bgcolor: { 
+          xs:"transparent", sm: "rgba(255, 255, 255, 0.85)" },
+        backdropFilter: 
+          { xs:"none", sm: "blur(8px)" },
         borderRadius: 2,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        border: "1px solid rgba(0,0,0,0.08)",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+        border: { xs: "none", sm:"1px solid rgba(0,0,0,0.08)" },
+        boxShadow: { xs: "none", sm:"0 4px 16px rgba(0,0,0,0.12)" },
         minWidth: { xs: 210, sm: 260 },
         maxWidth: { xs: 260, sm: 320 },
       }}
@@ -468,7 +470,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
           py: 1,
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
           <LayersIcon fontSize="small" />
           <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
             Layers
@@ -481,6 +483,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
             size="small"
             onClick={() => setCollapsed((c) => !c)}
             sx={{
+              display: { xs: 'none', sm: 'inline-flex' },
               border: "1px solid rgba(0,0,0,0.15)",
               bgcolor: "white",
               "&:hover": { bgcolor: "#f5f5f5" },
@@ -491,13 +494,19 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
         </Tooltip>
       </Box>
 
-      {!collapsed && (
+      {!effectiveCollapsed && (
         <Box 
           sx={{
             px: { xs: 1,  sm: 1.5 },
             pb: { xs: 1,  sm: 1.5 },
             maxHeight: { xs: '50vh', sm: 'unset' }, // phones: cap height on phones never exceed half the screen height.
             overflowY: { xs: 'auto',  sm: 'visible' }, // If there is more content the inner area scrolls instead of covering map
+            bgcolor: { xs: "rgba(255,255,255,0.85)", sm: "transparent" },
+            backdropFilter: { xs: "blur(8px)", sm: "none" },
+            border: { xs: "1px solid rgba(0,0,0,0.08)", sm: "none" },
+            boxShadow: { xs: "0 4px 16px rgba(0,0,0,0.12)", sm: "none" },
+            borderRadius: { xs: 2, sm: 0 },
+            mt: { xs: 0.5, sm: 0 },
           }}
         >
           {/* Base maps */}
@@ -667,7 +676,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity }) 
           </Stack>
 
           {/* Scroll for more hint */}
-          {isMobile && !collapsed && (
+          {isMobile && !effectiveCollapsed && (
             <Box sx={{ px: 1, pb: 0.75, pt: 0.25 }}>
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Scroll for more
