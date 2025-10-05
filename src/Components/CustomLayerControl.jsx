@@ -35,6 +35,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const [showMultiHillshade, setShowMultiHillshade] = useState(false);
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
+  const [showNMRWfs, setShowNMRWfs] = useState(false);
 
 // This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
   const osmRef = useRef(null);
@@ -43,6 +44,13 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const multiHillshadeRef = useRef(null);
   const cadwSmRef = useRef(null); 
   const parksRef = useRef(null);
+  const NMRRef = useRef(null);
+
+  // Ref for NMR requests
+  const nmrMoveDebounceRef = useRef(null); // waits 300ms after you stop moving
+  const nmrAbortRef = useRef(null);        // cancels an old request if a new one starts
+  const MIN_ZOOM_NMR = 11;                 // only fetch NMR when zoomed in enough 
+  const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawin
 
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
@@ -258,7 +266,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
               ? `<a href="${p.report_en}" target="_blank" rel="noopener noreferrer">Cadw report</a>`
               : 'N/A';
 
-
             layer.bindPopup(
               `<div class="custom-popup parks-popup">
                  <strong>Registered Historic Park &amp; Garden</strong><br/>
@@ -290,6 +297,145 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
       }
     }
   }, [showParksWfs, map]);
+
+  // --- WFS: National Monuments Records (NMR) ---
+  useEffect(() => {
+    const NMR_BASE =
+      "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:rcahmw_nmrw_terrestrialsites_rcahmw_bng&srsName=EPSG:4326&outputFormat=application/json";
+
+    const addAttribution = () => {
+      if (map.attributionControl) map.attributionControl.addAttribution(NMR_ATTR);
+    };
+    const removeAttribution = () => {
+      if (map.attributionControl) map.attributionControl.removeAttribution(NMR_ATTR);
+    };
+
+    const ensureLayer = () => {
+      if (!NMRRef.current) {
+        NMRRef.current = L.geoJSON(null, {
+          // Points-only: NMR is a point dataset, so render everything as a two-layer halo + dot group for high visibility
+          pointToLayer: (feature, latlng) => {
+            // Single circleMarker with thick white stroke so it remains clickable
+            return L.circleMarker(latlng, {
+              radius: 7,                 // larger, easy to tap
+              renderer: nmrCanvasRendererRef?.current, // keep canvas performance if available
+              color: '#ffffff',          // bright white outer stroke (halo effect)
+              weight: 4,                 // thick outline for contrast
+              opacity: 1,
+              fillColor: '#ff2a6d',      // vivid magenta fill
+              fillOpacity: 0.95,
+            });
+          },
+          onEachFeature: (f, layer) => {
+            const p = f?.properties || {};
+
+            const name = p.name || p.Name || 'No name';
+
+            // Support both `site_type` and `site_ty` (seen in your screenshots)
+            const rawSiteType = p.site_type ?? p.SiteType ?? p.type ?? '';
+            const siteType = String(rawSiteType || '')
+              .split(/[;,.]/)
+              .map(s => s.trim())
+              .filter(Boolean)
+              .filter((v, i, a) => a.indexOf(v) === i)
+              .join(', ') || 'N/A';
+
+            const period = p.period ?? p.Period ?? 'N/A';
+
+            // Coflein link
+            // Coflein URL (several possible keys)
+            const reportUrl = p.url ?? p.URL ?? p.report ?? p.Report ?? null;
+            const reportLink = reportUrl
+              ? `<a href="${reportUrl}" target="_blank" rel="noopener noreferrer">View</a>`
+              : 'N/A';
+
+            layer.bindPopup(
+              `<div class="custom-popup nmr-popup">
+                 <strong>NMR Record</strong><br/>
+                 <strong>${name}</strong><br/>
+                 <em>Site Type: </em>${siteType}<br/>
+                 <em>Period: </em>${period}<br/>
+                 <em>Record Link: </em>${reportLink}
+               </div>`
+            );
+          },
+          pane: "overlayPane",
+        });
+      }
+      if (!map.hasLayer(NMRRef.current)) NMRRef.current.addTo(map);
+    };
+
+    const clearLayer = () => {
+      if (NMRRef.current) NMRRef.current.clearLayers();
+    };
+
+    const buildBBoxParam = (bounds) => {
+      const bbox = bounds.toBBoxString(); // west,south,east,north
+      return `&bbox=${bbox},EPSG:4326`;
+    };
+
+    const abortInFlight = () => {
+      if (nmrAbortRef.current) {
+        try { nmrAbortRef.current.abort(); } catch (_) {}
+        nmrAbortRef.current = null;
+      }
+    };
+
+    const loadInView = async () => {
+      // Only fetch when zoomed in close enough
+      if (map.getZoom() < MIN_ZOOM_NMR) {
+        clearLayer();
+        return;
+      }
+
+      ensureLayer();
+      abortInFlight();
+
+      const url = `${NMR_BASE}${buildBBoxParam(map.getBounds())}&count=5000`;
+      const controller = new AbortController();
+      nmrAbortRef.current = controller;
+
+      map.fire('dataloading');
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        const data = await res.json();
+        clearLayer();
+        
+        // Add the new data to the layer
+        NMRRef.current.addData(data);
+      } catch (e) {
+        if (e?.name !== 'AbortError') {
+          console.error('Failed to load NMR WFS:', e);
+        }
+      } finally {
+        map.fire('dataload');
+      }
+    };
+
+    // Debounced pan/zoom handler
+    const debouncedLoad = () => {
+      if (nmrMoveDebounceRef.current) clearTimeout(nmrMoveDebounceRef.current);
+      nmrMoveDebounceRef.current = setTimeout(loadInView, 300);
+    };
+
+    if (showNMRWfs) {
+      ensureLayer();
+      addAttribution();
+      loadInView(); // initial fetch for current view
+      map.on('moveend zoomend', debouncedLoad);
+    } else {
+      map.off('moveend zoomend', debouncedLoad);
+      abortInFlight();
+      if (NMRRef.current && map.hasLayer(NMRRef.current)) map.removeLayer(NMRRef.current);
+      removeAttribution();
+    }
+
+    // Cleanup on unmount or dependency change
+    return () => {
+      map.off('moveend zoomend', debouncedLoad);
+      abortInFlight();
+    };
+  }, [showNMRWfs, map]);
 
 
   return (
@@ -420,6 +566,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
               }}
             />
 
+            {/* Cadw Scheduled Monuments */}
             <FormControlLabel
               control={
                 <Checkbox
@@ -451,6 +598,28 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
                 />
               }
               label="Registered Historic Parks and Gardens"
+              sx={{
+                m: 0,
+                p: { xs: 0.25, sm: 0.25 },
+                borderRadius: 1,
+                "& .MuiFormControlLabel-label": {
+                  fontSize: { xs: '0.92rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                },
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
+              }}
+            />
+
+            {/* National Monuments Record of Wales */}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={showNMRWfs}
+                  onChange={(e) => setShowNMRWfs(e.target.checked)}
+                />
+              }
+              label="National Monuments Record of Wales"
               sx={{
                 m: 0,
                 p: { xs: 0.25, sm: 0.25 },
