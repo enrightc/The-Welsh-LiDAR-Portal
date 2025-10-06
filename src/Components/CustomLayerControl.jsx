@@ -306,13 +306,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     const NMR_BASE =
       "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:rcahmw_nmrw_terrestrialsites_rcahmw_bng&srsName=EPSG:4326&outputFormat=application/json";
 
-    const addAttribution = () => {
-      if (map.attributionControl) map.attributionControl.addAttribution(NMR_ATTR);
-    };
-    const removeAttribution = () => {
-      if (map.attributionControl) map.attributionControl.removeAttribution(NMR_ATTR);
-    };
-
     const ensureLayer = () => {
       if (!NMRRef.current) {
         NMRRef.current = L.geoJSON(null, {
@@ -433,8 +426,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     } else {
       map.off('moveend zoomend', debouncedLoad);
       abortInFlight();
-      if (NMRRef.current && map.hasLayer(NMRRef.current)) map.removeLayer(NMRRef.current);
-      removeAttribution();
+      
     }
 
     // Cleanup on unmount or dependency change
