@@ -56,26 +56,23 @@ function SidebarTab({ visible, onOpen }) {
   if (!visible) return null;
   return (
     <Tooltip title="Click to open record form" arrow>
-      <button
+      <Button
         onClick={onOpen}
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "0",
-          transform: "rotate(-90deg) translateX(-50%)",
-          transformOrigin: "top left",
-          background: "#1976d2",
-          color: "#fff",
-          border: "none",
-          borderRadius: "0 0 4px 4px",
-          padding: "8px 16px",
-          fontSize: "16px",
-          cursor: "pointer",
+        variant="contained"
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: 0,
+          transform: 'rotate(-90deg) translateX(-50%)',
+          transformOrigin: 'top left',
+          borderRadius: '0 0 4px 4px',
+          px: 2,
+          py: 1,
           zIndex: 1300,
         }}
       >
         Record Form
-      </button>
+      </Button>
     </Tooltip>
   );
 }
