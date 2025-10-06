@@ -32,6 +32,7 @@ import Button from '@mui/material/Button';
 // --- Env / constants ------------------
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+// --- Reusable local UI components ---------------------------------------
 // Small, reusable spinner screen shown while data loads
 function LoadingScreen() {
   return (
@@ -78,6 +79,41 @@ function SidebarTab({ visible, onOpen }) {
     </Tooltip>
   );
 }
+
+// Floating “Add Record” button on mobile
+function MobileAddFab({ visible, onClick }) {
+  if (!visible) return null;
+  return (
+    <Fab
+      color="primary"
+      aria-label="Add record"
+      onClick={onClick}
+      sx={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1000 }}
+    >
+      <AddIcon />
+    </Fab>
+  );
+}
+
+// Warning dialog for single-polygon limit
+function PolygonLimitDialog({ open, onClose }) {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Polygon Limit</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          You can only draw one polygon per record. Please finish or delete your current polygon before starting another.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} autoFocus>
+          OK
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 
 // ================================================
 // LidarPortal
@@ -352,16 +388,7 @@ useEffect(() => {
             
         {/* Mobile */}
         {/* Floating “Add Record” button on mobile */}
-        {isHandheld && (
-          <Fab
-            color="primary"
-            aria-label="Add record"
-            onClick={openPanel}
-            sx={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1000 }}
-          >
-            <AddIcon />
-          </Fab>
-        )}
+        <MobileAddFab visible={isHandheld} onClick={openPanel} />
 
         <CreateRecordMobile
           open={panelOpen}
@@ -415,17 +442,7 @@ useEffect(() => {
         user={selectedUser}
       />
 
-      <Dialog open={warningOpen} onClose={handleWarningClose}>
-        <DialogTitle>Polygon Limit</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You can only draw one polygon per record. Please finish or delete your current polygon before starting another.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleWarningClose} autoFocus>OK</Button>
-        </DialogActions>
-      </Dialog>
+      <PolygonLimitDialog open={warningOpen} onClose={handleWarningClose} />
 
     </div>
   )
