@@ -1,19 +1,17 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Axios from 'axios'; // Import Axios for making HTTP requests
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-// Components
+// --- Local components & styles ----------------------------------
+import '../assets/styles/map.css';
 import CornerHelpBox from "../Components/CornerHelpBox";
 import MapToolbar from "../Components/MapToolbar";
-import '../assets/styles/map.css';
 import Sidebar from '../Components/Sidebar';
 import RecordDetail from '../Components/RecordDetail';
 import MiniProfile from '../Components/MiniProfile';  
 import MainLidarMap from '../Components/MainLidarMap';
 import CreateRecordMobile from '../Components/CreateRecordMobile';
 
-// MUI Imports
+// MUI Imports ----------------------
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -31,15 +29,28 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 
-// Fetches all records from the Django backend API at /api/records/
-// Converts the response to JSON and logs the data to the browser console
-function records() {
-  // fetch('http://127.0.0.1:8000/api/records/').then((response) => response.json()).then(data=>console.log(data))
-}
+// --- Env / constants ------------------
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-records();
 
+// ================================================
+// LidarPortal
+// ================================================
 const LidarPortal = () => {
+  
+  // --- Global state -------------------------
+  const state = React.useContext(StateContext);
+  const dispatch = React.useContext(DispatchContext);
+  const isLoggedIn = !!state.userId;
+
+  // --- Screen / device -------------------
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md')); // ≤ md treated as handheld
+  const isTouchDevice = (typeof window !== 'undefined') && (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+  const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
+  const isHandheld = isSmallScreen || isTouchDevice || isMobileDevice; // broader check than screen width alone
+
+  // --- UI state ------------------------
   // State to control layers
   const [layersOpen, setLayersOpen] = React.useState(false);
 
@@ -49,20 +60,48 @@ const LidarPortal = () => {
 
   // Record form for mobile
   const [panelOpen, setPanelOpen] = React.useState(false);
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md')); // ≤ md treated as handheld
-  const isTouchDevice = (typeof window !== 'undefined') && (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
-  const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
-  const isHandheld = isSmallScreen || isTouchDevice || isMobileDevice; // broader check than screen width alone
-
   const openPanel = () => setPanelOpen(true);
   const closePanel = () => setPanelOpen(false);
+
+  // Warning dialog state
+  const [warningOpen, setWarningOpen] = useState(false);
+  const handleWarningClose = () => setWarningOpen(false);
+
+  // *Sidebar*
+  // State variable to control whether the sidebar is open or closed.
+  // 'sidebarOpen' is true if the sidebar is open, false if it is closed.
+  // Use 'setSidebarOpen' to change its value (for example, to open or close the sidebar).
+  const [sidebarOpen, setSidebarOpen] = useState(false)
     
   // Profile view Modal
-  // State in LiDARPortal.jsx
   const [selectedUser, setSelectedUser] = useState(null);
   const [miniProfileModalOpen, setMiniProfileOpen] = useState(false);
 
+  // --- Map / drawing state ------------------
+  // Tracks if the user is currently in the middle of drawing a polygon.
+  // true = drawing in progress, false = not drawing.
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  const [polygonDrawn, setPolygonDrawn] = useState(false);  // state to track if polygon has been drawn.
+
+  // Create a "ref" (like an empty box) to store the Leaflet FeatureGroup.
+  // Later we attach this ref to <FeatureGroup ref={featureGroupRef}> to link them.
+  // Once attached, we can access the FeatureGroup using featureGroupRef.current.
+  const featureGroupRef = useRef();
+
+  // Holds a reference to the active Leaflet.Draw polygon handler.
+  // This lets us call special methods like "undo last vertex" or "cancel"
+  // on the exact drawing session that's in progress.
+  const activeDrawHandlerRef = useRef(null);
+
+  // --- Data ---------------------------
+  // Use the useState hook to create a state variable called allRecords
+  // It starts as an empty array []
+  // setAllRecords is the function used to update the state later
+  const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
+  const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
+
+  // --- Handlers: profiles -------------------
   // When user clicks the username
   const handleOpenMiniProfile = async (userId) => {
   try {
@@ -74,49 +113,7 @@ const LidarPortal = () => {
   }
 };
 
-  const [scheduledMonuments, setScheduledMonuments] = useState(null);
-
-  // *Sidebar*
-  // State variable to control whether the sidebar is open or closed.
-  // 'sidebarOpen' is true if the sidebar is open, false if it is closed.
-  // Use 'setSidebarOpen' to change its value (for example, to open or close the sidebar).
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Snackbar state
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  
-  // Warning dialog state
-  const [warningOpen, setWarningOpen] = useState(false);
-  const handleWarningClose = () => setWarningOpen(false);
-
-  // // 1. Get global state and dispatch from context
-  const state = React.useContext(StateContext);
-  const dispatch = React.useContext(DispatchContext);
-
-  const isLoggedIn = !!state.userId;
-
-  // Tracks if the user is currently in the middle of drawing a polygon.
-  // true = drawing in progress, false = not drawing.
-  const [isDrawing, setIsDrawing] = useState(false);
-
-  // Holds a reference to the active Leaflet.Draw polygon handler.
-  // This lets us call special methods like "undo last vertex" or "cancel"
-  // on the exact drawing session that's in progress.
-  const activeDrawHandlerRef = useRef(null);
-
-  // Use the useState hook to create a state variable called allRecords
-  // It starts as an empty array []
-  // setAllRecords is the function used to update the state later
-  const [allRecords, setAllRecords] = useState([]); // Store records fetched from the backend
-  const [dataIsLoading, setDataIsLoading] = useState(true); // Track loading state
-
-  const [polygonDrawn, setPolygonDrawn] = useState(false);  // state to track if polygon has been drawn.
-
-  // Create a "ref" (like an empty box) to store the Leaflet FeatureGroup.
-  // Later we attach this ref to <FeatureGroup ref={featureGroupRef}> to link them.
-  // Once attached, we can access the FeatureGroup using featureGroupRef.current.
-  const featureGroupRef = useRef();
-
+  // --- Handlers: drawing (Start Polygons, Delete Polygons, Ruler, Reset) --------------------
   // This function runs when the custom "Draw Polygon" button is clicked.
   // It starts the polygon drawing mode so the user can click on the map to draw.
   const handleStartPolygon = () => { 
@@ -184,7 +181,6 @@ const LidarPortal = () => {
   polygonDrawer.enable(); // Activate the polygon tool so the user can start drawing.
 }; // once polygon is closed it is added to the featureGroup and onCreated={handleDrawCreate} is triggered and handleDrawCreate runs.
 
-
 // Custom function to delete a polygon once drawn or clear an incomplete active polygon
 function handleDeletePolygon() {
   const handler = activeDrawHandlerRef.current;
@@ -218,15 +214,15 @@ const handleActivateRuler = () => {
   L.control.ruler({ measureUnits: { length: 'metres' } }).addTo(map);
 };
 
+// Function to reset the polygon drawing state after form is submitted
+// This function will be passed to the Sidebar component
+// so it can be called when the user submits the form
+function resetPolygon() {
+  setPolygonDrawn(false);  // Allow drawing again
+  dispatch({ type: "catchPolygonCoordinateChange", polygonChosen: [] }); // Clear global polygon
+}
 
-  // Function to reset the polygon drawing state after form is submitted
-  // This function will be passed to the Sidebar component
-  // so it can be called when the user submits the form
-  function resetPolygon() {
-    setPolygonDrawn(false);  // Allow drawing again
-    dispatch({ type: "catchPolygonCoordinateChange", polygonChosen: [] }); // Clear global polygon
-  }
-
+// --- Data fetching ---------------------------
   // a function to fetch records from your backend
   const fetchRecords = async () => {
   try {
@@ -357,10 +353,8 @@ useEffect(() => {
           hideBackdrop // Do not render backdrop that blocks clicks on map.
         />
       
-
         <CornerHelpBox 
           isLoggedIn={isLoggedIn}
-          
         />
 
         <MapToolbar 
@@ -375,7 +369,6 @@ useEffect(() => {
         />
 
         <MainLidarMap
-          scheduledMonuments={scheduledMonuments}
           handleDrawCreate={handleDrawCreate}
           featureGroupRef={featureGroupRef}
           dispatch={dispatch}
