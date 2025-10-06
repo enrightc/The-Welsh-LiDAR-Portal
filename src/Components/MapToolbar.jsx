@@ -58,23 +58,25 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
 
 
             <Tooltip title={isDrawing ? "Drawing… (click Clear to cancel)" : "Draw Polygon"} arrow>
-                <IconButton
+                <span>
+                    <IconButton
                     aria-label={isDrawing ? 'Drawing in progress' : 'Draw polygon'}
                     color="black"
                     onClick={handleStartPolygon}
                     disabled={!isLoggedIn}
                     aria-pressed={isDrawing}
-                    
-                >
+                    >
                     <EditIcon sx={{ 
                         color: isDrawing ? 'info.main' : 'inherit',
                         fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' }, 
-                     }} />
-                </IconButton>
+                    }} />
+                    </IconButton>
+                </span>
             </Tooltip>
 
             <Tooltip title={isDrawing ? 'Clear current drawing / Delete polygon' : 'Delete Polygon'} arrow>
-                <IconButton
+                <span>
+                    <IconButton
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
@@ -85,10 +87,13 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     fontSize: { xs: '1', sm: '1rem', md: '1.5rem' },
                      }} />
                 </IconButton>
+                </span>
+                
             </Tooltip>
 
             <Tooltip title="Measure Distance (coming Soon)" arrow>
-                <IconButton
+                <span>
+                    <IconButton
                     aria-label="Measure distance"
                     color="black"
                 >
@@ -96,6 +101,8 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                         fontSize: { xs: '1.25', sm: '1rem', md: '1.5rem' },
                     }} />
                 </IconButton>
+                </span>
+                
             </Tooltip>
 
 
