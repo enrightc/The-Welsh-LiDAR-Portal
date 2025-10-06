@@ -25,8 +25,6 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 
-import LidarFooter from "../Components/LidarFooter";
-
 function Profile() {
     const navigate = useNavigate()
     const GlobalState = useContext(StateContext)
@@ -174,6 +172,7 @@ function Profile() {
         async function GetProfileInfo() {
             try {
                 const response = await Axios.get(`${BASE_URL}/api/profiles/${GlobalState.userId}/`);
+                console.log(response.data);
                 const expertiseRaw = response.data.expertise_level || "";
                 const expertiseFormatted = expertiseRaw.charAt(0).toUpperCase() + expertiseRaw.slice(1).toLowerCase();
 
@@ -244,10 +243,14 @@ function Profile() {
               `${BASE_URL}/api/profiles/${GlobalState.userId}/update/`,
               formData
             );
+            console.log(response);
             handleSnackbarOpen("Profile updated!");
             setTimeout(() => navigate(0), 1500);
           } catch (e) {
+            console.log(e.response);
             handleSnackbarOpen("Update failed. Please try again.");
+            console.log("profilePicture from API:", e?.response?.data?.profilePicture);
+            console.log("userProfile from state:", state.userProfile);
           }
         }
         updateProfile();
@@ -308,6 +311,22 @@ function Profile() {
             backgroundColor: "white",
           }}
         >
+          {/* Back to LiDAR Portal Button */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <Button
+              variant="outlined"
+              sx={{
+            color: 'black',
+            borderColor: 'black',
+            borderRadius: '8px',
+            textTransform: 'none'
+          }}
+              onClick={() => navigate('/LidarPortal')}
+            >
+              ← Back to LiDAR Portal
+            </Button>
+
+          </Box>
           <Grid
             container
             direction="column"
@@ -588,20 +607,12 @@ function Profile() {
                     type="file"
                     accept="image/png, image/gif, image/jpeg"
                     hidden
-                    onChange={e => {
-                      const newFiles = Array.from(e.target.files);
-                      const maxSizeMB = 2;
-                      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-                      const tooLarge = newFiles.some(file => file.size > maxSizeBytes);
-                        if (tooLarge) {
-                          alert(`Each file must be under ${maxSizeMB}MB.`);
-                          return;
-                        }
+                    onChange={e =>
                       dispatch({
                         type: "catchUploadedPictureChange",
                         uploadedPictureChosen: e.target.files,
                       })
-                    }}
+                    }
                   />
                 </Button>
               </Grid>
@@ -639,9 +650,6 @@ function Profile() {
           />
         </Box>
       </Grid>
-
-      <LidarFooter />
-
     </>
   );
 }

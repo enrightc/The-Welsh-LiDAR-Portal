@@ -217,6 +217,23 @@ const About = () => {
             </Box>
           </Box>
 
+          <Box
+            sx={{
+              textAlign: 'center',
+              mt: 8,
+              backgroundColor: '#EEF3F4',
+              alignSelf: 'flex-start',
+              padding: 2,
+              borderRadius: 8,
+              
+            }}
+          >
+            <Typography
+            variant="h2" sx={{ color: 'text.primary', fontSize: '1rem' }}>
+              💬 Have <a href="/feedback" style={{ color: '#0066cc', textDecoration: 'none' }}>feedback</a> or ideas? We’d love to hear from you! Please leave us <a href="/feedback" style={{ color: '#0066cc', textDecoration: 'none' }}>feedback</a> with any suggestions or bug reports.
+            </Typography>
+          </Box>
+
           <Box className="">
             <Typography variant="h1" component="h2" color="text.primary"
             sx={{
@@ -272,11 +289,31 @@ const About = () => {
                     }
                 />
               </ListItem>
+
+              <ListItem>
+                <ListItemText
+                  primary={
+                    <span>
+                      National Monuments Record of Wales (NMRW) data is produced by the
+                      Royal Commission on the Ancient and Historical Monuments of Wales (RCAHMW).
+                      © Crown Database Right {new Date().getFullYear()} and licensed under the{" "}
+                      <a
+                        href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Open Government Licence v3.0
+                      </a>.
+                    </span>
+                  }
+                />
+              </ListItem>
             </List> 
           </Box> 
         </Container>
       </main>
 
+      
       <SignUpCTA />
       <LidarFooter />
       

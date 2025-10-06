@@ -71,6 +71,10 @@ export default function Feedback() {
           {loading ? "Sending..." : "Send feedback"}
         </button>
 
+        <small style={{ display: "block",       color: "#666", marginTop: "1rem" }}>
+          If you’re reporting a bug, please describe what you were doing when it occurred and the steps we can follow to reproduce it. This will help us investigate and fix the issue more quickly.
+        </small>
+
         {status && <p style={{ marginTop: "1rem" }}>{status}</p>}
       </form>
 

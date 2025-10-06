@@ -163,7 +163,7 @@ function Login() {
             tokenInfo: state.token  // ✅ Use state.token here
         }); // Dispatch an action to update the username in the state
             setLoginComplete(true); // Set this after dispatch
-            navigate("/profile"); // Redirect to the home page after successful registration
+            navigate("/LidarPortal"); // Redirect to the home page after successful registration
             
           } catch (error) {
             if (Axios.isCancel?.(error)) return; // do nothing on cancel
