@@ -42,6 +42,9 @@ import { siteOptions, monumentOptions, periodOptions } from '../Constants/Option
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const isTouchDevice = (typeof window !== 'undefined') && (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
 
+// Key used to persist in-progress form data so it survives panel closes / unmounts
+const DRAFT_KEY = 'createRecordDraft';
+
 export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) {
     // Modal state (controls the Site/Monument help dialog)
     // helpOpen - true/false flag (whether modal is visible)
@@ -115,6 +118,15 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
             case "changeSendRequest":
                 draft.sendRequest = draft.sendRequest + 1 // Toggle sendRequest state
                 break; // This action will trigger the useEffect to send the request
+            case "hydrateFromDraft":
+                // Fill fields from a saved draft (used when the form remounts)
+                draft.titleValue = action.payload.titleValue ?? draft.titleValue;
+                draft.prnValue = action.payload.prnValue ?? draft.prnValue;
+                draft.descriptionValue = action.payload.descriptionValue ?? draft.descriptionValue;
+                draft.siteValue = action.payload.siteValue ?? draft.siteValue;
+                draft.monumentValue = action.payload.monumentValue ?? draft.monumentValue;
+                draft.periodValue = action.payload.periodValue ?? draft.periodValue;
+                break;
             case "resetForm":
                 return initialstate; // Resets all fields to their initial values
                 break;
@@ -122,6 +134,26 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
     }
     
     const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
+
+    // Load any saved draft when this component mounts (helps if the panel unmounted)
+    useEffect(() => {
+      try {
+        const raw = window.sessionStorage.getItem(DRAFT_KEY);
+        if (raw) {
+          const draft = JSON.parse(raw);
+          // Only hydrate known, safe text/select fields (not images)
+          dispatch({ type: 'hydrateFromDraft', payload: {
+            titleValue: draft.titleValue || '',
+            prnValue: draft.prnValue || '',
+            descriptionValue: draft.descriptionValue || '',
+            siteValue: draft.siteValue || '',
+            monumentValue: draft.monumentValue || '',
+            periodValue: draft.periodValue || ''
+          }});
+        }
+      } catch (_) {}
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Catching picture fields
     // This effect runs every time the first uploaded picture changes.
@@ -173,6 +205,21 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
             });
         }
     }, [state.uploadedPictures[4]]);
+
+    // Persist a lightweight draft of the form so closing the sheet doesn't wipe inputs
+    useEffect(() => {
+      const draft = {
+        titleValue: state.titleValue,
+        prnValue: state.prnValue,
+        descriptionValue: state.descriptionValue,
+        siteValue: state.siteValue,
+        monumentValue: state.monumentValue,
+        periodValue: state.periodValue,
+      };
+      try {
+        window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      } catch (_) {}
+    }, [state.titleValue, state.prnValue, state.descriptionValue, state.siteValue, state.monumentValue, state.periodValue]);
 
     function FormSubmit(e){
         e.preventDefault(); // Stop default form submission
@@ -245,6 +292,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                             }
                         }
                     );
+                    window.sessionStorage.removeItem(DRAFT_KEY); // Clear saved draft on successful submit
                     dispatch({ type: "resetForm" }); // <--- Reset form
                     resetPolygon(); // Reset the polygon in the parent component
                     navigate("/LidarPortal", { state: { toast: "New record successfully created" } });
