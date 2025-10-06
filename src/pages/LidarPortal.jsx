@@ -32,6 +32,52 @@ import Button from '@mui/material/Button';
 // --- Env / constants ------------------
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+// Small, reusable spinner screen shown while data loads
+function LoadingScreen() {
+  return (
+    <Grid
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      style={{ height: "100vh", width: "100vw" }}
+    >
+      <CircularProgress />
+      <Typography variant="body2" align="center" sx={{ mt: 2, maxWidth: 560, px: 2, opacity: 0.9 }}>
+        If this takes a while, the server might be waking up.
+      </Typography>
+    </Grid>
+  );
+}
+
+// The rotated “Record Form” tab shown on desktop when sidebar is closed
+function SidebarTab({ visible, onOpen }) {
+  if (!visible) return null;
+  return (
+    <Tooltip title="Click to open record form" arrow>
+      <button
+        onClick={onOpen}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "0",
+          transform: "rotate(-90deg) translateX(-50%)",
+          transformOrigin: "top left",
+          background: "#1976d2",
+          color: "#fff",
+          border: "none",
+          borderRadius: "0 0 4px 4px",
+          padding: "8px 16px",
+          fontSize: "16px",
+          cursor: "pointer",
+          zIndex: 1300,
+        }}
+      >
+        Record Form
+      </button>
+    </Tooltip>
+  );
+}
 
 // ================================================
 // LidarPortal
@@ -250,23 +296,9 @@ useEffect(() => {
 
   // If data is still loading, show a loading message
   if (dataIsLoading === true) {
-    return (
-      <Grid 
-        container
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        style={{ height: "100vh", width: "100vw" }}
-        // Set width: "100vw" to make sure the Grid takes up the full screen width,
-        // so the loading spinner can be perfectly centered horizontally
-      >
-        <CircularProgress />
-        <Typography variant="body2" align="center" sx={{ mt: 2, maxWidth: 560, px: 2, opacity: 0.9 }}>
-          If this takes a while, the server might be waking up.
-        </Typography>
-      </Grid>
-    );
-  }
+    return <LoadingScreen />;
+}
+ 
 
   const handleDrawCreate = (e) => {
     const { layerType, layer } = e;
@@ -313,32 +345,11 @@ useEffect(() => {
       {/* Main content (map), shrinks when sidebar is open */}
       <div style={{ flex: 1, position: "relative" }}>
         {/* Show menu button only when user is logged in, not on mobile, and sidebar is closed */}
-        {isLoggedIn && !isHandheld && !sidebarOpen && (
-          <Tooltip title="Click to open record form" arrow>
-            <button
-              onClick={() => setSidebarOpen(true)}
-              style={{
-                position: "absolute",
-                top: "50%", // Vertically centered
-                left: sidebarOpen ? "300px" : "0",   // Stick to the very left edge
-                transform: "rotate(-90deg) translateX(-50%)", 
-                transformOrigin: "top left",  // Pivot nicely from top-left
-                background: "#1976d2",
-                color: "#fff",
-                border: "none",
-                borderRadius: "0 0 4px 4px",
-                padding: "8px 16px",
-                fontSize: "16px",
-                cursor: "pointer",
-                zIndex: 1300,
-              }}
-            >
-              Record Form
-            </button>
-          </Tooltip>
-        )}
-
-
+        <SidebarTab
+          visible={isLoggedIn && !isHandheld && !sidebarOpen}
+          onOpen={() => setSidebarOpen(true)}
+        />
+            
         {/* Mobile */}
         {/* Floating “Add Record” button on mobile */}
         {isHandheld && (
