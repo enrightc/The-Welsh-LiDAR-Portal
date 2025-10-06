@@ -112,7 +112,10 @@ function RecordPopup({ record, onOpenMini, onOpenDetail }) {
       <Button
         variant="outlined"
         size="small"
-        onClick={() => onOpenDetail(record)}
+        onClick={(e) => {
+          e.currentTarget.blur(); // prevent focus from staying on a button inside the popup
+          onOpenDetail(record);
+        }}
         sx={{ mt: 1 }}
       >
         View Full Record
@@ -188,6 +191,9 @@ export default function MainLidarMap({
       tap={false}
       attributionControl={false}
       doubleClickZoom={true}
+      whenCreated={(map) => {
+        try { map.getContainer().setAttribute('tabindex', '-1'); } catch (_) {}
+      }}
     >
 
       <MapActionsRegistrar />
