@@ -48,6 +48,7 @@ function Login() {
               break; // This action will trigger the useEffect to send the request
             case "catchToken":
               draft.token = action.tokenValue // Update the token in the state
+              localStorage.setItem('theUserToken', action.tokenValue); // Save to localStorage
             break; // This action will update the token state when the request is successful
             case 'userSignsIn':
               draft.userId = action.IdInfo;
@@ -59,10 +60,10 @@ function Login() {
       
         const [state, dispatch] = useImmerReducer(ReducerFunction, initialstate)
 
-    {/* // Handles the form submission event:
+    // Handles the form submission event:
     // - Prevents the default page reload behaviour
     // - Triggers the `useEffect` hook by incrementing sendRequest
-    //   which then sends the registration request to the backend */}
+    //   which then sends the registration request to the backend
     function FormSubmit(e){
         e.preventDefault() // prevents the default form submission behavior/page reload
 
@@ -97,16 +98,10 @@ function Login() {
         // If the request is successful, the response will contain the data
 
         dispatch({
-            type: 'catchToken', 
-            tokenValue: response.data.auth_token}); // Dispatch an action to update the token in the state
-        GlobalDispatch({
-            type: 'catchToken', 
-            tokenValue: response.data.auth_token
-        }); // Dispatch an action to update the global token in the context
-       // navigate("/"); // Redirect to the home page after successful registration
+        type: 'catchToken', 
+        tokenValue: response.data.auth_token
+    });
 
-       setErrorMessage("");  // clear any previous errors
-        
       // Error messages
       } catch (error) {
         if (Axios.isCancel?.(error)) return;
@@ -161,10 +156,12 @@ function Login() {
             // If the request is successful, the response will contain the data
 
             GlobalDispatch({
-                type: 'userSignsIn', 
-                usernameInfo: response.data.username, emailInfo: response.data.email, 
-                IdInfo: response.data.id
-            }); // Dispatch an action to update the username in the state
+            type: 'userSignsIn', 
+            usernameInfo: response.data.username, 
+            emailInfo: response.data.email, 
+            IdInfo: response.data.id,
+            tokenInfo: state.token  // ✅ Use state.token here
+        }); // Dispatch an action to update the username in the state
             setLoginComplete(true); // Set this after dispatch
             navigate("/profile"); // Redirect to the home page after successful registration
             
