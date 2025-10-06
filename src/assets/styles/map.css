@@ -1,38 +1,61 @@
 /* Modern styled popup for Scheduled Monuments */
 .custom-popup {
-  font-size: 16px;
-  color: #2e2e2e;
-  max-width: 260px;
-  line-height: 1.5;
+  font-family: "Outfit", sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  max-width: 300px;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  font-style: normal;
+  font-weight: 400;
+  color: #555;
 }
 
+.record-popup strong {
+  color: #1976d2;
+  font-size: 16px;
+  display: block;
+  margin-bottom: 12px;
+}
 
+.record-popup img {
+  height: 10rem;
+  width: 100%;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
 
-.custom-popup, .cadw-popup strong {
+.custom-popup.record-popup p {
+  margin: 0;
+}
+
+.custom-popup.record-popup .recorded-by-link {
+  color: #1976d2;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cadw-popup strong {
   display: block;
   color: #b30000;  /* rich red for titles */
   font-size: 16px;
   margin-bottom: 1px;
 }
 
-.custom-popup, .nmr-popup strong {
+.nmr-popup strong {
   display: block;
   color: #ff2a6d;
   font-size: 16px;
   margin-bottom: 1px;
 }
 
-.custom-popup, .parks-popup strong {
+.parks-popup strong {
   display: block;
   color: #006d2c;  /* deep green for titles */
   font-size: 16px;
   margin-bottom: 1px;
-}
-
-.custom-popup, .cadw-popup, .nmr-popup, .parks-popup em {
-  font-style: normal;
-  font-weight: 600;
-  color: #555;
 }
 
 .custom-popup a {
@@ -45,6 +68,9 @@
 .custom-popup a:hover {
   text-decoration: underline;
 }
+
+
+
 
 .leaflet-div-icon {
   width: 9px !important;  
@@ -117,3 +143,15 @@
 .layer-toggle-btn:hover {
   background: #f0f0f0;
 }
+
+
+
+
+
+
+
+
+
+
+
+

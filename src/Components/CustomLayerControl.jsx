@@ -197,9 +197,9 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
               `<div class="custom-popup cadw-popup">
                  <strong>Scheduled Monument</strong><br/>
                  <strong>${name}</strong><br/>
-                 <em>Site Type: </em>${type}<br/>
-                 <em>Period: </em>${period}<br/>
-                 <em>Cadw Report: </em>${report}
+                 Site Type: ${type}<br/>
+                 Period: ${period}<br/>
+                 Cadw Report: ${report}
                </div>`
             );
           },
@@ -273,16 +273,15 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
               `<div class="custom-popup parks-popup">
                  <strong>Registered Historic Park &amp; Garden</strong><br/>
                  <strong>${name}</strong><br/>
-                 <em>Grade: </em>${grade}<br/>
-                 <em>Main Phase: </em>${main_phase}<br/>
-                 <em>Cadw Report: </em>${reportLink}
+                 Grade: ${grade}<br/>
+                 Main Phase: ${main_phase}<br/>
+                 Cadw Report: ${reportLink}
                </div>`
             );
           },
         });
 
         parksRef.current.addTo(map); // Put the leaflet layer on the map
-        if (map.attributionControl) map.attributionControl.addAttribution(PARKS_ATTR);
       } catch (e) {
         console.error('Failed to load Parks & Gardens WFS:', e);
       } finally {
@@ -294,10 +293,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     if (showParksWfs) {
       addParks();
     } else if (parksRef.current && map.hasLayer(parksRef.current)) { // Hide the layer
-      map.removeLayer(parksRef.current);
-      if (map.attributionControl) {
-        map.attributionControl.removeAttribution(PARKS_ATTR) // Remove attribute(PARKS_ATTR);
-      }
+      map.removeLayer(parksRef.current)
     }
   }, [showParksWfs, map]);
 
@@ -349,9 +345,9 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
               `<div class="custom-popup nmr-popup">
                  <strong>NMR Record</strong><br/>
                  <strong>${name}</strong><br/>
-                 <em>Site Type: </em>${siteType}<br/>
-                 <em>Period: </em>${period}<br/>
-                 <em>Record Link: </em>${reportLink}
+                 <Site Type: ${siteType}<br/>
+                 Period: ${period}<br/>
+                 Record Link: ${reportLink}
                </div>`
             );
           },
@@ -420,13 +416,11 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         setNmrHintOpen(true);
       }
       ensureLayer();
-      addAttribution();
       loadInView(); // initial fetch for current view
       map.on('moveend zoomend', debouncedLoad);
     } else {
       map.off('moveend zoomend', debouncedLoad);
       abortInFlight();
-      
     }
 
     // Cleanup on unmount or dependency change

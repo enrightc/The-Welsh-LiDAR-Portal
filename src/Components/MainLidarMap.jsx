@@ -56,64 +56,47 @@ function MapActionsRegistrar() {
 // that opens the user's mini profile when clicked.
 function RecordPopup({ record, onOpenMini, onOpenDetail }) {
   return (
-    <div
-      style={{
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
-        lineHeight: 1.4,
-        maxWidth: 300,
-        backgroundColor: '#fff',
-        padding: 10,
-        borderRadius: 6,
-      }}
-    >
-      <strong style={{ color: 'blue', fontSize: 15, display: 'block', marginBottom: 12 }}>
-        LiDAR Feature
-      </strong>
-
-      <h3 style={{ margin: '0 0 6px 0', fontSize: 16, color: 'blue' }}>{record.title}</h3>
+    <div className="custom-popup record-popup">
+      <strong>LiDAR Feature</strong>
+      <strong>{record.title}</strong>
 
       {record.picture1 && (
-        <img
-          src={record.picture1}
-          alt={record.title}
-          style={{ height: '10rem', width: '100%', objectFit: 'cover', marginBottom: 8, borderRadius: 4 }}
-        />
+        <img src={record.picture1} alt={record.title} />
       )}
 
       {record.prn && (
-        <p style={{ margin: 0 }}>
-          <strong>PRN:</strong> {record.prn}
+        <p>
+          PRN:{record.prn}
         </p>
       )}
 
-      <p style={{ margin: 0 }}>
-        <strong>Site Type: </strong>
-        {record.site_type_display}
+      <p>
+        Site Type:{record.site_type_display}
       </p>
-      <p style={{ margin: 0 }}>
-        <strong>Monument Type: </strong>
-        {record.monument_type_display}
+
+      <p>
+        <em>Monument Type: </em>{record.monument_type_display}
       </p>
-      <p style={{ margin: 0 }}>
-        <strong>Recorded By: </strong>
+
+      <p>
+        <em>Recorded By: </em>
         <span
           onClick={() => onOpenMini(record.recorded_by_user_id)}
-          style={{ color: '#1976d2', cursor: 'pointer', textDecoration: 'underline' }}
+          className="recorded-by-link"
         >
           {record.recorded_by}
         </span>
       </p>
-      <p style={{ margin: 0 }}>
-        <strong>Date Recorded: </strong>
-        {record.date_recorded}
+
+      <p>
+        <em>Date Recorded: </em>{record.date_recorded}
       </p>
 
       <Button
         variant="outlined"
         size="small"
         onClick={(e) => {
-          e.currentTarget.blur(); // prevent focus from staying on a button inside the popup
+          e.currentTarget.blur();
           onOpenDetail(record);
         }}
         sx={{ mt: 1 }}
@@ -132,21 +115,66 @@ function RecordPopup({ record, onOpenMini, onOpenDetail }) {
 // or the recorder’s mini profile.
 function CommunityLayer({ records, onOpenMini, onOpenDetail }) {
   if (!records?.length) return null;
+
   return (
     <LayerGroup>
       {records.map((record) => (
-        Array.isArray(record.polygonCoordinate) && record.polygonCoordinate.length > 0 && (
+        Array.isArray(record.polygonCoordinate) &&
+        record.polygonCoordinate.length > 0 && (
           <Polygon
             key={record.id}
             positions={record.polygonCoordinate}
             pathOptions={{ color: '#3388ff', weight: 2, fillOpacity: 0.2 }}
           >
             <Popup>
-              <RecordPopup
-                record={record}
-                onOpenMini={onOpenMini}
-                onOpenDetail={onOpenDetail}
-              />
+              <div className="custom-popup record-popup">
+                <strong>LiDAR Feature</strong>
+                <strong>{record.title}</strong>
+
+                {record.picture1 && (
+                  <img src={record.picture1} alt={record.title} />
+                )}
+
+                {record.prn && (
+                  <p>
+                    PRN: {record.prn}
+                  </p>
+                )}
+
+                <p>
+                  Site Type: {record.site_type_display}
+                </p>
+
+                <p>
+                  Monument Type: {record.monument_type_display}
+                </p>
+
+                <p>
+                  Recorded By: 
+                  <span
+                    onClick={() => onOpenMini(record.recorded_by_user_id)}
+                    className="recorded-by-link"
+                  >
+                    {record.recorded_by}
+                  </span>
+                </p>
+
+                <p>
+                  Date Recorded: {record.date_recorded}
+                </p>
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={(e) => {
+                    e.currentTarget.blur();
+                    onOpenDetail(record);
+                  }}
+                  sx={{ mt: 1 }}
+                >
+                  View Full Record
+                </Button>
+              </div>
             </Popup>
           </Polygon>
         )
