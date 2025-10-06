@@ -41,16 +41,22 @@ export default function Sidebar({ open, onClose, resetPolygon, fetchRecords }) {
       )}
 
       {/* Sidebar content */}
-      {open && (
-        <div style={{ padding: -45 }}>
-        {/* Component to create a record with reset polygon passed as prop */}
-            <CreateRecord 
-                resetPolygon={resetPolygon}
-                fetchRecords={fetchRecords}
-                onSuccess={onClose}
-            /> 
-        </div>
-      )}
+      <div
+        style={{
+          padding: -45,
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease',
+        }}
+        aria-hidden={!open}
+      >
+        {/* Keep CreateRecord mounted so user input persists when sidebar closes */}
+        <CreateRecord 
+          resetPolygon={resetPolygon}
+          fetchRecords={fetchRecords}
+          onSuccess={onClose}
+        />
+      </div>
     </div>
   );
 }
