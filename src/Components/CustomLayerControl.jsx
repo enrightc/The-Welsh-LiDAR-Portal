@@ -1,20 +1,38 @@
+// --- Imports --------------------------------
 import { useEffect, useRef, useState } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the map is "loading"
-
-import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery, Snackbar, Alert } from "@mui/material";
-import LayersIcon from "@mui/icons-material/Layers";
-
-import '../assets/styles/map.css';
 import 'leaflet/dist/leaflet.css';
 
+// --- Mui Components -------------------------
+import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery, Snackbar, Alert } from "@mui/material";
+
+// --- Icons --------------------------------
+import LayersIcon from "@mui/icons-material/Layers";
+
+// --- Styles --------------------------------
+import '../assets/styles/map.css';
+
+// --- Custom Components------------------------
+import LayerToggles from './LayerToggles';
+import BaseMapToggles from './BaseMapToggles';
+
+
+// =============================================
+// CustomLayerControl
+// =============================================
+// Provides checkboxes and radio buttons to toggle base maps and overlays.
+// Handles all WMS (LiDAR) and WFS (Cadw, Parks, NMR) layers.
+// Synchronises the map layers with user selections and manages visibility.
 export default function CustomLayerControl({ showCommunity, setShowCommunity, layersOpen }) {
 
+  // --- Responsive--------------------------
   const isMobile = useMediaQuery('(max-width:600px)'); // ~≤600px isMobile becomes true on small screens
 
   const map = useMap();
 
+  // --- State ---------------------------------
   // Base map selection
   const [base, setBase] = useState("osm"); // "osm" or "esri"
 
@@ -30,17 +48,20 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   // on desk top it keeps using own collapsed state
   const effectiveCollapsed = isMobile ? !layersOpen : collapsed;
 
-  // Overlay toggles (each one controls whether a layer is shown). This gives a checkbox-controlled-boolean - when true the layer shows; when fallse it hides.
+  // Overlay toggles 
+  // each one controls whether a layer is shown. 
+  // This gives a checkbox-controlled-boolean - when true the layer shows; when false it hides.
   const [showDsmHillshade, setShowDsmHillshade] = useState(false); 
   const [showMultiHillshade, setShowMultiHillshade] = useState(false);
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
   const [showNMRWfs, setShowNMRWfs] = useState(false);
 
-  // One-time hint when NMR is enabled but zoom is too low
+  // Hint for NMR
   const [nmrHintOpen, setNmrHintOpen] = useState(false);
 
-// This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
+  // --- Refs ----------------------------------
+  // This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
   const osmRef = useRef(null);
   const esriRef = useRef(null);
   const dsmHillshadeRef = useRef(null);
@@ -53,7 +74,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const nmrMoveDebounceRef = useRef(null); // waits 300ms after you stop moving
   const nmrAbortRef = useRef(null);        // cancels an old request if a new one starts
   const MIN_ZOOM_NMR = 11;                 // only fetch NMR when zoomed in enough 
-  const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawin
+  const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawing
 
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
@@ -205,7 +226,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
           },
         });
         cadwSmRef.current.addTo(map);
-        if (map.attributionControl) map.attributionControl.addAttribution(CADW_SM_ATTR);
       } catch (e) {
         console.error("Failed to load Cadw WFS:", e);
       } finally {
@@ -220,9 +240,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     } else if (cadwSmRef.current // Otherwise, if the checkbox is OFF and... 
         && map.hasLayer(cadwSmRef.current)) { // ...the Cadw layer is currently on the map
       map.removeLayer(cadwSmRef.current); // Remove the layer from the map
-      if (map.attributionControl) {
-        map.attributionControl.removeAttribution(CADW_SM_ATTR);
-      }
     }
   }, [showCadwSm, map]);
 
@@ -503,31 +520,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
           }}
         >
           {/* Base maps */}
-          <Typography variant="caption" sx={{ opacity: 0.8, display: "block", mb: 0 }}>
-            Base
-          </Typography>
-          <RadioGroup
-            value={base}
-            onChange={(e) => setBase(e.target.value)}
-            sx={{
-              display: "flex",
-              gap: 0,
-              "& .MuiFormControlLabel-root": {
-                m: 0,
-                p: 0,
-                borderRadius: 1,
-              },
-              "& .MuiFormControlLabel-root:hover": {
-                backgroundColor: "rgba(0,0,0,0.04)",
-              },
-              "& .MuiFormControlLabel-label": {
-                fontSize: { xs: '0.92rem', sm: '1rem' },
-              },
-            }}
-          >
-            <FormControlLabel value="osm" control={<Radio size="small" />} label="OpenStreetMap" />
-            <FormControlLabel value="esri" control={<Radio size="small" />} label="ESRI Imagery" />
-          </RadioGroup>
+          <BaseMapToggles base={base} setBase={setBase} />
 
           <Divider sx={{ my: 1 }} />
 
@@ -536,137 +529,20 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
             Overlays
           </Typography>
 
-          <Stack spacing={0}>
-
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={showCommunity}
-                  onChange={(e) => setShowCommunity(e.target.checked)}
-                />
-              }
-              label="Community Finds"
-              sx={{
-                m: 0,
-                p: { xs: 0.25, sm: 0.25 },
-                borderRadius: 1,
-                "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: '0.92rem', sm: '1rem' },
-                  lineHeight: 1.2,
-                },
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
-              }}
-            />
-
-            {/* Cadw Scheduled Monuments */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={showCadwSm}
-                  onChange={(e) => setShowCadwSm(e.target.checked)}
-                />
-              }
-              label="Cadw Scheduled Monuments"
-              sx={{
-                m: 0,
-                p: { xs: 0.25, sm: 0.25 },
-                borderRadius: 1,
-                "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: '0.92rem', sm: '1rem' },
-                  lineHeight: 1.2,
-                },
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
-              }}
-            />
-
-            {/* Parks and Gardens */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={showParksWfs}
-                  onChange={(e) => setShowParksWfs(e.target.checked)}
-                />
-              }
-              label="Registered Historic Parks and Gardens"
-              sx={{
-                m: 0,
-                p: { xs: 0.25, sm: 0.25 },
-                borderRadius: 1,
-                "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: '0.92rem', sm: '1rem' },
-                  lineHeight: 1.2,
-                },
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
-              }}
-            />
-
-            {/* National Monuments Record of Wales */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={showNMRWfs}
-                  onChange={(e) => setShowNMRWfs(e.target.checked)}
-                />
-              }
-              label="National Monuments Record of Wales"
-              sx={{
-                m: 0,
-                p: { xs: 0.25, sm: 0.25 },
-                borderRadius: 1,
-                "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: '0.92rem', sm: '1rem' },
-                  lineHeight: 1.2,
-                },
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
-              }}
-            />
-            
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={showDsmHillshade}
-                  onChange={(e) => setShowDsmHillshade(e.target.checked)}
-                />
-              }
-              label="LiDAR DSM Hillshade"
-              sx={{
-                m: 0,
-                p: { xs: 0.25, sm: 0.25 },
-                borderRadius: 1,
-                "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: '0.92rem', sm: '1rem' },
-                  lineHeight: 1.2,
-                },
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
-              }}
-            />
-
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={showMultiHillshade}
-                  onChange={(e) => setShowMultiHillshade(e.target.checked)}
-                />
-              }
-              label="LiDAR DSM Multi-directional"
-              sx={{
-                m: 0,
-                p: { xs: 0.25, sm: 0.25 },
-                borderRadius: 1,
-                "& .MuiFormControlLabel-label": {
-                  fontSize: { xs: '0.92rem', sm: '1rem' },
-                  lineHeight: 1.2,
-                },
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.035)" },
-              }}
-            />
-          </Stack>
+          <LayerToggles
+            showCommunity={showCommunity}
+            setShowCommunity={setShowCommunity}
+            showCadwSm={showCadwSm}
+            setShowCadwSm={setShowCadwSm}
+            showParksWfs={showParksWfs}
+            setShowParksWfs={setShowParksWfs}
+            showNMRWfs={showNMRWfs}
+            setShowNMRWfs={setShowNMRWfs}
+            showDsmHillshade={showDsmHillshade}
+            setShowDsmHillshade={setShowDsmHillshade}
+            showMultiHillshade={showMultiHillshade}
+            setShowMultiHillshade={setShowMultiHillshade}
+          />
 
           {/* Scroll for more hint */}
           {isMobile && !effectiveCollapsed && (
