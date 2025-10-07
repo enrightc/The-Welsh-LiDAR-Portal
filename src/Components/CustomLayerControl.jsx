@@ -18,7 +18,7 @@ import '../assets/styles/map.css';
 import LayerToggles from './LayerToggles';
 import BaseMapToggles from './BaseMapToggles';
 
-// --- Helper Functions -----------------------------
+// --- Helper Functions -----------------------
 
 /**
  * ensureWmsLayer
@@ -53,6 +53,57 @@ function toggleLayer(map, layerRef, visible) {
   if (!layer) return;
   if (visible && !map.hasLayer(layer)) layer.addTo(map);
   if (!visible && map.hasLayer(layer)) map.removeLayer(layer);
+}
+
+// --- NMR Helpers
+/**
+ * makeNmrLayer
+ * Builds and returns a Leaflet GeoJSON layer for National Monuments Record (NMR) points.
+ * Uses circle markers with custom styling and binds a popup showing basic record info.
+ * Called once to initialise the NMR layer, which is then reused and updated as the map moves.
+ */
+function makeNmrLayer(rendererRef) {
+  return L.geoJSON(null, {
+    pointToLayer: (_, latlng) => 
+      L.circleMarker(latlng, {
+        radius: 7,
+        renderer: rendererRef?.current,
+        color: "#ffffff",
+        weight: 4,
+        opacity: 1,
+        fillColor: "#ff2a6d",
+        fillOpacity: 0.95,
+      }),
+    onEachFeature: (f, layer) => {
+      const p = f?.properties || {};
+      const name = p.name || p.Name || "No name";
+      const siteType = String(p.site_type ?? p.SiteType ?? p.type ?? "")
+        .split(/[;,.]/)
+        .map(s => s.trim())
+        .filter(Boolean)
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .join(", ") || "N/A";
+      const period = p.period ?? p.Period ?? "N/A";
+      const reportUrl = p.url ?? p.URL ?? p.report ?? p.Report ?? null;
+      const reportLink = reportUrl
+        ? `<a href="${reportUrl}" target="_blank" rel="noopener noreferrer">View</a>`
+        : "N/A";
+      layer.bindPopup(
+        `<div class="custom-popup nmr-popup">
+          <strong>NMR Record</strong><br/>
+          <strong>${name}</strong><br/>
+          Site Type: ${siteType}<br/>
+          Period: ${period}<br/>
+          Record Link: ${reportLink}
+        </div>`
+      );
+    },
+    pane: "overlayPane",
+  });
+}
+
+function buildBboxUrl(base, map) {
+  return `${base}&bbox=${map.getBounds().toBBoxString()},EPSG:4326&count=5000`;
 }
 
 // =============================================
@@ -170,9 +221,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     toggleLayer(map, multiHillshadeRef, showMultiHillshade);
   }, [showMultiHillshade, map]);
 
-  
-
-  // --- Vector Layers ---
+  // --- Vector Layers ------------------------
   // --- WFS: Cadw Scheduled Monuments ---
   useEffect(() => {
     const CADW_SM_URL =
@@ -297,9 +346,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
       } finally {
         map.fire('dataload'); // Hide the spinner
       }
-    }
-
-    // Adds/Removes attribution as needed. 
+    } 
     if (showParksWfs) {
       addParks();
     } else if (parksRef.current && map.hasLayer(parksRef.current)) { // Hide the layer
@@ -314,67 +361,14 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
 
     const ensureLayer = () => {
       if (!NMRRef.current) {
-        NMRRef.current = L.geoJSON(null, {
-          // Points-only: NMR is a point dataset, so render everything as a two-layer halo + dot group for high visibility
-          pointToLayer: (feature, latlng) => {
-            // Single circleMarker with thick white stroke so it remains clickable
-            return L.circleMarker(latlng, {
-              radius: 7,                 // larger, easy to tap
-              renderer: nmrCanvasRendererRef?.current, // keep canvas performance if available
-              color: '#ffffff',          // bright white outer stroke (halo effect)
-              weight: 4,                 // thick outline for contrast
-              opacity: 1,
-              fillColor: '#ff2a6d',      // vivid magenta fill
-              fillOpacity: 0.95,
-            });
-          },
-          onEachFeature: (f, layer) => {
-            const p = f?.properties || {};
-
-            const name = p.name || p.Name || 'No name';
-
-            // Support both `site_type` and `site_ty` (seen in your screenshots)
-            const rawSiteType = p.site_type ?? p.SiteType ?? p.type ?? '';
-            const siteType = String(rawSiteType || '')
-              .split(/[;,.]/)
-              .map(s => s.trim())
-              .filter(Boolean)
-              .filter((v, i, a) => a.indexOf(v) === i)
-              .join(', ') || 'N/A';
-
-            const period = p.period ?? p.Period ?? 'N/A';
-
-            // Coflein link
-            // Coflein URL (several possible keys)
-            const reportUrl = p.url ?? p.URL ?? p.report ?? p.Report ?? null;
-            const reportLink = reportUrl
-              ? `<a href="${reportUrl}" target="_blank" rel="noopener noreferrer">View</a>`
-              : 'N/A';
-
-            layer.bindPopup(
-              `<div class="custom-popup nmr-popup">
-                 <strong>NMR Record</strong><br/>
-                 <strong>${name}</strong><br/>
-                 <Site Type: ${siteType}<br/>
-                 Period: ${period}<br/>
-                 Record Link: ${reportLink}
-               </div>`
-            );
-          },
-          pane: "overlayPane",
-        });
+        NMRRef.current = makeNmrLayer(nmrCanvasRendererRef);
+        NMRRef.current.addTo(map);
+      } else if (!map.hasLayer(NMRRef.current)) {
+        NMRRef.current.addTo(map);
       }
-      if (!map.hasLayer(NMRRef.current)) NMRRef.current.addTo(map);
     };
 
-    const clearLayer = () => {
-      if (NMRRef.current) NMRRef.current.clearLayers();
-    };
-
-    const buildBBoxParam = (bounds) => {
-      const bbox = bounds.toBBoxString(); // west,south,east,north
-      return `&bbox=${bbox},EPSG:4326`;
-    };
+    const clearLayer = () => NMRRef.current?.clearLayers();
 
     const abortInFlight = () => {
       if (nmrAbortRef.current) {
@@ -384,7 +378,6 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     };
 
     const loadInView = async () => {
-      // Only fetch when zoomed in close enough
       if (map.getZoom() < MIN_ZOOM_NMR) {
         clearLayer();
         return;
@@ -393,49 +386,39 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
       ensureLayer();
       abortInFlight();
 
-      const url = `${NMR_BASE}${buildBBoxParam(map.getBounds())}&count=5000`;
       const controller = new AbortController();
       nmrAbortRef.current = controller;
 
-      map.fire('dataloading');
+      map.fire("dataloading");
       try {
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(buildBboxUrl(NMR_BASE, map), { signal: controller.signal });
         const data = await res.json();
         clearLayer();
-        
-        // Add the new data to the layer
         NMRRef.current.addData(data);
       } catch (e) {
-        if (e?.name !== 'AbortError') {
-          console.error('Failed to load NMR WFS:', e);
-        }
+        if (e?.name !== "AbortError") console.error("Failed to load NMR WFS:", e);
       } finally {
-        map.fire('dataload');
+        map.fire("dataload");
       }
     };
 
-    // Debounced pan/zoom handler
     const debouncedLoad = () => {
-      if (nmrMoveDebounceRef.current) clearTimeout(nmrMoveDebounceRef.current);
+      clearTimeout(nmrMoveDebounceRef.current);
       nmrMoveDebounceRef.current = setTimeout(loadInView, 300);
     };
 
     if (showNMRWfs) {
-      // If the user turned NMR on but is zoomed out too far, show a helpful hint
-      if (map.getZoom() < MIN_ZOOM_NMR) {
-        setNmrHintOpen(true);
-      }
+      if (map.getZoom() < MIN_ZOOM_NMR) setNmrHintOpen(true);
       ensureLayer();
-      loadInView(); // initial fetch for current view
-      map.on('moveend zoomend', debouncedLoad);
+      loadInView();
+      map.on("moveend zoomend", debouncedLoad);
     } else {
-      map.off('moveend zoomend', debouncedLoad);
+      map.off("moveend zoomend", debouncedLoad);
       abortInFlight();
     }
 
-    // Cleanup on unmount or dependency change
     return () => {
-      map.off('moveend zoomend', debouncedLoad);
+      map.off("moveend zoomend", debouncedLoad);
       abortInFlight();
     };
   }, [showNMRWfs, map]);
