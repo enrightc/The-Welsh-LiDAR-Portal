@@ -6,6 +6,7 @@ import 'leaflet-loading';
  import CustomLayerControl from "./CustomLayerControl";
 
 function FitPolygon({ coordinates }) { // Function to draw the polygon on the map and zoom the map to fit the extent of the polygon
+
   const map = useMap(); // gives access to map after its loaded
 
   useEffect(() => { // This runs after the map is loaded

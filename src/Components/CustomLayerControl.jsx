@@ -6,7 +6,7 @@ import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the 
 import 'leaflet/dist/leaflet.css';
 
 // --- Mui Components -------------------------
-import { Box, Tooltip, IconButton, Divider, Typography, RadioGroup, FormControlLabel, Radio, Checkbox, Stack, useMediaQuery, Snackbar, Alert } from "@mui/material";
+import { Box, Tooltip, IconButton, Divider, Typography, Stack, useMediaQuery, Snackbar, Alert, Collapse } from "@mui/material";
 
 // --- Icons --------------------------------
 import LayersIcon from "@mui/icons-material/Layers";
@@ -19,7 +19,6 @@ import LayerToggles from './LayerToggles';
 import BaseMapToggles from './BaseMapToggles';
 
 // --- Helper Functions -----------------------
-
 /**
  * ensureWmsLayer
  * Creates and caches a Leaflet WMS tile layer if it doesn't already exist.
@@ -501,7 +500,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         </Tooltip>
       </Box>
 
-      {!effectiveCollapsed && (
+      <Collapse in={!effectiveCollapsed}>
         <Box 
           sx={{
             px: { xs: 1,  sm: 1.5 },
@@ -550,7 +549,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
             </Box>
           )}
         </Box>
-      )}
+      </Collapse>
     </Box>
     <Snackbar
       open={nmrHintOpen}
