@@ -18,6 +18,42 @@ import '../assets/styles/map.css';
 import LayerToggles from './LayerToggles';
 import BaseMapToggles from './BaseMapToggles';
 
+// --- Helper Functions -----------------------------
+
+/**
+ * ensureWmsLayer
+ * Creates and caches a Leaflet WMS tile layer if it doesn't already exist.
+ * Keeps your useEffects cleaner by reusing the same pattern for LiDAR WMS layers.
+ */
+function ensureWmsLayer(ref, map, { url, layers, zIndex, attribution }) {
+  if (!ref.current) {
+    ref.current = L.tileLayer.wms(url, {
+      layers,
+      format: "image/png",
+      transparent: true,
+      tileSize: 1024,
+      version: "1.1.1",
+      maxZoom: 18,
+      opacity: 1,
+      attribution,
+      pane: "lidarPane",
+      zIndex,
+    });
+  }
+  return ref.current;
+}
+
+/**
+ * toggleLayer
+ * Adds or removes a layer from the map depending on the `visible` flag.
+ * Prevents repeating `.addTo()` and `.removeLayer()` code everywhere.
+ */
+function toggleLayer(map, layerRef, visible) {
+  const layer = layerRef.current;
+  if (!layer) return;
+  if (visible && !map.hasLayer(layer)) layer.addTo(map);
+  if (!visible && map.hasLayer(layer)) map.removeLayer(layer);
+}
 
 // =============================================
 // CustomLayerControl
@@ -76,6 +112,18 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const MIN_ZOOM_NMR = 11;                 // only fetch NMR when zoomed in enough 
   const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawing
 
+  // --- useEffects --------------------------
+
+  // React hook, runs after the component renders. only re-runs if something in its dependency list changes. 
+  useEffect(() => {
+    if (!map.getPane("lidarPane")) { // checks if leaflet already has a pane called "lidarPane". If it doesnt exist yet (! means "not"), then it creates one
+      const pane = map.createPane("lidarPane"); // creates new pane in leaflet called "lidarPane"
+      pane.style.zIndex = 340; // above basemap (200), below vectors (400)
+      pane.style.pointerEvents = "none"; // Make LiDAR tiles ignore mouse/touch events. 
+      // This way they don't block clicks, drags, or hovers on the map and vector layers.
+    }
+  }, [map]); // closes the useEffect, [map] means the effect will run when the map object is read (from useMap())
+
   // --- Base maps (create once, then swap) ---
   useEffect(() => {
     if (!osmRef.current) {
@@ -97,87 +145,32 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     if (toAdd && !map.hasLayer(toAdd)) toAdd.addTo(map);
   }, [base, map]);
 
+  // --- WMS (LiDAR Layers) --------------------
   // --- WMS: LiDAR DSM Hillshade ---
-  // This effect runs whenever `showDsmHillshade` changes (toggled by the checkbox)
-  // or when the `map` object is first ready.
   useEffect(() => {
-    const URL = "https://datamap.gov.wales/geoserver/ows?";
-    const LAYERS = "geonode:wales_lidar_dsm_1m_hillshade_cog";
     const ATTR = "© DataMapWales / Welsh Government";
+    ensureWmsLayer(dsmHillshadeRef, map, {
+      url: "https://datamap.gov.wales/geoserver/ows?",
+      layers: "geonode:wales_lidar_dsm_1m_hillshade_cog",
+      zIndex: 350,
+      attribution: ATTR,
+    });
+    toggleLayer(map, dsmHillshadeRef, showDsmHillshade);
+  }, [showDsmHillshade, map]);
 
-    if (showDsmHillshade) { 
-      // ✅ If the checkbox is ON (true) → THe layer should be visible
-
-      if (!dsmHillshadeRef.current) { 
-        // If we haven't already created a DSM hillshade layer object and stored it in the ref...
-
-        dsmHillshadeRef.current = L.tileLayer.wms(URL, { 
-          // Create a new WMS tile layer from the server at `URL`
-          // and save it into the ref for reuse later.
-          layers: LAYERS, // Which dataset to request from the WMS server
-          format: "image/png", // Image format (supports transparency)
-          transparent: true, // Allow background to be see-through
-          tileSize: 1024, // Size of each tile (larger than default 256)
-          version: "1.1.1", // WMS protocol version used by DataMapWales
-          maxZoom: 18, // Only request tiles up to zoom level 18
-          opacity: 1, // Fully visible (1 = 100%)
-          attribution: ATTR, // Credits shown in the map corner
-          pane: "lidarPane",
-          zIndex: 350,
-        });
-      }
-
-      if (!map.hasLayer(dsmHillshadeRef.current)) {
-        // If the DSM hillshade layer exists but is not currently displayed on the map...
-        dsmHillshadeRef.current.addTo(map); 
-        // Add it to the map (make it visible).
-      }
-
-    } else if (dsmHillshadeRef.current && map.hasLayer(dsmHillshadeRef.current)) {
-      // ❌ If the checkbox is OFF (false), AND the layer exists AND is currently displayed...
-
-      map.removeLayer(dsmHillshadeRef.current);
-      // Remove it from the map (hide it), but keep the ref so we can re-add quickly later.
-    }
-
-  }, [showDsmHillshade, map]); 
-  // 🔄 This hook re-runs whenever the checkbox state or the map changes
-
-  // --- WMS: LiDAR DSM Multi‑directional Hillshade ---
+  // --- WMS: LiDAR DSM Multi-directional Hillshade ---
   useEffect(() => {
-    const URL = "https://datamap.gov.wales/geoserver/ows?";
-    const LAYERS = "geonode:wales_lidar_dsm_1m_hillshade_multi_cog";
-
-    if (showMultiHillshade) {
-      if (!multiHillshadeRef.current) {
-        multiHillshadeRef.current = L.tileLayer.wms(URL, {
-          layers: LAYERS,
-          format: "image/png",
-          transparent: true,
-          tileSize: 1024,
-          version: "1.1.1",
-          maxZoom: 18,
-          opacity: 1,
-          attribution: "© DataMapWales / Welsh Government",
-          pane: "lidarPane",
-          zIndex: 340,
-        });
-      }
-      if (!map.hasLayer(multiHillshadeRef.current)) multiHillshadeRef.current.addTo(map);
-    } else if (multiHillshadeRef.current && map.hasLayer(multiHillshadeRef.current)) {
-      map.removeLayer(multiHillshadeRef.current);
-    }
+    const ATTR = "© DataMapWales / Welsh Government";
+    ensureWmsLayer(multiHillshadeRef, map, {
+      url: "https://datamap.gov.wales/geoserver/ows?",
+      layers: "geonode:wales_lidar_dsm_1m_hillshade_multi_cog",
+      zIndex: 340,
+      attribution: ATTR,
+    });
+    toggleLayer(map, multiHillshadeRef, showMultiHillshade);
   }, [showMultiHillshade, map]);
 
-  // React hook, runs after the component renders. only re-runs if something in its dependency list changes. 
-  useEffect(() => {
-  if (!map.getPane("lidarPane")) { // checks if leaflet already has a pane called "lidarPane". If it doesnt exist yet (! means "not"), then it creates one
-    const pane = map.createPane("lidarPane"); // creates new pane in leaflet called "lidarPane"
-    pane.style.zIndex = 340; // above basemap (200), below vectors (400)
-    pane.style.pointerEvents = "none"; // Make LiDAR tiles ignore mouse/touch events. 
-    // This way they don't block clicks, drags, or hovers on the map and vector layers.
-  }
-}, [map]); // closes the useEffect, [map] means the effect will run when the map object is read (from useMap())
+  
 
   // --- Vector Layers ---
   // --- WFS: Cadw Scheduled Monuments ---
