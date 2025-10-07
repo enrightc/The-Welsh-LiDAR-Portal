@@ -18,29 +18,8 @@ import '../assets/styles/map.css';
 import LayerToggles from './LayerToggles';
 import BaseMapToggles from './BaseMapToggles';
 
-// --- Constants ---------------------------------------------------------------
-const ATTR_DM = "© DataMapWales / Welsh Government";
-
-// WMS (LiDAR)
-const WMS_URL = "https://datamap.gov.wales/geoserver/ows?";
-const LAYER_DSM   = "geonode:wales_lidar_dsm_1m_hillshade_cog";
-const LAYER_MULTI_DSM = "geonode:wales_lidar_dsm_1m_hillshade_multi_cog";
-
-// WFS (Vector)
-const CADW_SM_URL =
-  "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=inspire-wg:Cadw_SAM&srsName=EPSG:4326&outputFormat=application/json";
-
-const PARKS_WFS_URL =
-  "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:cadw_rhpg_registeredareas&srsName=EPSG:4326&outputFormat=application/json";
-
-const NMR_BASE_URL =
-  "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:rcahmw_nmrw_terrestrialsites_rcahmw_bng&srsName=EPSG:4326&outputFormat=application/json";
-
-// Behaviour
-const MIN_ZOOM_NMR = 11;
-
-
 // --- Helper Functions -----------------------
+
 /**
  * ensureWmsLayer
  * Creates and caches a Leaflet WMS tile layer if it doesn't already exist.
@@ -76,16 +55,10 @@ function toggleLayer(map, layerRef, visible) {
   if (!visible && map.hasLayer(layer)) map.removeLayer(layer);
 }
 
-// --- NMR Helpers
-/**
- * makeNmrLayer
- * Builds and returns a Leaflet GeoJSON layer for National Monuments Record (NMR) points.
- * Uses circle markers with custom styling and binds a popup showing basic record info.
- * Called once to initialise the NMR layer, which is then reused and updated as the map moves.
- */
+// --- NMR Helpers 
 function makeNmrLayer(rendererRef) {
   return L.geoJSON(null, {
-    pointToLayer: (_, latlng) => 
+    pointToLayer: (_, latlng) =>
       L.circleMarker(latlng, {
         radius: 7,
         renderer: rendererRef?.current,
@@ -109,22 +82,45 @@ function makeNmrLayer(rendererRef) {
       const reportLink = reportUrl
         ? `<a href="${reportUrl}" target="_blank" rel="noopener noreferrer">View</a>`
         : "N/A";
-      layer.bindPopup(
-        `<div class="custom-popup nmr-popup">
-          <strong>NMR Record</strong><br/>
-          <strong>${name}</strong><br/>
-          Site Type: ${siteType}<br/>
-          Period: ${period}<br/>
-          Record Link: ${reportLink}
-        </div>`
-      );
+      const popupHtml = makePopup({
+        title: 'NMR Record',
+        name,
+        className: 'nmr-popup',
+        rows: [
+          { label: 'Site Type', value: siteType },
+          { label: 'Period', value: period },
+          { label: 'Record Link', value: reportLink },
+        ],
+      });
+      layer.bindPopup(popupHtml);
     },
     pane: "overlayPane",
   });
 }
 
+// Append the current map view as a BBOX (WGS84) + a feature limit
+// Used by NMR Layer
 function buildBboxUrl(base, map) {
   return `${base}&bbox=${map.getBounds().toBBoxString()},EPSG:4326&count=5000`;
+}
+
+/**
+ * makePopup
+ * Builds a small HTML string for Leaflet popups using a consistent layout.
+ * Keeps WFS layer code cleaner by avoiding repeated template strings.
+ */
+function makePopup({ title, name, rows, className = '' }) {
+  const body = rows
+    .filter(Boolean)
+    .map((r) => `${r.label}: ${r.value}`)
+    .join('<br/>');
+  return `
+    <div class="custom-popup ${className}">
+      <strong>${title}</strong><br/>
+      <strong>${name}</strong><br/>
+      ${body}
+    </div>
+  `;
 }
 
 // =============================================
@@ -164,21 +160,16 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
   const [showNMRWfs, setShowNMRWfs] = useState(false);
-  
+
   // Hint for NMR
   const [nmrHintOpen, setNmrHintOpen] = useState(false);
-  // Close handler for the NMR zoom hint snackbar
-  const handleCloseNmrHint = () => setNmrHintOpen(false);
 
   // --- Refs ----------------------------------
   // This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
-  // --- Base maps ---
   const osmRef = useRef(null);
   const esriRef = useRef(null);
-  // --- LiDAR (WMS) ---
   const dsmHillshadeRef = useRef(null);
   const multiHillshadeRef = useRef(null);
-  // --- Vector (WFS) ---
   const cadwSmRef = useRef(null); 
   const parksRef = useRef(null);
   const NMRRef = useRef(null);
@@ -222,37 +213,37 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     if (toAdd && !map.hasLayer(toAdd)) toAdd.addTo(map);
   }, [base, map]);
 
-// ==========================================
-// ============ WMS (LiDAR Layers) ============
-// =============================================
-  // --- LiDAR DSM Hillshade ---
+  // --- WMS (LiDAR Layers) --------------------
+  // --- WMS: LiDAR DSM Hillshade ---
   useEffect(() => {
+    const ATTR = "© DataMapWales / Welsh Government";
     ensureWmsLayer(dsmHillshadeRef, map, {
-      url: WMS_URL,
-      layers: "LAYER_DSM",
+      url: "https://datamap.gov.wales/geoserver/ows?",
+      layers: "geonode:wales_lidar_dsm_1m_hillshade_cog",
       zIndex: 350,
-      attribution: ATTR_DM,
+      attribution: ATTR,
     });
     toggleLayer(map, dsmHillshadeRef, showDsmHillshade);
   }, [showDsmHillshade, map]);
 
   // --- WMS: LiDAR DSM Multi-directional Hillshade ---
   useEffect(() => {
+    const ATTR = "© DataMapWales / Welsh Government";
     ensureWmsLayer(multiHillshadeRef, map, {
-      url: WMS_URL,
-      layers: "LAYER_MULTI_DSM",
+      url: "https://datamap.gov.wales/geoserver/ows?",
+      layers: "geonode:wales_lidar_dsm_1m_hillshade_multi_cog",
       zIndex: 340,
-      attribution: ATTR_DM,
+      attribution: ATTR,
     });
     toggleLayer(map, multiHillshadeRef, showMultiHillshade);
   }, [showMultiHillshade, map]);
 
-// ==========================================
-// ============ WFS (Vector Layers) ============
-// =============================================
-
-  // --- Cadw Scheduled Monuments ---
+  // --- Vector Layers ------------------------
+  // --- WFS: Cadw Scheduled Monuments ---
   useEffect(() => {
+    const CADW_SM_URL =
+      "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=inspire-wg:Cadw_SAM&srsName=EPSG:4326&outputFormat=application/json";
+
     async function addCadw() {
       // If already created once, just re-add it
       if (cadwSmRef.current) {
@@ -282,15 +273,17 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
             const report = p.Report
               ? `<a href="${p.Report}" target="_blank" rel="noopener noreferrer">View</a>`
               : "N/A";
-            layer.bindPopup(
-              `<div class="custom-popup cadw-popup">
-                 <strong>Scheduled Monument</strong><br/>
-                 <strong>${name}</strong><br/>
-                 Site Type: ${type}<br/>
-                 Period: ${period}<br/>
-                 Cadw Report: ${report}
-               </div>`
-            );
+            const popupHtml = makePopup({
+              title: 'Scheduled Monument',
+              name,
+              className: 'cadw-popup',
+              rows: [
+                { label: 'Site Type', value: type },
+                { label: 'Period', value: period },
+                { label: 'Cadw Report', value: report },
+              ],
+            });
+            layer.bindPopup(popupHtml);
           },
         });
         cadwSmRef.current.addTo(map);
@@ -312,33 +305,41 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   }, [showCadwSm, map]);
 
   // --- WFS: Registered Historic Parks & Gardens ---
-  // --- WFS: Registered Historic Parks & Gardens ---
   useEffect(() => {
+  
+    const PARKS_WFS_URL = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:cadw_rhpg_registeredareas&srsName=EPSG:4326&outputFormat=application/json";
+
     async function addParks() {
-      // If the layer was already created once, just re-add it
+      // If already built once, just re-add it
       if (parksRef.current) {
         if (!map.hasLayer(parksRef.current)) parksRef.current.addTo(map);
         return;
       }
-
       try {
-        // Start the loading spinner
+        // Show the small top-left spinner while loading
         map.fire('dataloading');
 
-        // Fetch the GeoJSON data
-        const res = await fetch(PARKS_WFS_URL);
-        const data = await res.json();
+        const res = await fetch(PARKS_WFS_URL); // Fetch the WFS
+        const data = await res.json(); // Parse as a GeoJSON
 
-        // Build the Leaflet layer
-        parksRef.current = L.geoJSON(data, {
+        // Helpful for discovering actual property names in your dataset
+        if (data?.features?.[0]?.properties) {
+          // Open DevTools console to see this once
+          // and then tailor the popup fields below
+          console.log('[Parks & Gardens WFS] example properties:', data.features[0].properties);
+        }
+
+        parksRef.current = L.geoJSON(data, { // Build the leaflet layer
           style: {
-            color: '#006d2c',
+            color: '#006d2c',       // outline
             weight: 2,
-            fillColor: '#c7e9c0',
+            fillColor: '#c7e9c0',   // light green fill
             fillOpacity: 0.35,
           },
           onEachFeature: (f, layer) => {
             const p = f?.properties || {};
+            // Try common field names; adjust once you check the console log above
+            // Map to the real fields from DataMapWales
             const name = p.site_name_en || p.site_name_cy || 'Unknown site';
             const grade = p.grade_gradd || p.grade || 'N/A';
             const main_phase = p.main_phase_en || 'N/A';
@@ -346,37 +347,39 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
               ? `<a href="${p.report_en}" target="_blank" rel="noopener noreferrer">Cadw report</a>`
               : 'N/A';
 
-            layer.bindPopup(
-              `<div class="custom-popup parks-popup">
-                <strong>Registered Historic Park &amp; Garden</strong><br/>
-                <strong>${name}</strong><br/>
-                Grade: ${grade}<br/>
-                Main Phase: ${main_phase}<br/>
-                Cadw Report: ${reportLink}
-              </div>`
-            );
+            const popupHtml = makePopup({
+              title: 'Registered Historic Park & Garden',
+              name,
+              className: 'parks-popup',
+              rows: [
+                { label: 'Grade', value: grade },
+                { label: 'Main Phase', value: main_phase },
+                { label: 'Cadw Report', value: reportLink },
+              ],
+            });
+            layer.bindPopup(popupHtml);
           },
         });
 
-        parksRef.current.addTo(map);
+        parksRef.current.addTo(map); // Put the leaflet layer on the map
       } catch (e) {
         console.error('Failed to load Parks & Gardens WFS:', e);
       } finally {
-        // Stop spinner regardless of success/failure
-        map.fire('dataload');
+        map.fire('dataload'); // Hide the spinner
       }
-    }
-
-    // Show or hide depending on toggle state
+    } 
     if (showParksWfs) {
       addParks();
-    } else if (parksRef.current && map.hasLayer(parksRef.current)) {
-      map.removeLayer(parksRef.current);
+    } else if (parksRef.current && map.hasLayer(parksRef.current)) { // Hide the layer
+      map.removeLayer(parksRef.current)
     }
   }, [showParksWfs, map]);
 
   // --- WFS: National Monuments Records (NMR) ---
   useEffect(() => {
+    const NMR_BASE =
+      "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geonode:rcahmw_nmrw_terrestrialsites_rcahmw_bng&srsName=EPSG:4326&outputFormat=application/json";
+
     const ensureLayer = () => {
       if (!NMRRef.current) {
         NMRRef.current = makeNmrLayer(nmrCanvasRendererRef);
@@ -409,7 +412,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
 
       map.fire("dataloading");
       try {
-        const res = await fetch(buildBboxUrl(NMR_BASE_URL, map), { signal: controller.signal });
+        const res = await fetch(buildBboxUrl(NMR_BASE, map), { signal: controller.signal });
         const data = await res.json();
         clearLayer();
         NMRRef.current.addData(data);
@@ -549,22 +552,16 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         </Box>
       )}
     </Box>
-    
-      <Snackbar
-        open={nmrHintOpen}
-        autoHideDuration={4000}
-        onClose={handleCloseNmrHint}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseNmrHint}
-          severity="info"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          Zoom in to see National Monuments Record points (zoom 11+).
-        </Alert>
-      </Snackbar>
+    <Snackbar
+      open={nmrHintOpen}
+      autoHideDuration={4000}
+      onClose={() => setNmrHintOpen(false)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert onClose={() => setNmrHintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
+        Zoom in to see National Monuments Record points (zoom 11+).
+      </Alert>
+    </Snackbar>
     </>
   );
 }
