@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 
 import LidarFooter from "../Components/LidarFooter";
-import SignUpCTA from "../Components/SignUpCTA";
+import Support from "../Components/Support";
 
 
 const About = () => {
@@ -314,7 +314,7 @@ const About = () => {
       </main>
 
       
-      <SignUpCTA />
+      <Support />
       <LidarFooter />
       
     </>

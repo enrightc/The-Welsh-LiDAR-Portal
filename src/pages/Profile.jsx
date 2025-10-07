@@ -3,9 +3,10 @@ import React from 'react'
 import { useEffect, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import {useImmerReducer} from "use-immer";
-import Axios from 'axios'; 
+import Axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import LidarFooter from "../Components/LidarFooter";
+import Support from "../Components/Support";
 
 // Contexts
 import StateContext from '../Contexts/StateContext';
@@ -24,6 +25,8 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function Profile() {
     const navigate = useNavigate()
@@ -650,6 +653,9 @@ function Profile() {
           />
         </Box>
       </Grid>
+
+      <Support />
+      <LidarFooter />
     </>
   );
 }

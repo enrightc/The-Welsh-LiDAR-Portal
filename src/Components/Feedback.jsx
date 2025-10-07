@@ -1,5 +1,6 @@
 import { useState } from "react";
 import LidarFooter from "../Components/LidarFooter";
+import Support from "../Components/Support";
 
 export default function Feedback() {
   const [status, setStatus] = useState(null);
@@ -78,6 +79,7 @@ export default function Feedback() {
         {status && <p style={{ marginTop: "1rem" }}>{status}</p>}
       </form>
 
+      <Support />
       <LidarFooter />
     </>
     

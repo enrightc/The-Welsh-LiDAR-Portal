@@ -5,7 +5,8 @@ import "../assets/styles/lidar-footer.css";
 
 export default function LidarFooter() {
   return (
-    <footer className="lidar-footer" aria-labelledby="footer-heading">
+
+      <footer className="lidar-footer" aria-labelledby="footer-heading">
 
       {/* Decorative illustration */}
       <svg
@@ -83,5 +84,6 @@ export default function LidarFooter() {
         </div>
       </div>
     </footer>
+    
   );
 }

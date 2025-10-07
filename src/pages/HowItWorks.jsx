@@ -11,7 +11,7 @@ import mapIconUrl from '../assets/icons/mapIcon.svg';
 import completedRecordIconUrl from '../assets/icons/completedRecordIcon.svg';
 
 import LidarFooter from "../Components/LidarFooter";
-import SignUpCTA from "../Components/SignUpCTA";
+import Support from "../Components/Support";
 
 function HowItWorks() {
   return (
@@ -238,7 +238,7 @@ function HowItWorks() {
             </Container>
         </main>
 
-        <SignUpCTA />
+        <Support />
         <LidarFooter />
 
     </div>

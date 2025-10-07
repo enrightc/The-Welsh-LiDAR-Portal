@@ -4,7 +4,7 @@ import React from 'react' // Import React library
 // Importing CSS for styling and components
 import '../assets/styles/Home.css';
 import LidarFooter from "../Components/LidarFooter";
-import SignUpCTA from "../Components/SignUpCTA";
+import Support from "../Components/Support";
 import BetaNoticeModal from "../Components/BetaNoticeModal";
 
 
@@ -114,9 +114,11 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        
       </main> 
 
-      <SignUpCTA />
+      <Support />
       <LidarFooter />
       
     </>
