@@ -164,9 +164,11 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
   const [showNMRWfs, setShowNMRWfs] = useState(false);
-
+  
   // Hint for NMR
   const [nmrHintOpen, setNmrHintOpen] = useState(false);
+  // Close handler for the NMR zoom hint snackbar
+  const handleCloseNmrHint = () => setNmrHintOpen(false);
 
   // --- Refs ----------------------------------
   // This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
@@ -547,16 +549,22 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         </Box>
       )}
     </Box>
-    <Snackbar
-      open={nmrHintOpen}
-      autoHideDuration={4000}
-      onClose={() => setNmrHintOpen(false)}
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-    >
-      <Alert onClose={() => setNmrHintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
-        Zoom in to see National Monuments Record points (zoom 11+).
-      </Alert>
-    </Snackbar>
+    
+      <Snackbar
+        open={nmrHintOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseNmrHint}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseNmrHint}
+          severity="info"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Zoom in to see National Monuments Record points (zoom 11+).
+        </Alert>
+      </Snackbar>
     </>
   );
 }
