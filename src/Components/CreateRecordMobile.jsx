@@ -1,22 +1,28 @@
+// --- Imports ------------------------------------------------
 import * as React from 'react';
+
+
+// --- MUI Imports ------------------------------------------------
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+
+// --- Icons ------------------------------------------------
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
 
-// your existing form
+// --- Local components ------------------------------------------------
 import CreateRecord from './CreateRecord';
 
-/**
- * A bottom sheet with two snap points:
- * - "peek" (25% viewport height)
- * - "full" (95% viewport height)
- *
- * It keeps the map interactive behind it.
- */
+
+// =============================================
+// CreateRecordMobile
+//==============================================
+// A bottom sheet that slides up on mobile devices.
+// It has two snap points: "peek" (about 30% height) and "full" (about 65% height).
+// Users can toggle between these heights while keeping the map interactive behind it.
 export default function CreateRecordMobile({
   open,
   onClose,
@@ -24,16 +30,20 @@ export default function CreateRecordMobile({
   fetchRecords,
   onSuccess,
 }) {
+  // --- State -------------------------------
   // 'peek' | 'full'
   const [position, setPosition] = React.useState('full');
 
+  // --- Config -------------------------------
   const heights = {
     peek: '30vh',
     full: '65vh',
   };
 
+  // --- Handlers ------------------------------
   const toggle = () => setPosition((p) => (p === 'peek' ? 'full' : 'peek'));
 
+  // --- Render -------------------------------
   return (
     <>
       {/* Fixed bottom sheet that does NOT block clicks outside it */}
