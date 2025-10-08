@@ -10,6 +10,7 @@ if (L?.Draw?.Polyline) {
 
 // --- MUI ---------------------------------------------------------------------
 import Button from '@mui/material/Button';
+import { useMediaQuery } from '@mui/material';
 
 // --- React Leaflet -----------------------------------------------------------
 import {
@@ -34,7 +35,6 @@ import '../assets/styles/map.css';
 import AttributesControl from './AttributesControl';
 
 // --- Local helper components (used only within this file) -----------------------------------------------
-
 // This small helper component runs once when the map loads.
 // It grabs the Leaflet map instance and disables the "tap" feature,
 // which can cause unwanted touches or double-taps on mobile devices.
@@ -205,6 +205,8 @@ export default function MainLidarMap({
 
   // --- Local UI toggles ------------------------------------------------------
   const [showCommunity, setShowCommunity] = React.useState(true);
+  
+  const isMobile = useMediaQuery('(max-width:1090px)');
 
   return (
 
@@ -219,6 +221,7 @@ export default function MainLidarMap({
       tap={false}
       attributionControl={false}
       doubleClickZoom={true}
+      zoomControl={!isMobile}
       whenCreated={(map) => {
         try { map.getContainer().setAttribute('tabindex', '-1'); } catch (_) {}
       }}

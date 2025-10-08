@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, Typography, Box } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Typography, Box, useMediaQuery, useTheme } from "@mui/material";
 
 export default function AttributesControl() {
   const [openAttributes, setOpenAttributes] = React.useState(false);
+  const theme = useTheme();
+  const isNarrow = useMediaQuery('(max-width:1090px)');
 
   return (
     <>
@@ -11,8 +13,8 @@ export default function AttributesControl() {
             sx={{
                 position: 'absolute',
                 bottom: 16,
-                left: { xs: 16, sm: 16, md: 'auto' },
-                right: { xs: 'auto', sm: 'auto', md: 16 },
+                left: isNarrow ? 16 : 'auto',
+                right: isNarrow ? 'auto' : 16,
                 bgcolor: 'rgba(255, 255, 255, 0.5)',
                 borderRadius: 1,
                 boxShadow: "none",

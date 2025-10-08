@@ -124,7 +124,7 @@ const LidarPortal = () => {
 
   // --- Screen / device -------------------
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md')); // ≤ md treated as handheld
+  const isSmallScreen = useMediaQuery('(max-width:1090px)'); // ≤1090px treated as handheld
   const isTouchDevice = (typeof window !== 'undefined') && (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
   const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
   const isHandheld = isSmallScreen || isTouchDevice || isMobileDevice; // broader check than screen width alone
