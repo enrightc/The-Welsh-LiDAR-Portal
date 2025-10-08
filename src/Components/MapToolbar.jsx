@@ -80,7 +80,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
-                    disabled={!isLoggedIn && !isDrawing || !polygonDrawn }
+                    disabled={!isLoggedIn && !isDrawing || polygonDrawn }
                     aria-pressed={isDrawing && polygonDrawn}
                 >
                     <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit',
