@@ -16,7 +16,7 @@ import "./api";
 
 // Theme
 import { ThemeProvider } from '@mui/material/styles';
-import theme from './theme';   // 👈 import the theme
+import theme from './theme';
 
 // Get the root element in index.html (React will render inside this)
 createRoot(document.getElementById("root")).render(

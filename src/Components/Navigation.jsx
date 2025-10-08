@@ -36,6 +36,7 @@ const pages = [
   { name: "How It Works", path: "/HowItWorks" },
   { name: "Lidar Portal", path: "/LidarPortal" },
   { name: "Feedback", path: "/feedback" },
+  { name: "News", path: "/news" },
 ];
 
 
@@ -159,7 +160,8 @@ function Navigation() {
             aria-label="Go to homepage"
             sx={{
               mr: 2,
-              display: { xs: "none", lg: "flex" },
+              display: { xs: "none" },
+              "@media (min-width:1296px)": { display: "flex" },
               alignItems: "center",
               textDecoration: "none",
               paddingRight: 5,
@@ -210,8 +212,9 @@ function Navigation() {
             aria-label="Go to homepage"
             sx={{
               flexGrow: 1,
-              display: { xs: "flex", lg: "none" },
-              alignItens: "center",
+              display: { xs: "flex" },
+              "@media (min-width:1296px)": { display: "none" },
+              alignItems: "center",
               textDecoration: "none",
             }}
           >
