@@ -27,8 +27,8 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             width: { xs: 2, sm: 'auto' },
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
-            zIndex: 1000,
-            bottom: { xs: 'max(100px, calc(env(safe-area-inset-bottom) + 2svh))', sm: 30 },
+            zIndex: 100,
+            bottom: { xs: 'max(110px, calc(env(safe-area-inset-bottom) + 2svh))', sm: 30 },
             right: { xs: 23, sm: 'calc(50% - 174px)' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
             bgcolor: 'rgba(255, 255, 255, 0.6)',
@@ -80,7 +80,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
-                    disabled={!isLoggedIn && !isDrawing || polygonDrawn }
+                    disabled={!isLoggedIn && (!isDrawing || !polygonDrawn) }
                     aria-pressed={isDrawing && polygonDrawn}
                 >
                     <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit',

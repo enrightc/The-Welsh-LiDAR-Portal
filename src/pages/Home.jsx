@@ -20,7 +20,7 @@ const Home = () => {
   return (
     <>
     <BetaNoticeModal
-        storage="session"                 // once per tab/session
+        storage="session" // once per tab/session
         storageKey="wlidar_seen_beta_v1"  // bump to _v2 to re-show after updates
       />
 
@@ -33,7 +33,7 @@ const Home = () => {
               <p className="hero__tagline">Search, explore and contribute to the map of Wales’ archaeological heritage.</p>
               <div className="hero__btns">
                 <a href="/lidarPortal" className="btn btn--primary">Start Exploring</a>
-                <a href="/About" className="btn btn--secondary">Register</a>
+                <a href="/Register" className="btn btn--secondary">Register</a>
               </div> 
             </div>         
           </div> 
