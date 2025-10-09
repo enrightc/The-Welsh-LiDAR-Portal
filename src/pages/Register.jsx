@@ -14,11 +14,14 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 
 function Register() {
   const navigate = useNavigate()
   const GlobalDispatch = useContext(DispatchContext);
   const [submitting, setSubmitting] = React.useState(false);
+  const [fieldErrors, setFieldErrors] = React.useState({});
+  const [formError, setFormError] = React.useState("");
   
   const initialstate = {
       usernameValue: "",
@@ -52,7 +55,22 @@ function Register() {
 
   function FormSubmit(e){
     e.preventDefault()
+    setFieldErrors({});
+    setFormError("");
     if (submitting) return; // Prevent multiple submissions
+    // Basic client-side validation
+    const newErrors = {};
+    if (!state.usernameValue?.trim()) newErrors.username = ["Please enter a username."];
+    if (!state.emailValue?.trim()) newErrors.email = ["Please enter an email address."];
+    if (!state.passwordValue) newErrors.password = ["Please enter a password."];
+    if (!state.password2Value) newErrors.password2 = ["Please confirm your password."];
+    if (state.passwordValue && state.password2Value && state.passwordValue !== state.password2Value) {
+      newErrors.password2 = ["Passwords do not match."];
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      return; // don't submit
+    }
     setSubmitting(true); // Lock the form
     dispatch({type: 'changeSendRequest'})
   }
@@ -125,12 +143,32 @@ function Register() {
 
       } catch (error) {
         if (error.response) {
-          console.log("Server responded with:", error.response.status, error.response.data);
+          const data = error.response.data || {};
+          // Djoser typically returns field-wise arrays, e.g. { username: ["This field ..."], email: ["..."], password: ["..."], re_password: ["..."] }
+          const mapped = {};
+          if (data.username) mapped.username = Array.isArray(data.username) ? data.username : [String(data.username)];
+          if (data.email) mapped.email = Array.isArray(data.email) ? data.email : [String(data.email)];
+          if (data.password) mapped.password = Array.isArray(data.password) ? data.password : [String(data.password)];
+          if (data.re_password || data.password2) {
+            const rp = data.re_password || data.password2;
+            mapped.password2 = Array.isArray(rp) ? rp : [String(rp)];
+          }
+          if (data.non_field_errors) mapped.non_field_errors = Array.isArray(data.non_field_errors) ? data.non_field_errors : [String(data.non_field_errors)];
+          if (data.detail) mapped.detail = [String(data.detail)];
+
+          // If nothing mapped, show a generic error
+          if (Object.keys(mapped).length === 0) {
+            setFormError("Something went wrong. Please try again.");
+          } else {
+            setFieldErrors(mapped);
+          }
+        } else if (error.message) {
+          setFormError(error.message);
         } else {
-          console.log("Error:", error.message);
+          setFormError("Network error. Please try again.");
         }
       } finally {
-        setSubmitting(false); // Unlock the form on error
+        setSubmitting(false); // Unlock the form on error or success
       }
     }
     
@@ -174,6 +212,8 @@ function Register() {
                   usernameChosen: e.target.value
                 })
               } 
+              error={Boolean(fieldErrors.username)}
+              helperText={fieldErrors.username ? fieldErrors.username.join(" ") : ""}
             /> 
           </Grid>
 
@@ -186,6 +226,8 @@ function Register() {
               value={state.emailValue}
               onChange = {(e)=> 
                 dispatch({type: "catchEmailChange", emailChosen: e.target.value})} 
+              error={Boolean(fieldErrors.email)}
+              helperText={fieldErrors.email ? fieldErrors.email.join(" ") : ""}
             />
           </Grid>
 
@@ -198,6 +240,8 @@ function Register() {
               type="password"
               value={state.passwordValue}
               onChange = {(e)=> dispatch({type: "catchPasswordChange", passwordChosen: e.target.value})} 
+              error={Boolean(fieldErrors.password)}
+              helperText={fieldErrors.password ? fieldErrors.password.join(" ") : ""}
             />
           </Grid>
 
@@ -210,6 +254,8 @@ function Register() {
               type="password"
               value={state.password2Value}
               onChange = {(e)=> dispatch({type: "catchPassword2Change", password2Chosen: e.target.value})} 
+              error={Boolean(fieldErrors.password2)}
+              helperText={fieldErrors.password2 ? fieldErrors.password2.join(" ") : ""}
             />
           </Grid>
 
@@ -241,6 +287,16 @@ function Register() {
               >
                 If this takes a while, the server might be waking up.
               </Typography>
+            )}
+
+            {(formError || fieldErrors.non_field_errors || fieldErrors.detail) && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {[formError]
+                  .concat(fieldErrors.non_field_errors || [])
+                  .concat(fieldErrors.detail || [])
+                  .filter(Boolean)
+                  .join(" ")}
+              </Alert>
             )}
           </Grid>
 

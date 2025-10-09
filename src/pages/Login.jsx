@@ -112,6 +112,7 @@ function Login() {
         if (import.meta.env.PROD && 
             (error.code === "ECONNABORTED" || [502,503,504].includes(status))) {
           setErrorMessage("Waking the server… please try again in a few seconds.");
+          setSubmitting(false);
           return;
         } // Friendly message if server is waking up.
 
@@ -120,6 +121,10 @@ function Login() {
         } else {
           setErrorMessage("Something went wrong. Please try again.");
         }
+        setSubmitting(false);
+      } finally {
+        // Ensure the submit button is re-enabled after the request completes
+        setSubmitting(false);
       }
     }
     // Call the function we just defined
