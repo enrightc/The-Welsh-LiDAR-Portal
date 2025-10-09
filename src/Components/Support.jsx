@@ -30,17 +30,15 @@ function Support() {
       </Typography>
 
       <Typography variant="body1" sx={{ maxWidth: 700, mx: 'auto', mb: 3 }}>
-        Mapping the Past is built independently by an archaeologist and aspiring developer.
-        There’s no funding behind it — just curiosity and a wish to give something back to the community.
+        Mapping the Past is built independently by an archaeologist and aspiring developer — no funding, no institution behind it, just curiosity, late nights, and a desire to give something back to the community
       </Typography>
 
       <Typography variant="body1" sx={{ maxWidth: 700, mx: 'auto', mb: 3 }}>
-        It’s free to use, but it takes time and money to keep it running and to build new features that help people
-        explore and record Wales’s heritage.
+        It’s free to use, but it takes time and money to keep it running and to build new features that help people explore and record Wales’s heritage. Your support helps cover the essentials: hosting, data access, and the tools that keep the site fast, accurate, and free for everyone.
       </Typography>
 
       <Typography variant="body1" sx={{ maxWidth: 700, mx: 'auto', mb: 4 }}>
-        If you’ve found the site useful, inspiring, or simply enjoy exploring it, you can help keep it going:
+        If you’ve found the site useful, inspiring, or simply enjoy exploring it, you can help keep it going.
       </Typography>
 
       <Button
