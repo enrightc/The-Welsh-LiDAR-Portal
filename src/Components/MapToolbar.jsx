@@ -14,8 +14,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-
 
 
 export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn, layersOpen, setLayersOpen }) {
@@ -24,10 +22,10 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
 
     return (
         <Box sx={{
-            width: { xs: 2, sm: 'auto' },
+            width: { xs: 20, sm: 'auto' },
             flexDirection: { xs: 'column', sm: 'row' },
             position: 'absolute',
-            zIndex: 100,
+            zIndex: 1000,
             bottom: { xs: 'max(110px, calc(env(safe-area-inset-bottom) + 2svh))', sm: 30 },
             right: { xs: 23, sm: 'calc(50% - 174px)' },
             transform: { xs: 'none', sm: 'translateX(-50%)' },
