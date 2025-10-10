@@ -429,13 +429,17 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     };
 
     if (showNMRWfs) {
-      if (map.getZoom() < MIN_ZOOM_NMR) setNmrHintOpen(true);
+      // If the user turned NMR on but is zoomed out too far, show a helpful hint
+      if (map.getZoom() < MIN_ZOOM_NMR) {
+        setNmrHintOpen(true);
+      }
       ensureLayer();
-      loadInView();
-      map.on("moveend zoomend", debouncedLoad);
+      loadInView(); // initial fetch for current view
+      map.on('moveend zoomend', debouncedLoad);
     } else {
-      map.off("moveend zoomend", debouncedLoad);
+      map.off('moveend zoomend', debouncedLoad);
       abortInFlight();
+      if (NMRRef.current && map.hasLayer(NMRRef.current)) map.removeLayer(NMRRef.current);
     }
 
     return () => {
