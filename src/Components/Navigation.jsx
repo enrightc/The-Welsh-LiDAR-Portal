@@ -18,6 +18,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Icons
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
@@ -35,8 +36,9 @@ const pages = [
   { name: "About", path: "/about" },
   { name: "How It Works", path: "/HowItWorks" },
   { name: "Lidar Portal", path: "/LidarPortal" },
-  { name: "Feedback", path: "/feedback" },
   { name: "News", path: "/news" },
+  { name: "Feedback", path: "/feedback" },
+  
 ];
 
 
@@ -44,6 +46,8 @@ function Navigation() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const desktopUp = useMediaQuery('(min-width:1296px)');
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -151,7 +155,7 @@ function Navigation() {
       left: 0, 
       backgroundColor: "#232138",
     }}>
-      <Container maxWidth="xl">
+      <Container maxWidth={false} sx={{ maxWidth: 1296, mx: 'auto', px: { xs: 2, md: 3 } }}>
         <Toolbar disableGutters>
           {/* Desktop Logo */}
           <Box
@@ -160,12 +164,11 @@ function Navigation() {
             aria-label="Go to homepage"
             sx={{
               mr: 2,
-              display: { xs: "none" },
-              "@media (min-width:1296px)": { display: "flex" },
-              alignItems: "center",
-              textDecoration: "none",
-              paddingRight: 5,
-              paddingLeft: 20,
+              display: desktopUp ? 'flex' : 'none',
+              alignItems: 'center',
+              textDecoration: 'none',
+              paddingRight: 3,
+              paddingLeft: 5,
             }}
           >
             <Tooltip
@@ -179,7 +182,7 @@ function Navigation() {
           </Box>
 
           {/* Mobile Menu Button */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", lg: "none" } }}>
+          <Box sx={{ flexGrow: 1, display: desktopUp ? 'none' : 'flex' }}>
             <IconButton size="large" onClick={handleOpenNavMenu} color="inherit">
               <MenuIcon />
             </IconButton>
@@ -202,6 +205,18 @@ function Navigation() {
                   </Typography>
                 </MenuItem>
               ))}
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography textAlign="center">
+                  <a
+                    href="https://lnkd.in/esC9Heuy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    Support
+                  </a>
+                </Typography>
+              </MenuItem>
             </Menu>
           </Box>
 
@@ -212,10 +227,9 @@ function Navigation() {
             aria-label="Go to homepage"
             sx={{
               flexGrow: 1,
-              display: { xs: "flex" },
-              "@media (min-width:1296px)": { display: "none" },
-              alignItems: "center",
-              textDecoration: "none",
+              display: desktopUp ? 'none' : 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
             }}
           >
             <Box
@@ -227,7 +241,7 @@ function Navigation() {
           </Box>
 
           {/* Desktop Navigation */}
-          <Box sx={{ flexGrow: 1, display: { xs: "none", lg: "flex" } }}>
+          <Box sx={{ flexGrow: 1, display: desktopUp ? 'flex' : 'none' }}>
             {pages.map((page) => (
               <Button
                 key={page.name} // ✅ Fixed key
@@ -239,6 +253,31 @@ function Navigation() {
               </Button>
             ))}
           </Box>
+
+          <Button
+            variant="contained"
+            color="warning"
+            size="large"
+            href="https://lnkd.in/esC9Heuy"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              display: desktopUp ? 'inline-flex' : 'none',
+              fontWeight: 600,
+              color: 'black',
+              textTransform: 'none',
+              px: 2,
+              py: 1,
+              mr: 2,
+              borderRadius: '8px',
+              backgroundColor: '#ffb74d',
+              '&:hover': {
+                backgroundColor: '#ffa726',
+              },
+            }}
+          >
+            Support
+          </Button>
 
           {/* User Profile Menu */}
           <Box sx={{ flexGrow: 0,

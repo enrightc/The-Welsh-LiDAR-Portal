@@ -6,6 +6,7 @@ import '../assets/styles/Home.css';
 import LidarFooter from "../Components/LidarFooter";
 import Support from "../Components/Support";
 import BetaNoticeModal from "../Components/BetaNoticeModal";
+import SupportButton from "../Components/SupportButton";
 
 
 // Image Imports
@@ -34,6 +35,7 @@ const Home = () => {
               <div className="hero__btns">
                 <a href="/lidarPortal" className="btn btn--primary">Start Exploring</a>
                 <a href="/Register" className="btn btn--secondary">Register</a>
+                
               </div> 
             </div>         
           </div> 
