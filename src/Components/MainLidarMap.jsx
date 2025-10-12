@@ -8,6 +8,7 @@ if (L?.Draw?.Polyline) {
   L.Draw.Polyline.prototype._onTouch = L.Util.falseFn;
 }
 
+
 // --- MUI ---------------------------------------------------------------------
 import Button from '@mui/material/Button';
 import { useMediaQuery } from '@mui/material';
@@ -208,14 +209,28 @@ export default function MainLidarMap({
   
   const isMobile = useMediaQuery('(max-width:1090px)');
 
+  const savedMapView = React.useMemo(() => {
+      try { return JSON.parse(window.sessionStorage.getItem('mapView') || 'null'); }
+      catch (_) { return null; }
+    }, []);
+
+  const initialCenter = React.useMemo(() => savedMapView?.center ?? [52.1307, -3.7837], []);
+  const initialZoom = React.useMemo(() => savedMapView?.zoom ?? 8.5, []);
+  const mapRef = React.useRef(null);
+
+  React.useEffect(() => {
+      if (!mapRef.current) return;
+      const sv = savedMapView;
+      if (sv?.center && typeof sv.zoom === 'number') {
+        try { mapRef.current.setView(sv.center, sv.zoom, { animate: false }); } catch (_) {}
+      }
+    }, [records.length]);
+
   return (
 
     <MapContainer
-      center={[
-        52.1307,
-        -3.7837,
-      ]}
-      zoom={8.5}
+      center={initialCenter}
+      zoom={initialZoom}
       scrollWheelZoom={true}
       loadingControl={true} // shows the little spinner control
       tap={false}
@@ -223,7 +238,15 @@ export default function MainLidarMap({
       doubleClickZoom={true}
       zoomControl={!isMobile}
       whenCreated={(map) => {
+        mapRef.current = map;
         try { map.getContainer().setAttribute('tabindex', '-1'); } catch (_) {}
+        map.on('moveend', () => {
+          const c = map.getCenter();
+          const z = map.getZoom();
+          try {
+            window.sessionStorage.setItem('mapView', JSON.stringify({ center: [c.lat, c.lng], zoom: z }));
+          } catch (_) {}
+        });
       }}
     >
 

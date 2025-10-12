@@ -6,8 +6,6 @@ import '../assets/styles/Home.css';
 import LidarFooter from "../Components/LidarFooter";
 import Support from "../Components/Support";
 import BetaNoticeModal from "../Components/BetaNoticeModal";
-import SupportButton from "../Components/SupportButton";
-
 
 // Image Imports
 import mapScreenImage from '../Components/Assets/MapScreenImage.webp';

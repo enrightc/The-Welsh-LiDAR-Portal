@@ -61,7 +61,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-label={isDrawing ? 'Drawing in progress' : 'Draw polygon'}
                     color="black"
                     onClick={handleStartPolygon}
-                    disabled={!isLoggedIn}
+                    disabled={!isLoggedIn || (polygonDrawn && !isDrawing)} //Disables when a polygon is already drawn (unless actively drawing)
                     aria-pressed={isDrawing}
                     >
                     <EditIcon sx={{ 
@@ -78,7 +78,7 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
-                    disabled={!isLoggedIn && (!isDrawing || !polygonDrawn) }
+                    disabled={!isLoggedIn || (!isDrawing && !polygonDrawn) } // enables if user is drawig or have already drawn a polygon
                     aria-pressed={isDrawing && polygonDrawn}
                 >
                     <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit',

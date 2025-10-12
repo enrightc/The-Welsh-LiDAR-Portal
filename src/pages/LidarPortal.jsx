@@ -297,8 +297,21 @@ const handleActivateRuler = () => {
 // This function will be passed to the Sidebar component
 // so it can be called when the user submits the form
 function resetPolygon() {
-  setPolygonDrawn(false);  // Allow drawing again
-  dispatch({ type: "catchPolygonCoordinateChange", polygonChosen: [] }); // Clear global polygon
+  // 1) Clear any polygons on the map
+  if (featureGroupRef.current) {
+    featureGroupRef.current.clearLayers();
+  }
+  // 2) Reset flags so user can draw again
+  setPolygonDrawn(false);
+  setIsDrawing(false);
+  // 3) Disable any active drawing tool (if user was in middle of drawing)
+  const drawToolbar = activeDrawHandlerRef.current?._toolbars?.draw;
+  const polygonHandler = drawToolbar?._modes?.polygon?.handler;
+  if (polygonHandler?.enabled()) {
+    polygonHandler.disable();
+  }
+  // 4) Clear polygon coordinates from global state
+  dispatch({ type: "catchPolygonCoordinateChange", polygonChosen: [] });
 }
 
 // --- Data fetching ---------------------------

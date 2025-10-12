@@ -810,5 +810,5 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
         </Dialog>
       </Box>
     </Box>
-    );
+  );
 }
