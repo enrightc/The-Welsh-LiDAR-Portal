@@ -159,8 +159,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
   const [showNMRWfs, setShowNMRWfs] = useState(false);
-  // Toggle for S3-hosted XYZ hillshade tiles
-  const [showS3Hillshade, setShowS3Hillshade] = useState(false);
+  // Toggle for S3-hosted XYZ DTM hillshade tiles
+  const [showDtmHillshade, setShowDtmHillshade] = useState(false);
 
   // Hint for NMR
   const [nmrHintOpen, setNmrHintOpen] = useState(false);
@@ -174,8 +174,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const cadwSmRef = useRef(null); 
   const parksRef = useRef(null);
   const NMRRef = useRef(null);
-  // Ref for S3 XYZ hillshade
-  const s3HillshadeRef = useRef(null);
+  // Ref for S3 XYZ DTM hillshade
+  const dtmHillshadeRef = useRef(null);
 
   // Ref for NMR requests
   const nmrMoveDebounceRef = useRef(null); // waits 300ms after you stop moving
@@ -184,12 +184,12 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawing
 
   // Only allow S3 hillshade when zoomed in enough
-const MIN_ZOOM_S3 = 16; // change to 16 if you want even closer
+  const MIN_ZOOM_DTM = 16; // change to 16 if you want even closer
 
-// Hint for S3 layer when user is zoomed out
-const [s3HintOpen, setS3HintOpen] = useState(false);
+  // Hint for S3 layer when user is zoomed out
+  const [dtmHintOpen, setDtmHintOpen] = useState(false);
 
-  // --- useEffects --------------------------
+  // --- useEffects ---------------------------------------------------------
 
   // React hook, runs after the component renders. only re-runs if something in its dependency list changes. 
   useEffect(() => {
@@ -222,7 +222,7 @@ const [s3HintOpen, setS3HintOpen] = useState(false);
     if (toAdd && !map.hasLayer(toAdd)) toAdd.addTo(map);
   }, [base, map]);
 
-  // --- WMS (LiDAR Layers) --------------------
+  // --- WMS (LiDAR Layers) ------------
 
   // --- WMS: LiDAR DSM Hillshade ---
   useEffect(() => {
@@ -248,16 +248,13 @@ const [s3HintOpen, setS3HintOpen] = useState(false);
     toggleLayer(map, multiHillshadeRef, showMultiHillshade);
   }, [showMultiHillshade, map]);
 
-
-
-
-  // --- XYZ: S3-hosted LiDAR hillshade tiles (create once) ---
+  // --- XYZ: S3-hosted LiDAR DTM hillshade tiles (create once) ---
   useEffect(() => {
     // Wales bounds to stop world wrapping / out-of-extent requests
     const WALES_BOUNDS = L.latLngBounds([51.25, -5.80], [53.60, -2.60]);
 
-    if (!s3HillshadeRef.current) {
-      s3HillshadeRef.current = L.tileLayer(
+    if (!dtmHillshadeRef.current) {
+      dtmHillshadeRef.current = L.tileLayer(
           "https://welsh-lidar-portal.s3.eu-north-1.amazonaws.com/tiles/{z}/{x}/{y}.webp",
         {
           attribution: "LiDAR hillshade © DataMapWales",
@@ -285,7 +282,6 @@ const [s3HintOpen, setS3HintOpen] = useState(false);
           minZoom: 1,
           maxZoom: 22,
           opacity: 1,
-          resamplingMethod: 'cubic',
           
           // Avoid pink error tiles if a tile is missing
           errorTileUrl:
@@ -295,16 +291,16 @@ const [s3HintOpen, setS3HintOpen] = useState(false);
     }
   }, [map]);
 
-  // Add/remove S3 layer only when zoomed in enough
-useEffect(() => {
-  const handleVisibility = () => {
-    const z = map.getZoom();
-    const shouldShow = showS3Hillshade && z >= MIN_ZOOM_S3;
-    toggleLayer(map, s3HillshadeRef, shouldShow);
-    if (showS3Hillshade && z < MIN_ZOOM_S3) {
-      setS3HintOpen(true); // pop a helpful hint
-    }
-  };
+  // Add/remove DTM Hillshade layer only when zoomed in enough
+  useEffect(() => {
+    const handleVisibility = () => {
+      const z = map.getZoom();
+      const shouldShow = showDtmHillshade && z >= MIN_ZOOM_DTM;
+      toggleLayer(map, dtmHillshadeRef, shouldShow);
+      if (showDtmHillshade && z < MIN_ZOOM_DTM) {
+        setDtmHintOpen(true); // pop a helpful hint
+      }
+    };
 
   // Run once on mount/toggle
   handleVisibility();
@@ -317,11 +313,7 @@ useEffect(() => {
     map.off("zoomend", handleVisibility);
     map.off("moveend", handleVisibility);
   };
-}, [showS3Hillshade, map]);
-
-
-
-
+}, [showDtmHillshade, map]);
 
   // --- Vector Layers ------------------------
   // --- WFS: Cadw Scheduled Monuments ---
@@ -615,19 +607,8 @@ useEffect(() => {
             Overlays
           </Typography>
 
-          {/* Temporary local toggle for S3 XYZ hillshade (no need to edit LayerToggles yet) */}
-<Box sx={{ px: 1, pt: 0.5, pb: 0.5 }}>
-  <FormControlLabel
-    control={
-      <Checkbox
-        size="small"
-        checked={showS3Hillshade}
-        onChange={(e) => setShowS3Hillshade(e.target.checked)}
-      />
-    }
-    label="LiDAR Hillshade (S3 XYZ)"
-  />
-</Box>
+          {/* Temporary local toggle for S3 XYZ DTM hillshade (no need to edit LayerToggles yet) */}
+
 
           <LayerToggles
             showCommunity={showCommunity}
@@ -642,6 +623,8 @@ useEffect(() => {
             setShowDsmHillshade={setShowDsmHillshade}
             showMultiHillshade={showMultiHillshade}
             setShowMultiHillshade={setShowMultiHillshade}
+            showDtmHillshade={showDtmHillshade}
+            setShowDtmHillshade={setShowDtmHillshade}
           />
 
           {/* Scroll for more hint */}
@@ -655,6 +638,8 @@ useEffect(() => {
         </Box>
       </Collapse>
     </Box>
+
+    {/* Alerts  */}
     <Snackbar
       open={nmrHintOpen}
       autoHideDuration={4000}
@@ -667,13 +652,13 @@ useEffect(() => {
     </Snackbar>
 
     <Snackbar
-      open={s3HintOpen}
+      open={dtmHintOpen}
       autoHideDuration={3500}
-      onClose={() => setS3HintOpen(false)}
+      onClose={() => setDtmHintOpen(false)}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
-      <Alert onClose={() => setS3HintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
-        Zoom in to see the LiDAR hillshade (zoom {MIN_ZOOM_S3}+).
+      <Alert onClose={() => setDtmHintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
+        Zoom in to see the LiDAR hillshade (zoom {MIN_ZOOM_DTM}+).
       </Alert>
     </Snackbar>
     </>
