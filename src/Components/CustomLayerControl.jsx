@@ -532,7 +532,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         position: "absolute",
         zIndex: 1000,
         top: { xs: 12, sm: 20 },
-        right: { xs: 12, sm: 20 },
+        right: { xs: 75, sm: 20 },
         bgcolor: { 
           xs:"transparent", sm: "rgba(255, 255, 255, 0.85)" },
         backdropFilter: 
