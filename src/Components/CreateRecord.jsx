@@ -314,7 +314,7 @@ export default function CreateRecord({ resetPolygon, fetchRecords, onSuccess }) 
                     }
 
                     // 👇 Fallback for any other kind of error
-                    navigate(".", {
+                    navigate("", {
                         state: {
                             toast: "There was a problem creating your record. Please try again.",
                         },

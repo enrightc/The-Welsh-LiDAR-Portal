@@ -6,7 +6,7 @@ import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the 
 import 'leaflet/dist/leaflet.css';
 
 // --- Mui Components -------------------------
-import { Box, Tooltip, IconButton, Divider, Typography, Stack, useMediaQuery, Snackbar, Alert, Collapse } from "@mui/material";
+import { Box, Tooltip, IconButton, Divider, Typography, Stack, useMediaQuery, Snackbar, Alert, Collapse, FormControlLabel, Checkbox } from "@mui/material";
 
 // --- Icons --------------------------------
 import LayersIcon from "@mui/icons-material/Layers";
@@ -159,6 +159,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
   const [showNMRWfs, setShowNMRWfs] = useState(false);
+  // Toggle for S3-hosted XYZ DTM hillshade tiles
+  const [showDtmHillshade, setShowDtmHillshade] = useState(false);
 
   // Hint for NMR
   const [nmrHintOpen, setNmrHintOpen] = useState(false);
@@ -172,6 +174,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const cadwSmRef = useRef(null); 
   const parksRef = useRef(null);
   const NMRRef = useRef(null);
+  // Ref for S3 XYZ DTM hillshade
+  const dtmHillshadeRef = useRef(null);
 
   // Ref for NMR requests
   const nmrMoveDebounceRef = useRef(null); // waits 300ms after you stop moving
@@ -179,7 +183,13 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const MIN_ZOOM_NMR = 11;                 // only fetch NMR when zoomed in enough 
   const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawing
 
-  // --- useEffects --------------------------
+  // Only allow S3 hillshade when zoomed in enough
+  const MIN_ZOOM_DTM = 16; // change to 16 if you want even closer
+
+  // Hint for S3 layer when user is zoomed out
+  const [dtmHintOpen, setDtmHintOpen] = useState(false);
+
+  // --- useEffects ---------------------------------------------------------
 
   // React hook, runs after the component renders. only re-runs if something in its dependency list changes. 
   useEffect(() => {
@@ -212,7 +222,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     if (toAdd && !map.hasLayer(toAdd)) toAdd.addTo(map);
   }, [base, map]);
 
-  // --- WMS (LiDAR Layers) --------------------
+  // --- WMS (LiDAR Layers) ------------
 
   // --- WMS: LiDAR DSM Hillshade ---
   useEffect(() => {
@@ -237,6 +247,73 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     });
     toggleLayer(map, multiHillshadeRef, showMultiHillshade);
   }, [showMultiHillshade, map]);
+
+  // --- XYZ: S3-hosted LiDAR DTM hillshade tiles (create once) ---
+  useEffect(() => {
+    // Wales bounds to stop world wrapping / out-of-extent requests
+    const WALES_BOUNDS = L.latLngBounds([51.25, -5.80], [53.60, -2.60]);
+
+    if (!dtmHillshadeRef.current) {
+      dtmHillshadeRef.current = L.tileLayer(
+          "https://welsh-lidar-portal.s3.eu-north-1.amazonaws.com/tiles/{z}/{x}/{y}.webp",
+        {
+          attribution: "LiDAR hillshade © DataMapWales",
+          pane: "lidarPane",
+          zIndex: 345,
+
+          // Generated tiles are TMS (gdal2tiles default)
+          tms: true,
+
+          // Native (real) zooms you uploaded
+          minNativeZoom: 16,
+          maxNativeZoom: 17, // set 15 if you haven't uploaded 16 yet
+
+          // Reduce extra requests
+          keepBuffer: 0,
+          updateWhenIdle: true,
+          updateWhenZooming: false,
+          detectRetina: false,
+
+          // Don’t fetch across the dateline or outside Wales
+          noWrap: true,
+          bounds: WALES_BOUNDS,
+
+          // Let map zoom however it likes; Leaflet will scale tiles
+          minZoom: 1,
+          maxZoom: 22,
+          opacity: 1,
+          
+          // Avoid pink error tiles if a tile is missing
+          errorTileUrl:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGMAAQAABQABDQottQAAAABJRU5ErkJggg==",
+        }
+      );
+    }
+  }, [map]);
+
+  // Add/remove DTM Hillshade layer only when zoomed in enough
+  useEffect(() => {
+    const handleVisibility = () => {
+      const z = map.getZoom();
+      const shouldShow = showDtmHillshade && z >= MIN_ZOOM_DTM;
+      toggleLayer(map, dtmHillshadeRef, shouldShow);
+      if (showDtmHillshade && z < MIN_ZOOM_DTM) {
+        setDtmHintOpen(true); // pop a helpful hint
+      }
+    };
+
+  // Run once on mount/toggle
+  handleVisibility();
+
+  // Update when user finishes zooming/panning
+  map.on("zoomend", handleVisibility);
+  map.on("moveend", handleVisibility);
+
+  return () => {
+    map.off("zoomend", handleVisibility);
+    map.off("moveend", handleVisibility);
+  };
+}, [showDtmHillshade, map]);
 
   // --- Vector Layers ------------------------
   // --- WFS: Cadw Scheduled Monuments ---
@@ -530,6 +607,9 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
             Overlays
           </Typography>
 
+          {/* Temporary local toggle for S3 XYZ DTM hillshade (no need to edit LayerToggles yet) */}
+
+
           <LayerToggles
             showCommunity={showCommunity}
             setShowCommunity={setShowCommunity}
@@ -543,6 +623,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
             setShowDsmHillshade={setShowDsmHillshade}
             showMultiHillshade={showMultiHillshade}
             setShowMultiHillshade={setShowMultiHillshade}
+            showDtmHillshade={showDtmHillshade}
+            setShowDtmHillshade={setShowDtmHillshade}
           />
 
           {/* Scroll for more hint */}
@@ -556,6 +638,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         </Box>
       </Collapse>
     </Box>
+
+    {/* Alerts  */}
     <Snackbar
       open={nmrHintOpen}
       autoHideDuration={4000}
@@ -564,6 +648,17 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     >
       <Alert onClose={() => setNmrHintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
         Zoom in to see National Monuments Record points (zoom 11+).
+      </Alert>
+    </Snackbar>
+
+    <Snackbar
+      open={dtmHintOpen}
+      autoHideDuration={3500}
+      onClose={() => setDtmHintOpen(false)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert onClose={() => setDtmHintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
+        Zoom in to see the LiDAR hillshade (zoom {MIN_ZOOM_DTM}+).
       </Alert>
     </Snackbar>
     </>

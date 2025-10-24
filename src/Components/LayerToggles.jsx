@@ -2,6 +2,8 @@ import React from 'react';
 import Stack from '@mui/material/Stack';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
 
 /**
  * LayerToggles
@@ -14,7 +16,7 @@ export default function LayerToggles({
   showParksWfs, setShowParksWfs,
   showNMRWfs, setShowNMRWfs,
   showDsmHillshade, setShowDsmHillshade,
-  showMultiHillshade, setShowMultiHillshade,
+  showMultiHillshade, setShowMultiHillshade, showDtmHillshade, setShowDtmHillshade
 }) {
   const labelSx = {
     m: 0,
@@ -77,6 +79,26 @@ export default function LayerToggles({
         sx={labelSx}
       />
 
+      <Divider sx={{ my: 1.25, opacity: 0.6 }} />
+      <Typography
+        variant="overline"
+        sx={{ px: 1, pb: 0.25, color: 'text.secondary', letterSpacing: 0.6 }}
+      >
+        LiDAR 
+      </Typography>
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            size="small"
+            checked={showDtmHillshade}
+            onChange={(e) => setShowDtmHillshade(e.target.checked)}
+          />
+        }
+        label="DTM Hillshade"
+        sx={labelSx}
+      />
+
       <FormControlLabel
         control={
           <Checkbox
@@ -85,7 +107,7 @@ export default function LayerToggles({
             onChange={(e) => setShowDsmHillshade(e.target.checked)}
           />
         }
-        label="LiDAR DSM Hillshade"
+        label="DSM Hillshade"
         sx={labelSx}
       />
 
@@ -97,7 +119,7 @@ export default function LayerToggles({
             onChange={(e) => setShowMultiHillshade(e.target.checked)}
           />
         }
-        label="LiDAR DSM Multi-directional"
+        label="DSM Multi-directional"
         sx={labelSx}
       />
     </Stack>
