@@ -492,6 +492,11 @@ p {
   }
 }
 
+.css-1fkx50b {
+  max-height: none !important;
+}
 
-
+#root > main > div > div:nth-child(2) > div.leaflet-container.leaflet-touch.leaflet-retina.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom > div.MuiBox-root.css-dm1b14 > div.MuiCollapse-root.MuiCollapse-vertical.MuiCollapse-entered.css-1cbf1l2 > div > div > div {
+  max-height: none !important;
+}
 
