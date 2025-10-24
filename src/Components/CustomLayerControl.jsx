@@ -6,7 +6,7 @@ import 'leaflet-loading'; // Leaflet plugin: small spinner in top-left when the 
 import 'leaflet/dist/leaflet.css';
 
 // --- Mui Components -------------------------
-import { Box, Tooltip, IconButton, Divider, Typography, Stack, useMediaQuery, Snackbar, Alert, Collapse } from "@mui/material";
+import { Box, Tooltip, IconButton, Divider, Typography, Stack, useMediaQuery, Snackbar, Alert, Collapse, FormControlLabel, Checkbox } from "@mui/material";
 
 // --- Icons --------------------------------
 import LayersIcon from "@mui/icons-material/Layers";
@@ -159,6 +159,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const [showCadwSm, setShowCadwSm] = useState(false);
   const [showParksWfs, setShowParksWfs] = useState(false);
   const [showNMRWfs, setShowNMRWfs] = useState(false);
+  // Toggle for S3-hosted XYZ hillshade tiles
+  const [showS3Hillshade, setShowS3Hillshade] = useState(false);
 
   // Hint for NMR
   const [nmrHintOpen, setNmrHintOpen] = useState(false);
@@ -172,12 +174,20 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   const cadwSmRef = useRef(null); 
   const parksRef = useRef(null);
   const NMRRef = useRef(null);
+  // Ref for S3 XYZ hillshade
+  const s3HillshadeRef = useRef(null);
 
   // Ref for NMR requests
   const nmrMoveDebounceRef = useRef(null); // waits 300ms after you stop moving
   const nmrAbortRef = useRef(null);        // cancels an old request if a new one starts
   const MIN_ZOOM_NMR = 11;                 // only fetch NMR when zoomed in enough 
   const nmrCanvasRendererRef = useRef(L.canvas({ padding: 0.5 })); // Use a canvas renderer for faster drawing
+
+  // Only allow S3 hillshade when zoomed in enough
+const MIN_ZOOM_S3 = 16; // change to 16 if you want even closer
+
+// Hint for S3 layer when user is zoomed out
+const [s3HintOpen, setS3HintOpen] = useState(false);
 
   // --- useEffects --------------------------
 
@@ -237,6 +247,81 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     });
     toggleLayer(map, multiHillshadeRef, showMultiHillshade);
   }, [showMultiHillshade, map]);
+
+
+
+
+  // --- XYZ: S3-hosted LiDAR hillshade tiles (create once) ---
+  useEffect(() => {
+    // Wales bounds to stop world wrapping / out-of-extent requests
+    const WALES_BOUNDS = L.latLngBounds([51.25, -5.80], [53.60, -2.60]);
+
+    if (!s3HillshadeRef.current) {
+      s3HillshadeRef.current = L.tileLayer(
+          "https://welsh-lidar-portal.s3.eu-north-1.amazonaws.com/tiles/{z}/{x}/{y}.webp",
+        {
+          attribution: "LiDAR hillshade © DataMapWales",
+          pane: "lidarPane",
+          zIndex: 345,
+
+          // Generated tiles are TMS (gdal2tiles default)
+          tms: true,
+
+          // Native (real) zooms you uploaded
+          minNativeZoom: 16,
+          maxNativeZoom: 17, // set 15 if you haven't uploaded 16 yet
+
+          // Reduce extra requests
+          keepBuffer: 0,
+          updateWhenIdle: true,
+          updateWhenZooming: false,
+          detectRetina: false,
+
+          // Don’t fetch across the dateline or outside Wales
+          noWrap: true,
+          bounds: WALES_BOUNDS,
+
+          // Let map zoom however it likes; Leaflet will scale tiles
+          minZoom: 1,
+          maxZoom: 22,
+          opacity: 1,
+          resamplingMethod: 'cubic',
+          
+          // Avoid pink error tiles if a tile is missing
+          errorTileUrl:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGMAAQAABQABDQottQAAAABJRU5ErkJggg==",
+        }
+      );
+    }
+  }, [map]);
+
+  // Add/remove S3 layer only when zoomed in enough
+useEffect(() => {
+  const handleVisibility = () => {
+    const z = map.getZoom();
+    const shouldShow = showS3Hillshade && z >= MIN_ZOOM_S3;
+    toggleLayer(map, s3HillshadeRef, shouldShow);
+    if (showS3Hillshade && z < MIN_ZOOM_S3) {
+      setS3HintOpen(true); // pop a helpful hint
+    }
+  };
+
+  // Run once on mount/toggle
+  handleVisibility();
+
+  // Update when user finishes zooming/panning
+  map.on("zoomend", handleVisibility);
+  map.on("moveend", handleVisibility);
+
+  return () => {
+    map.off("zoomend", handleVisibility);
+    map.off("moveend", handleVisibility);
+  };
+}, [showS3Hillshade, map]);
+
+
+
+
 
   // --- Vector Layers ------------------------
   // --- WFS: Cadw Scheduled Monuments ---
@@ -530,6 +615,20 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
             Overlays
           </Typography>
 
+          {/* Temporary local toggle for S3 XYZ hillshade (no need to edit LayerToggles yet) */}
+<Box sx={{ px: 1, pt: 0.5, pb: 0.5 }}>
+  <FormControlLabel
+    control={
+      <Checkbox
+        size="small"
+        checked={showS3Hillshade}
+        onChange={(e) => setShowS3Hillshade(e.target.checked)}
+      />
+    }
+    label="LiDAR Hillshade (S3 XYZ)"
+  />
+</Box>
+
           <LayerToggles
             showCommunity={showCommunity}
             setShowCommunity={setShowCommunity}
@@ -564,6 +663,17 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
     >
       <Alert onClose={() => setNmrHintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
         Zoom in to see National Monuments Record points (zoom 11+).
+      </Alert>
+    </Snackbar>
+
+    <Snackbar
+      open={s3HintOpen}
+      autoHideDuration={3500}
+      onClose={() => setS3HintOpen(false)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert onClose={() => setS3HintOpen(false)} severity="info" variant="filled" sx={{ width: '100%' }}>
+        Zoom in to see the LiDAR hillshade (zoom {MIN_ZOOM_S3}+).
       </Alert>
     </Snackbar>
     </>
