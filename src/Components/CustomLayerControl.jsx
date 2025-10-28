@@ -532,7 +532,8 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         position: "absolute",
         zIndex: 1000,
         top: { xs: 12, sm: 20 },
-        right: { xs: 75, sm: 20 },
+                left: { xs: 12, sm: 'auto' },
+        right: { xs: 'auto', sm: 20 },
         bgcolor: { 
           xs:"transparent", sm: "rgba(255, 255, 255, 0.85)" },
         backdropFilter: 
@@ -628,13 +629,14 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
           />
 
           {/* Scroll for more hint */}
-          {isMobile && !effectiveCollapsed && (
+          {/* Removed until more options added */}
+          {/* {isMobile && !effectiveCollapsed && (
             <Box sx={{ px: 1, pb: 0.75, pt: 0.25 }}>
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Scroll for more
               </Typography>
             </Box>
-          )}
+          )} */}
         </Box>
       </Collapse>
     </Box>
