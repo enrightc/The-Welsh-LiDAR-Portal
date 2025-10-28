@@ -36,6 +36,11 @@ export default function BaseMapRadios({ base, setBase }) {
       >
         <FormControlLabel value="osm" control={<Radio size="small" />} label="OpenStreetMap" />
         <FormControlLabel value="esri" control={<Radio size="small" />} label="ESRI Imagery" />
+        <FormControlLabel
+  value="historic"
+  control={<Radio size="small" />}
+  label="Historic OS (c.1888)" 
+/>
       </RadioGroup>
     </>
   );

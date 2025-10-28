@@ -169,6 +169,7 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
   // This stores the actual Leaflet GeoJSON layer object so it can add/remove it without rebuilding every render. 
   const osmRef = useRef(null);
   const esriRef = useRef(null);
+  const historicRef = useRef(null); // MapTiler Historic OS 10k (c.1888)
   const dsmHillshadeRef = useRef(null);
   const multiHillshadeRef = useRef(null);
   const cadwSmRef = useRef(null); 
@@ -214,16 +215,46 @@ export default function CustomLayerControl({ showCommunity, setShowCommunity, la
         { attribution: "Tiles © Esri" }
       );
     }
+    const MT_KEY = import.meta.env?.VITE_MAPTILER_KEY;
+    if (!MT_KEY) {
+      console.warn('[Historic OS] Missing VITE_MAPTILER_KEY. Skipping historic basemap creation.');
+    } else {
+      historicRef.current = L.tileLayer(
+        `https://api.maptiler.com/tiles/uk-osgb10k1888/{z}/{x}/{y}.jpg?key=${MT_KEY}`,
+        {
+          attribution: 'Historic map © MapTiler • Data: Ordnance Survey (c.1888)',
+          maxZoom: 17,
+          noWrap: true,
+          tms: false,
+          crossOrigin: true,
+        }
+      );
+    }
 
-    const toAdd = base === "osm" ? osmRef.current : esriRef.current;
-    const toRemove = base === "osm" ? esriRef.current : osmRef.current;
+    const basemapByKey = {
+      osm: osmRef.current,
+      esri: esriRef.current,
+      historic: historicRef.current,
+    };
 
-    if (toRemove && map.hasLayer(toRemove)) map.removeLayer(toRemove);
-    if (toAdd && !map.hasLayer(toAdd)) toAdd.addTo(map);
+    // Remove any basemap that isn't selected
+    Object.entries(basemapByKey).forEach(([key, layer]) => {
+      if (!layer) return;
+      if (key !== base && map.hasLayer(layer)) {
+        map.removeLayer(layer);
+      }
+    });
+
+    // Add the selected one
+    const selected = basemapByKey[base] || osmRef.current;
+    if (selected && !map.hasLayer(selected)) {
+      selected.addTo(map);
+    }
   }, [base, map]);
 
-  // --- WMS (LiDAR Layers) ------------
+  // --- Historic Maps ----------------------------
 
+  // --- WMS (LiDAR Layers) ----------------------------
   // --- WMS: LiDAR DSM Hillshade ---
   useEffect(() => {
     const ATTR = "© DataMapWales / Welsh Government";
