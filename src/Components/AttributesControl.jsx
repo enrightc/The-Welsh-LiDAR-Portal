@@ -45,6 +45,9 @@ export default function AttributesControl() {
                     <strong>Esri Imagery </strong>Tiles © Esri
                 </Typography>
                 <Typography variant="body2">
+                    <strong>UK Great Britain, Ordnance Survey six-inch to the mile (1:10,560), 1888-1913 </strong>Courtesy of the National Library of Scotland
+                </Typography>
+                <Typography variant="body2">
                     <strong>Scheduled Monuments </strong>© Crown copyright Cadw, DataMapWales, <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">OGL v3.0</a>
                 </Typography>
                 <Typography variant="body2">
