@@ -266,6 +266,8 @@ function Login() {
               {submitting ? <CircularProgress size={20} color="inherit" /> : "Login"}
             </Button>
 
+
+
             {submitting && (
               <Typography 
                 variant="body2" 
@@ -277,6 +279,16 @@ function Login() {
             )}
           </Grid>
 
+          <Grid>
+            <Typography variant="body2" align="center">
+              <span
+                onClick={() => navigate("/forgot-password")}
+                style={{ cursor: "pointer", color: "blue" }}
+              >
+                Forgot password?
+              </span>
+            </Typography>
+          </Grid>
           <Grid>
             <Typography variant="small" align="center">
               Dont have an account yet?{" "}
