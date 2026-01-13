@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 
 export default function ResetPassword() {
     const { uid, token } = useParams();
+    const navigate = useNavigate();
     const [newPassword, setNewPassword] = useState("");
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
     async function handleSubmit(e) {
         e.preventDefault();
         setIsLoading(true);
@@ -27,15 +29,43 @@ export default function ResetPassword() {
                 }
             );
 
-            if (!res.ok) {
-                throw new Error(`Request failed (${res.status})`);
+            // Try to read JSON either way (Djoser returns validation messages in the response)
+            let data = null;
+            try {
+                data = await res.json();
+            } catch (_) {
+                data = null;
             }
 
-            setMessage("Password updated. You can now log in with your new password.");
+            if (!res.ok) {
+                const pwErrors = data?.new_password || data?.detail || data?.non_field_errors;
+
+                if (Array.isArray(pwErrors) && pwErrors.length) {
+                    setMessage(pwErrors.join(" "));
+                    setIsError(true);
+                } else if (typeof pwErrors === "string" && pwErrors) {
+                    setMessage(pwErrors);
+                    setIsError(true);
+                } else {
+                    setMessage("Password was not accepted. Please choose a stronger password and try again.");
+                    setIsError(true);
+                }
+
+                return; // IMPORTANT: stop here so we don’t run the success code below
+            }
+
+            setMessage("Password updated. Redirecting you to login…");
+            setIsError(false);
+
+            setTimeout(() => {
+                navigate("/login");
+            }, 1200);
+
         } catch (error) {
             setMessage(
                 "That reset link may have expired or the password was not accepted. Please request a new reset link and try again."
             );
+            setIsError(true);
         } finally {
             setIsLoading(false);
         }
@@ -56,7 +86,13 @@ export default function ResetPassword() {
                     {isLoading ? "Saving…" : "Update password"}
                 </button>
             </form>
-            {message ? <p>{message}</p> : null}
+            
+            {/* Error Message */}
+            {message ? (
+                <p style={{ color: isError ? "red" : "green" }}>
+                    {message}
+                </p>
+            ) : null}
         </div>
     );
 }

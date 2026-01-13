@@ -279,6 +279,7 @@ function Login() {
             )}
           </Grid>
 
+          {/* Forgot Password */}
           <Grid>
             <Typography variant="body2" align="center">
               <span
@@ -289,6 +290,8 @@ function Login() {
               </span>
             </Typography>
           </Grid>
+
+          {/* Dont have an account yet? */}
           <Grid>
             <Typography variant="small" align="center">
               Dont have an account yet?{" "}
