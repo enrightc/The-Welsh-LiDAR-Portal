@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -10,7 +12,7 @@ export default function ForgotPassword() {
     setIsLoading(true);
     setMessage("");
     try {
-      const res = await fetch("http://127.0.0.1:8000/api-auth-djoser/users/reset_password/", {
+      fetch(`${BASE_URL}/api-auth-djoser/users/reset_password/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email }),

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 export default function ResetPassword() {
     const { uid, token } = useParams();
@@ -15,7 +17,7 @@ export default function ResetPassword() {
         setMessage("");
         try {
             const res = await fetch(
-                "http://127.0.0.1:8000/api-auth-djoser/users/reset_password_confirm/",
+                `${BASE_URL}/api-auth-djoser/users/reset_password_confirm/`,
                 {
                     method: "POST",
                     headers: {
