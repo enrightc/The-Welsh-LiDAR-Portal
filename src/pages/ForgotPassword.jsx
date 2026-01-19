@@ -12,13 +12,11 @@ export default function ForgotPassword() {
     setIsLoading(true);
     setMessage("");
     try {
-      const res = await fetch(`${BASE_URL}/api-auth-djoser/users/reset_password/`, 
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email }),
-      }
-    );
+      const res = await fetch(`${BASE_URL}/api-auth-djoser/users/reset_password/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email }),
+    });
     if (!res.ok) {
       throw new Error(`Request failed (${res.status})`);
     }

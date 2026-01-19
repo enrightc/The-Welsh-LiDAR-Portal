@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-
 export default function ResetPassword() {
     const { uid, token } = useParams();
     const navigate = useNavigate();
