@@ -361,7 +361,7 @@ function Navigation() {
                     <Typography textAlign="center">Profile</Typography>
                   </MenuItem>
                   <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/account"); }}>
-                    <Typography textAlign="center">Account</Typography>
+                    <Typography textAlign="center">Account settings</Typography>
                   </MenuItem>
                   <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/dashboard"); }}>
                     <Typography textAlign="center">Dashboard</Typography>
