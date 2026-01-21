@@ -21,7 +21,7 @@ import DialogActions from '@mui/material/DialogActions';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Icons
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import LoginIcon from '@mui/icons-material/Login';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 
 import logo from "./Assets/mainLogoWhite.png"; 
@@ -286,16 +286,18 @@ function Navigation() {
            }}>
             <Tooltip title="Open settings">
               {GlobalState.userIsLoggedIn ?
-                <Button 
-                  color="inherit"
-                  variant="outlined"
+                <Button
+                  variant="contained"
                   onClick={handleOpenUserMenu}
-                  sx={{ 
+                  sx={{
                     textTransform: 'none',
-                    alignItems: 'flex-start', // ensures left alignment within the button
-                    border: '1px solid transparent', // invisible border for layout stability
+                    alignItems: 'flex-start',
+                    backgroundColor: '#1976d2',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    border: '1px solid transparent',
                     '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.08)', // light overlay
+                      backgroundColor: '#1565c0',
                     
                     },
                   }}
@@ -310,21 +312,23 @@ function Navigation() {
                       {GlobalState.userUsername}
                     </Typography>
                     <ArrowRightOutlinedIcon />
-                    <AccountCircleOutlinedIcon />
                   </Box>
                 </Button> :
 
-                <Button 
-                  color="inherit"
-                  variant="outlined" 
+                <Button
+                  variant="contained"
                   onClick={handleOpenUserMenu}
-                  sx={{ 
+                  sx={{
                     textTransform: 'none',
-                    alignItems: 'flex-start', // ensures left alignment within the button
-                    border: '1px solid transparent', // invisible border for layout stability
+                    alignItems: 'flex-start',
+                    backgroundColor: '#1976d2',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    border: '1px solid transparent',
                     '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.08)', // light overlay
-                      },
+                      backgroundColor: '#1565c0',
+                      
+                    },
                   }}
                 >
                   <Box sx={{ 
@@ -334,9 +338,9 @@ function Navigation() {
                     gap: 2,
                   }}>
                     <Typography sx={{ fontWeight: 500 }}>
-                      Hello, 
+                      Login 
                     </Typography>
-                    <AccountCircleOutlinedIcon />
+                    <LoginIcon />
                   </Box>
                 </Button>
               }

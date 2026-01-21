@@ -8,8 +8,6 @@ import { useImmerReducer } from "use-immer";
 // App components
 import Navigation from "./Components/Navigation";
 import ToastListener from "./Components/ToastListener";
-import Box from "@mui/material/Box";
-import Typography from '@mui/material/Typography';
 
 // App pages
 import About from "./pages/About";
@@ -125,9 +123,6 @@ useEffect(() => {
                 <Route path="/news" element={<News />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
-                
-                
-                
             </Routes>
             <ToastListener />
           </main>

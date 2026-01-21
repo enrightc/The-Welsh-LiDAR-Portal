@@ -13,7 +13,6 @@ import "./index.css";
 // MUI Imports
 import Button from '@mui/material/Button';
 
-
 // Import the main App component
 import App from "./App.jsx";
 import "./api";
