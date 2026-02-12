@@ -161,6 +161,10 @@ export default function Account() {
     setEmailError("Please enter a new email address.");
     return;
   }
+  if (!currentPasswordForEmail) {
+  setEmailError("Please enter your current password to confirm the change.");
+  return;
+}
 
   // Get token (must be logged in)
   const token = localStorage.getItem("theUserToken");
@@ -172,15 +176,18 @@ export default function Account() {
   setSavingEmail(true);
 
   try {
-    const url = `${API_BASE_URL}/api-auth-djoser/users/me/`;
+    const url = `${API_BASE_URL}/api/users/set_email/`;
 
     const res = await fetch(url, {
-      method: "PATCH",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Token ${token}`,
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({
+        email,
+        current_password: currentPasswordForEmail,
+      }),
     });
 
     if (!res.ok) {
@@ -202,6 +209,7 @@ export default function Account() {
     // Success
     setEmailSuccess("Email updated.");
     setCurrentPasswordForEmail(""); // optional field, but nice to clear it
+    setEmail("");
   } catch {
     setEmailError("Network error — please try again.");
   } finally {
