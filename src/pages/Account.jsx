@@ -51,6 +51,10 @@ export default function Account() {
   const [email, setEmail] = useState("");
   const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
 
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [emailSuccess, setEmailSuccess] = useState("");
+  const [emailError, setEmailError] = useState("");
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -76,6 +80,7 @@ export default function Account() {
   // If you already have an axios helper (e.g. API.jsx), you can swap this fetch call to use it instead.
   const API_BASE_URL = (import.meta?.env?.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
 
+  // Change Password
   const handleSavePassword = async () => {
     // Basic front-end checks
     setPasswordSuccess("");
@@ -143,6 +148,65 @@ export default function Account() {
     } finally {
       setSavingPassword(false);
     }
+  };
+
+  // Change Email
+  const handleSaveEmail = async () => {
+  // Clear old messages
+  setEmailSuccess("");
+  setEmailError("");
+
+  // Basic check
+  if (!email) {
+    setEmailError("Please enter a new email address.");
+    return;
+  }
+
+  // Get token (must be logged in)
+  const token = localStorage.getItem("theUserToken");
+  if (!token) {
+    setEmailError("You are not signed in. Please sign in again and retry.");
+    return;
+  }
+
+  setSavingEmail(true);
+
+  try {
+    const url = `${API_BASE_URL}/api-auth-djoser/users/me/`;
+
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      // Try to read the error message from the API response
+      let message = "Sorry — your email could not be updated.";
+      try {
+        const data = await res.json();
+        const firstKey = data && typeof data === "object" ? Object.keys(data)[0] : null;
+        if (firstKey && Array.isArray(data[firstKey]) && data[firstKey][0]) {
+          message = data[firstKey][0];
+        }
+      } catch {
+        // ignore JSON parse issues
+      }
+      setEmailError(message);
+      return;
+    }
+
+    // Success
+    setEmailSuccess("Email updated.");
+    setCurrentPasswordForEmail(""); // optional field, but nice to clear it
+  } catch {
+    setEmailError("Network error — please try again.");
+  } finally {
+    setSavingEmail(false);
+  }
   };
 
   return (
@@ -216,19 +280,33 @@ export default function Account() {
                           label="New email"
                           type="email"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            setEmailError("");
+                            setEmailSuccess("");
+                          }}
                           fullWidth
                         />
                         <TextField
                           label="Current password"
                           type="password"
                           value={currentPasswordForEmail}
-                          onChange={(e) => setCurrentPasswordForEmail(e.target.value)}
+                          onChange={(e) => {
+                            setCurrentPasswordForEmail(e.target.value);
+                            setEmailError("");
+                            setEmailSuccess("");
+                          }}
                           fullWidth
                         />
+                        {emailError ? <Alert severity="error">{emailError}</Alert> : null}
+                        {emailSuccess ? <Alert severity="success">{emailSuccess}</Alert> : null}
                         <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-                          <Button variant="contained" onClick={() => alert("Hook this up to Djoser later")}>
-                            Save email
+                          <Button
+                            variant="contained"
+                            disabled={!email || savingEmail}
+                            onClick={handleSaveEmail}
+                          >
+                            {savingEmail ? "Saving…" : "Save email"}
                           </Button>
                         </Box>
                       </Stack>
