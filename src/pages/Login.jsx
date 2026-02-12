@@ -214,7 +214,7 @@ function Login() {
             <TextField 
                 id="username" 
                 fullWidth 
-                label="Username" 
+                label="Username or Email" 
                 variant="outlined"
                 onChange = {(e)=> 
                     // When the user types in the Confirm Password input, do the following:
