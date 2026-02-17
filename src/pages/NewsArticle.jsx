@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link as RouterLink } from "react-router-dom";
-import { Box, Typography, Link } from "@mui/material";
+import { Box, Typography, Link, Card, CardContent, CardMedia } from "@mui/material";
 
 export default function NewsArticle() {
   const { id } = useParams();
@@ -31,20 +31,37 @@ export default function NewsArticle() {
       <Link component={RouterLink} to="/news" underline="hover">
         ← Back to news
       </Link>
+      <Card sx={{ mt: 3, boxShadow: 3, borderRadius: 2 }}>
+        {item.image && (
+          <CardMedia
+            component="img"
+            height="360"
+            image={item.image}
+            alt={item.title}
+            sx={{
+              objectFit: "cover",
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+            }}
+          />
+        )}
 
-      <Typography variant="h3" sx={{ mt: 2, fontWeight: 700 }}>
-        {item.title}
-      </Typography>
+        <CardContent>
+          <Typography variant="h3" sx={{ mt: 0, fontWeight: 700 }}>
+            {item.title}
+          </Typography>
 
-      {item.published_at && (
-        <Typography sx={{ mt: 1, color: "text.secondary" }}>
-          {new Date(item.published_at).toLocaleDateString("en-GB")}
-        </Typography>
-      )}
+          {item.published_at && (
+            <Typography sx={{ mt: 1, color: "text.secondary" }}>
+              {new Date(item.published_at).toLocaleDateString("en-GB")}
+            </Typography>
+          )}
 
-      <Typography sx={{ mt: 3, whiteSpace: "pre-wrap" }}>
-        {item.content}
-      </Typography>
+          <Typography sx={{ mt: 3, whiteSpace: "pre-wrap" }}>
+            {item.content}
+          </Typography>
+        </CardContent>
+      </Card>
     </Box>
   );
 }

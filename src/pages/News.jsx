@@ -1,133 +1,170 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Stack, Card, CardContent, Link } from "@mui/material";
-
 import { Link as RouterLink } from "react-router-dom";
+import { Box, Typography, Card, CardContent, Link, Chip, CardMedia, Container } from "@mui/material";
 
-import LidarFooter from "../Components/LidarFooter";
-import Support from "../Components/Support";
-
-const LINK_MAP = { support: "#support", feedback: "/feedback" };
-
-function renderWithLinks(text) {
-  if (!text) return null;
-  const regex = /(support|feedback)/gi;
-  const nodes = [];
-  let lastIndex = 0;
-  let match;
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) nodes.push(text.slice(lastIndex, match.index));
-    const key = match[0].toLowerCase();
-    if (key === "support") {
-      nodes.push(
-        <Link
-          key={`${key}-${match.index}`}
-          href="#support"
-          underline="hover"
-          sx={{ fontWeight: 500 }}
-        >
-          {match[0]}
-        </Link>
-      );
-    } else {
-      nodes.push(
-        <Link
-          key={`${key}-${match.index}`}
-          component={RouterLink}
-          to={LINK_MAP[key]}
-          underline="hover"
-          sx={{ fontWeight: 500 }}
-        >
-          {match[0]}
-        </Link>
-      );
-    }
-    lastIndex = match.index + match[0].length;
-  }
-  if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
-  return nodes;
-}
-
-function getExcerpt(text, max = 260) {
-  if (!text) return "";
-  const clean = String(text).replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  return clean.slice(0, max).trimEnd() + "…";
-}
-
-
-export default function NewsList() {
+export default function News() {
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const BASE = import.meta.env.VITE_BACKEND_URL || "";
-    const url = `${BASE}/api/news/`;
-    fetch(url) // same origin proxy; see note below if different ports
-      .then((r) => r.json())
-      .then(setItems)
-      .catch((e) => console.error("Failed to load news", e))
-      .finally(() => setLoading(false));
+    const BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+
+    fetch(`${BASE}/api/news/`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setItems(data))
+      .catch((err) => {
+        console.error("Failed to load news:", err);
+        setItems([]);
+      });
   }, []);
 
-  if (loading) return <Typography>Loading news…</Typography>;
-  if (!items.length) return <Typography>No news yet.</Typography>;
+  function getExcerpt(text) {
+    if (!text) return "";
+    const maxLength = 120;
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength).trim() + "…";
+  }
+
+  if (!items.length) {
+    return (
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        <Typography variant="h1" component="h1" sx={{ mb: 2, textAlign: "center", fontWeight: 700 }}>
+          News
+        </Typography>
+        <Typography sx={{ textAlign: "center", color: "text.secondary" }}>
+          No news yet. Check back soon.
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
-    <>
-        <Box component="section" sx={{ maxWidth: 1000, mx: "auto", px: 2 }}>
-            
-            <Typography variant="h1" component="h1" sx={{ my: 4, textAlign: "center", fontWeight: 600, }}>
-            News
-            </Typography>
+    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+      <Typography
+        variant="h1"
+        component="h1"
+        sx={{
+          mb: 1,
+          textAlign: "center",
+          fontWeight: 700,
+          letterSpacing: "-0.02em",
+        }}
+      >
+        News
+      </Typography>
 
-            <Stack spacing={3} sx={{mb: 12,}}>
-                {items.map((n, idx) => (
+      <Typography
+        sx={{
+          mb: { xs: 4, md: 5 },
+          textAlign: "center",
+          color: "text.secondary",
+          maxWidth: 720,
+          mx: "auto",
+        }}
+      >
+        Updates, inspiration, and stories from the Welsh LiDAR Portal.
+      </Typography>
 
-                <Card
-                    key={n.id}
-                    sx={{
-                    boxShadow: 3,
-                    borderRadius: 2,
-                    mb: 9,
-                    backgroundColor: idx % 2 === 0 ? '#F6F2E8' : '#EEF3F4',
-                    }}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
+          gap: { xs: 2.5, md: 3 },
+        }}
+      >
+        {items.map((n) => (
+          <Card
+            key={n.id}
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: 2,
+              overflow: "hidden",
+              boxShadow: 3,
+              
+              boxShadow: 2,
+              transition: "transform 160ms ease, box-shadow 160ms ease",
+              "&:hover": {
+                transform: "translateY(-3px)",
+                boxShadow: 6,
+              },
+            }}
+          >
+            {n.image && (
+              <CardMedia
+                component="img"
+                height="180"
+                image={n.image}
+                alt={n.title}
+                sx={{ objectFit: "cover" }}
+              />
+            )}
+
+            <CardContent sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+              <Typography
+                variant="h2"
+                component="h2"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: { xs: "1.15rem", md: "1.25rem" },
+                  lineHeight: 1.2,
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 2,
+                  overflow: "hidden",
+                }}
+              >
+                {n.title}
+              </Typography>
+
+              {n.published_at && (
+                <Typography
+                  variant="caption"
+                  sx={{ color: "text.secondary", display: "block", mt: 1 }}
                 >
-                    
-                    <CardContent>
-                    <Typography variant="h2" component="h2" gutterBottom sx={{fontWeight: 600,
-                    }}>
-                        {n.title}
-                    </Typography>
-                    {n.published_at && (
-                        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 4 }}>
-                        {new Date(n.published_at).toLocaleDateString()}
-                        </Typography>
-                    )}
-                      <Typography sx={{ mt: 1 }}>
-                        {getExcerpt(n.content)}
-                      </Typography>
+                  {new Date(n.published_at).toLocaleDateString("en-GB")}
+                </Typography>
+              )}
 
-                      <Link
-                        component={RouterLink}
-                        to={`/news/${n.id}`}
-                        underline="hover"
-                        sx={{ display: "inline-block", mt: 2, fontWeight: 600 }}
-                      >
-                        Read more
-                      </Link>
-                    </CardContent>
-                </Card>
-                ))}
-            </Stack>
+              {n.tags && n.tags.length > 0 && (
+                <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  {n.tags.map((tag) => (
+                    <Chip key={tag.id} label={tag.name} size="small" sx={{ fontWeight: 500 }} />
+                  ))}
+                </Box>
+              )}
 
-            
-        </Box>
+              <Typography
+                sx={{
+                  mt: 2,
+                  color: "text.secondary",
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 3,
+                  overflow: "hidden",
+                }}
+              >
+                {getExcerpt(n.content)}
+              </Typography>
 
-        <Box id="support">
-            <Support />
-        </Box>
-        <LidarFooter />
-    </>         
-    
+              <Box sx={{ mt: "auto", pt: 2 }}>
+                <Link
+                  component={RouterLink}
+                  to={`/news/${n.id}`}
+                  underline="hover"
+                  sx={{ fontWeight: 700 }}
+                  aria-label={`Read more: ${n.title}`}
+                >
+                  Read more →
+                </Link>
+              </Box>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
+    </Container>
   );
 }
