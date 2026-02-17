@@ -47,6 +47,13 @@ function renderWithLinks(text) {
   return nodes;
 }
 
+function getExcerpt(text, max = 260) {
+  if (!text) return "";
+  const clean = String(text).replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max).trimEnd() + "…";
+}
+
 
 export default function NewsList() {
   const [items, setItems] = useState([]);
@@ -96,9 +103,18 @@ export default function NewsList() {
                         {new Date(n.published_at).toLocaleDateString()}
                         </Typography>
                     )}
-                    <Typography sx={{ mt: 1, whiteSpace: "pre-wrap" }}>
-                        {renderWithLinks(n.content)}
-                    </Typography>
+                      <Typography sx={{ mt: 1 }}>
+                        {getExcerpt(n.content)}
+                      </Typography>
+
+                      <Link
+                        component={RouterLink}
+                        to={`/news/${n.id}`}
+                        underline="hover"
+                        sx={{ display: "inline-block", mt: 2, fontWeight: 600 }}
+                      >
+                        Read more
+                      </Link>
                     </CardContent>
                 </Card>
                 ))}

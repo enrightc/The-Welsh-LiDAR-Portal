@@ -24,6 +24,7 @@ import Dashboard from "./pages/Dashboard";
 import WhatIsLidar from "./pages/WhatIsLidar";
 import Feedback from "./Components/Feedback";
 import News from "./pages/News";
+import NewsArticle from "./pages/NewsArticle";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 
@@ -121,6 +122,7 @@ useEffect(() => {
                 <Route path="/whatIsLidar" element={<Navigate to="/what-is-lidar" replace />} />
                 <Route path="/feedback" element={<Feedback />} />
                 <Route path="/news" element={<News />} />
+                <Route path="/news/:id" element={<NewsArticle />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
             </Routes>
