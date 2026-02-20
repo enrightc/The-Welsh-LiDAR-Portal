@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Typography, Card, CardContent, Link, Chip, CardMedia, Container } from "@mui/material";
+import { Box, Typography, Card, CardContent, Link, Chip, CardMedia, Container, CircularProgress } from "@mui/material";
 import SellIcon from '@mui/icons-material/Sell';
 
 export default function News() {
   const [items, setItems] = useState([]);
   const [selectedTagIds, setSelectedTagIds] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+
+    setLoading(true);
+
 
     fetch(`${BASE}/api/news/`)
       .then((res) => {
@@ -19,7 +23,8 @@ export default function News() {
       .catch((err) => {
         console.error("Failed to load news:", err);
         setItems([]);
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   function getExcerpt(text) {
@@ -76,6 +81,25 @@ export default function News() {
   function clearFilters() {
     setSelectedTagIds([]);
   }
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 8 } }}>
+        <Typography variant="h1" component="h1" sx={{ mb: 3, textAlign: "center", fontWeight: 700 }}>
+          News
+        </Typography>
+
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 6 }}>
+          <CircularProgress aria-label="Loading news" />
+        </Box>
+
+        <Typography sx={{ textAlign: "center", color: "text.secondary" }}>
+          Loading stories…
+        </Typography>
+      </Container>
+    );
+  }
+
 
   if (!items.length) {
     return (
