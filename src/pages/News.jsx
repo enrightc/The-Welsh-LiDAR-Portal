@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Typography, Card, CardContent, Link, Chip, CardMedia, Container } from "@mui/material";
+import SellIcon from '@mui/icons-material/Sell';
 
 export default function News() {
   const [items, setItems] = useState([]);
+  const [selectedTagIds, setSelectedTagIds] = useState([]);
 
   useEffect(() => {
     const BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
@@ -25,6 +27,54 @@ export default function News() {
     const maxLength = 120;
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength).trim() + "…";
+  }
+
+  // -----------------------------
+  // Build list of available tags
+  // -----------------------------
+  // This creates a unique, alphabetically sorted list of all tags
+  // found across the fetched news items.
+  //
+  // We use a Map to prevent duplicate tags (keyed by tag.id).
+  // useMemo ensures this only recalculates when `items` changes.
+  const availableTags = useMemo(() => {
+    const map = new Map();
+    for (const n of items) {
+      if (!n.tags) continue;
+      for (const t of n.tags) {
+        if (t?.id == null) continue;
+        map.set(t.id, t);
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [items]);
+
+  // -----------------------------
+  // Filter news items by selected tags
+  // -----------------------------
+  // If no tags are selected, return all items.
+  // If tags are selected, return items that match ANY selected tag.
+  //
+  // This recalculates only when either the full list of items
+  // or the selectedTagIds array changes.
+  const filteredItems = useMemo(() => {
+    if (!selectedTagIds.length) return items;
+    return items.filter((n) => (n.tags || []).some((t) => selectedTagIds.includes(t.id)));
+  }, [items, selectedTagIds]);
+
+  // Toggle a tag in the selectedTagIds state.
+  // If the tag is already selected, remove it.
+  // If it is not selected, add it.
+  function toggleTag(tagId) {
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+    );
+  }
+
+  // Reset all active tag filters.
+  // After this runs, the full list of news items is shown again.
+  function clearFilters() {
+    setSelectedTagIds([]);
   }
 
   if (!items.length) {
@@ -67,6 +117,53 @@ export default function News() {
         Updates, inspiration, and stories from the Welsh LiDAR Portal.
       </Typography>
 
+      {/*
+        Tag filter bar
+        ----------------
+        This section renders the clickable tag filters shown above the news grid.
+        It only appears if there are tags available.
+
+        - "All / Clear filters" resets the selectedTagIds state
+        - Each Chip represents a tag found in the news items
+        - Clicking a tag toggles it on/off via toggleTag()
+        - Selected tags are visually highlighted (filled + primary colour)
+      */}
+      {availableTags.length > 0 && (
+        <Box
+          sx={{
+            mb: { xs: 3, md: 4 },
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {/* Reset button: clears all active tag filters */}
+          <Chip
+            label={selectedTagIds.length ? "Clear filters" : "All"}
+            onClick={clearFilters}
+            variant={selectedTagIds.length ? "filled" : "outlined"}
+            sx={{ fontWeight: 700 }}
+          />
+
+          {/* Render one Chip per available tag */}
+          {availableTags.map((tag) => (
+            <Chip
+              key={tag.id}
+              icon={<SellIcon fontSize="small" />}
+              label={tag.name}
+              clickable
+              onClick={() => toggleTag(tag.id)}
+              color={selectedTagIds.includes(tag.id) ? "primary" : "default"}
+              variant={selectedTagIds.includes(tag.id) ? "filled" : "outlined"}
+              size="small"
+              sx={{ fontWeight: 600 }}
+            />
+          ))}
+        </Box>
+      )}
+
       <Box
         sx={{
           display: "grid",
@@ -74,7 +171,29 @@ export default function News() {
           gap: { xs: 2.5, md: 3 },
         }}
       >
-        {items.map((n) => (
+        {/*
+          Empty state message
+          -------------------
+          This renders when the active tag filters remove all results.
+          It spans the full grid width and provides a quick way to reset filters.
+        */}
+        {filteredItems.length === 0 && (
+          <Card sx={{ gridColumn: "1 / -1", p: 3, textAlign: "center", boxShadow: 0, border: "1px solid rgba(0,0,0,0.08)" }}>
+            <Typography sx={{ fontWeight: 700, mb: 1 }}>No results</Typography>
+            <Typography sx={{ color: "text.secondary", mb: 2 }}>
+              Try clearing your filters or selecting a different tag.
+            </Typography>
+            <Chip label="Clear filters" onClick={clearFilters} sx={{ fontWeight: 700 }} />
+          </Card>
+        )}
+
+        {/*
+          Render news cards
+          -----------------
+          This maps over the filteredItems array and renders one
+          responsive card per news article.
+        */}
+        {filteredItems.map((n) => (
           <Card
             key={n.id}
             sx={{
@@ -83,8 +202,6 @@ export default function News() {
               flexDirection: "column",
               borderRadius: 2,
               overflow: "hidden",
-              boxShadow: 3,
-              
               boxShadow: 2,
               transition: "transform 160ms ease, box-shadow 160ms ease",
               "&:hover": {
@@ -132,7 +249,12 @@ export default function News() {
               {n.tags && n.tags.length > 0 && (
                 <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
                   {n.tags.map((tag) => (
-                    <Chip key={tag.id} label={tag.name} size="small" sx={{ fontWeight: 500 }} />
+                    <Chip 
+                      key={tag.id} 
+                      icon={<SellIcon fontSize="small" />}
+                      label={tag.name} 
+                      size="small" 
+                      sx={{ fontWeight: 500 }} />
                   ))}
                 </Box>
               )}
