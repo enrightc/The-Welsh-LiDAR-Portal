@@ -469,8 +469,8 @@ export default function Account() {
                   }}
                 >
                   <Tab label="Sign-in and security" />
-                  <Tab label="Notifications" />
-                  <Tab label="Privacy" />
+                  <Tab label="Notifications" disabled />
+                  <Tab label="Privacy" disabled />
                   <Tab label="Data export" />
                   <Tab label="Delete account" />
                 </Tabs>
