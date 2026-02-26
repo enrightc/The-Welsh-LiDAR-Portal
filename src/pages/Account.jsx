@@ -675,7 +675,7 @@ export default function Account() {
                     >
                       <Stack spacing={2}>
                         <Alert severity="info">
-                          Start simple: export JSON or CSV. You can add “email me when ready” later if exports get big.
+                          Download your records as CSV for spreadsheets, or GeoJSON for QGIS and other mapping tools.
                         </Alert>
 
                         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
