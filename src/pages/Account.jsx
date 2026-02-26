@@ -12,6 +12,8 @@ import {
   Switch,
   FormControlLabel,
   Alert,
+  CircularProgress,
+  Snackbar,
 } from "@mui/material";
 
 import LidarFooter from "../Components/LidarFooter";
@@ -69,6 +71,14 @@ export default function Account() {
   const [deleteSuccess, setDeleteSuccess] = useState("");
   const [deleteError, setDeleteError] = useState("");
 
+  // Data export loading state
+  const [exportingCsv, setExportingCsv] = useState(false);
+  const [exportingGeoJson, setExportingGeoJson] = useState(false);
+
+  // Success snackbar (used for exports)
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
   // Notifications state (email only)
   const [notifyComments, setNotifyComments] = useState(true);
   const [notifyMentions, setNotifyMentions] = useState(true);
@@ -95,6 +105,93 @@ export default function Account() {
   // Base URL for the backend API.
   // If you already have an axios helper (e.g. API.jsx), you can swap this fetch call to use it instead.
   const API_BASE_URL = (import.meta?.env?.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
+
+  // ---------------//
+  // Data export
+  // ---------------//
+  const downloadBlob = (blob, filename) => {
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  };
+
+  const showDone = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (_, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbarOpen(false);
+  };
+
+
+  const handleExportRecordsCsv = async () => {
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      alert("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+    setExportingCsv(true);
+    try {
+      const url = `${API_BASE_URL}/api/records/export/csv/`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        alert("CSV export failed.");
+        return;
+      }
+
+      const blob = await res.blob();
+      downloadBlob(blob, "records.csv");
+      showDone("CSV downloaded.");
+    } catch {
+      alert("Network error — please try again.");
+    } finally {
+      setExportingCsv(false);
+    }
+  };
+
+  const handleExportRecordsGeoJson = async () => {
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      alert("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+    setExportingGeoJson(true);
+    try {
+      const url = `${API_BASE_URL}/api/records/export/geojson/`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        alert("GeoJSON export failed.");
+        return;
+      }
+
+      const blob = await res.blob();
+      downloadBlob(blob, "records.geojson");
+      showDone("GeoJSON downloaded.");
+    } catch {
+      alert("Network error — please try again.");
+    } finally {
+      setExportingGeoJson(false);
+    }
+  };
 
   // ---------------//
   // Change Password
@@ -582,11 +679,21 @@ export default function Account() {
                         </Alert>
 
                         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                          <Button variant="outlined" onClick={() => alert("Export account JSON later")}>
-                            Export account (JSON)
+                          <Button
+                            variant="outlined"
+                            onClick={handleExportRecordsCsv}
+                            disabled={exportingCsv || exportingGeoJson}
+                            startIcon={exportingCsv ? <CircularProgress size={16} /> : null}
+                          >
+                            {exportingCsv ? "Exporting CSV…" : "Export records (CSV)"}
                           </Button>
-                          <Button variant="outlined" onClick={() => alert("Export finds CSV later")}>
-                            Export finds (CSV)
+                          <Button
+                            variant="outlined"
+                            onClick={handleExportRecordsGeoJson}
+                            disabled={exportingCsv || exportingGeoJson}
+                            startIcon={exportingGeoJson ? <CircularProgress size={16} /> : null}
+                          >
+                            {exportingGeoJson ? "Exporting GeoJSON…" : "Export records (GeoJSON)"}
                           </Button>
                         </Box>
                       </Stack>
@@ -653,6 +760,16 @@ export default function Account() {
         </Stack>
       </Box>
 
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2500}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <LidarFooter />
     </>
   );
