@@ -62,6 +62,13 @@ export default function Account() {
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  // Delete account
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+
   // Notifications state (email only)
   const [notifyComments, setNotifyComments] = useState(true);
   const [notifyMentions, setNotifyMentions] = useState(true);
@@ -76,11 +83,22 @@ export default function Account() {
     return newPassword !== confirmNewPassword;
   }, [newPassword, confirmNewPassword]);
 
+  // "Armed" check (So the button only works when user types DELETE)
+  const deleteArmed = useMemo(() => {
+    return deleteConfirmText.trim().toUpperCase() === "DELETE";
+  }, [deleteConfirmText]);
+    // trim() removes spaces (so " DELETE " still counts)
+    // toUpperCase() makes it case-insensitive (delete, Delete, etc.)
+    // deleteArmed becomes true only when they’ve typed it properly
+
+
   // Base URL for the backend API.
   // If you already have an axios helper (e.g. API.jsx), you can swap this fetch call to use it instead.
   const API_BASE_URL = (import.meta?.env?.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
 
+  // ---------------//
   // Change Password
+  // ---------------//
   const handleSavePassword = async () => {
     // Basic front-end checks
     setPasswordSuccess("");
@@ -150,71 +168,154 @@ export default function Account() {
     }
   };
 
+  // ---------------//
   // Change Email
+  // ---------------//
   const handleSaveEmail = async () => {
-  // Clear old messages
-  setEmailSuccess("");
-  setEmailError("");
+    // Clear old messages
+    setEmailSuccess("");
+    setEmailError("");
 
-  // Basic check
-  if (!email) {
-    setEmailError("Please enter a new email address.");
-    return;
-  }
-  if (!currentPasswordForEmail) {
-  setEmailError("Please enter your current password to confirm the change.");
-  return;
-}
-
-  // Get token (must be logged in)
-  const token = localStorage.getItem("theUserToken");
-  if (!token) {
-    setEmailError("You are not signed in. Please sign in again and retry.");
+    // Basic check
+    if (!email) {
+      setEmailError("Please enter a new email address.");
+      return;
+    }
+    if (!currentPasswordForEmail) {
+    setEmailError("Please enter your current password to confirm the change.");
     return;
   }
 
-  setSavingEmail(true);
-
-  try {
-    const url = `${API_BASE_URL}/api/users/set_email/`;
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
-      },
-      body: JSON.stringify({
-        email,
-        current_password: currentPasswordForEmail,
-      }),
-    });
-
-    if (!res.ok) {
-      // Try to read the error message from the API response
-      let message = "Sorry — your email could not be updated.";
-      try {
-        const data = await res.json();
-        const firstKey = data && typeof data === "object" ? Object.keys(data)[0] : null;
-        if (firstKey && Array.isArray(data[firstKey]) && data[firstKey][0]) {
-          message = data[firstKey][0];
-        }
-      } catch {
-        // ignore JSON parse issues
-      }
-      setEmailError(message);
+    // Get token (must be logged in)
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      setEmailError("You are not signed in. Please sign in again and retry.");
       return;
     }
 
-    // Success
-    setEmailSuccess("Email updated.");
-    setCurrentPasswordForEmail(""); // optional field, but nice to clear it
-    setEmail("");
-  } catch {
-    setEmailError("Network error — please try again.");
-  } finally {
-    setSavingEmail(false);
-  }
+    setSavingEmail(true);
+
+    try {
+      const url = `${API_BASE_URL}/api/users/set_email/`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          email,
+          current_password: currentPasswordForEmail,
+        }),
+      });
+
+      if (!res.ok) {
+        // Try to read the error message from the API response
+        let message = "Sorry — your email could not be updated.";
+        try {
+          const data = await res.json();
+          const firstKey = data && typeof data === "object" ? Object.keys(data)[0] : null;
+          if (firstKey && Array.isArray(data[firstKey]) && data[firstKey][0]) {
+            message = data[firstKey][0];
+          }
+        } catch {
+          // ignore JSON parse issues
+        }
+        setEmailError(message);
+        return;
+      }
+
+      // Success
+      setEmailSuccess("Email updated.");
+      setCurrentPasswordForEmail(""); // optional field, but nice to clear it
+      setEmail("");
+    } catch {
+      setEmailError("Network error — please try again.");
+    } finally {
+      setSavingEmail(false);
+    }
+  };
+
+  // ---------------//
+  // Delete account
+  // ---------------//
+  const handleDeleteAccount = async () => {
+    // Clear old messages
+    setDeleteSuccess("");
+    setDeleteError("");
+
+    if (!deleteArmed) {
+      setDeleteError('Please type "DELETE" to confirm.');
+      return;
+    }
+
+    if (!deletePassword) {
+      setDeleteError("Please enter your password to confirm the deletion.");
+      return;
+    }
+
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      setDeleteError("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+
+    setDeletingAccount(true);
+
+    try {
+      const url = `${API_BASE_URL}/api-auth-djoser/users/me/`;
+
+      // Attempt 1: simple DELETE
+      let res = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      // Attempt 2 (fallback): DELETE with password payload (some setups require this)
+      if (!res.ok) {
+        res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+          body: JSON.stringify({ current_password: deletePassword }),
+        });
+      }
+
+      if (!res.ok) {
+        let message = "Sorry — your account could not be deleted.";
+        try {
+          const data = await res.json();
+          const firstKey = data && typeof data === "object" ? Object.keys(data)[0] : null;
+          if (firstKey && Array.isArray(data[firstKey]) && data[firstKey][0]) {
+            message = data[firstKey][0];
+          }
+        } catch {
+          // ignore JSON parse issues
+        }
+        setDeleteError(message);
+        return;
+      }
+
+      // Success
+      localStorage.removeItem("theUserToken");
+      localStorage.removeItem("theUserId");
+      localStorage.removeItem("theUserEmail");
+      localStorage.removeItem("theUserUsername");
+      setDeleteSuccess("Account deleted.");
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 800);
+    } catch {
+      setDeleteError("Network error — please try again.");
+    } finally {
+      setDeletingAccount(false);
+    }
   };
 
   return (
@@ -255,7 +356,11 @@ export default function Account() {
                 <Tabs
                   orientation="vertical"
                   value={tab}
-                  onChange={(_, v) => setTab(v)}
+                  onChange={(_, v) => {
+                    setTab(v);
+                    setDeleteError("");
+                    setDeleteSuccess("");
+                  }}
                   variant="scrollable"
                   sx={{
                     "& .MuiTab-root": {
@@ -505,21 +610,37 @@ export default function Account() {
                         <TextField
                           label='Type "DELETE" to confirm'
                           placeholder="DELETE"
+                          value={deleteConfirmText}
+                          onChange={(e) => {
+                            setDeleteConfirmText(e.target.value);
+                            setDeleteError("");
+                            setDeleteSuccess("");
+                          }}
                           fullWidth
                         />
                         <TextField
                           label="Password"
                           type="password"
+                          value={deletePassword}
+                          onChange={(e) => {
+                            setDeletePassword(e.target.value);
+                            setDeleteError("");
+                            setDeleteSuccess("");
+                          }}
                           fullWidth
                         />
+
+                        {deleteError ? <Alert severity="error">{deleteError}</Alert> : null}
+                        {deleteSuccess ? <Alert severity="success">{deleteSuccess}</Alert> : null}
 
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                           <Button
                             variant="contained"
                             color="error"
-                            onClick={() => alert("Wire to Djoser delete endpoint later")}
+                            disabled={!deleteArmed || !deletePassword || deletingAccount}
+                            onClick={handleDeleteAccount}
                           >
-                            Delete my account
+                            {deletingAccount ? "Deleting…" : "Delete my account"}
                           </Button>
                         </Box>
                       </Stack>
