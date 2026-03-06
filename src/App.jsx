@@ -42,12 +42,9 @@ function App() {
     userEmail: localStorage.getItem("theUserEmail"),  
     userId: localStorage.getItem("theUserId"),  
     userToken: localStorage.getItem("theUserToken"), 
-    userIsLoggedIn: localStorage.getItem('theUserUsername') ? true : false, // State to track if the user is logged in
-    // userIsAdmin: false, // State to track if the user is an admin
-    // markerPosition: {
-    //   latitudeValue: "52.1307",    
-    //   longitudeValue: "-3.7837", 
-    // },  
+    userIsLoggedIn: localStorage.getItem("theUserToken") ? true : false, // State to track if the user is logged in
+    userIsStaff: false,
+    userIsSuperuser: false,
     polygonValue: [],
   };
       
@@ -78,6 +75,10 @@ function App() {
       //   break;
       case 'catchPolygonCoordinateChange':
         draft.polygonValue = action.polygonChosen;
+        break;
+      case "setUserFlags":
+        draft.userIsStaff = action.value.isStaff;
+        draft.userIsSuperuser = action.value.isSuperuser;
         break;
     }
   }

@@ -95,8 +95,6 @@ function Register() {
           },
         );
 
-        console.log("Registration successful:", response.data);
-
         // Log the user in
         const loginResponse = await Axios.post(
           `${BASE_URL}/api-auth-djoser/token/login/`,
@@ -119,7 +117,6 @@ function Register() {
           }
         );
 
-        console.log("User info retrieved:", userInfoResponse.data);
 
         // Set localStorage BEFORE dispatching (critical for immediate state sync)
         localStorage.setItem("theUserUsername", userInfoResponse.data.username);

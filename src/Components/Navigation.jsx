@@ -83,11 +83,38 @@ function Navigation() {
 
   // This is how you read from Global State
   // This will allow you to access user information from the global state
-  const GlobalState = useContext(StateContext); 
+  const GlobalState = useContext(StateContext);
+  
+  const GlobalDispatch = useContext(DispatchContext);
 
-  // This is how you update/change the Global State.
-  // This will allow you to dispatch actions to update the global state
-  const GlobalDispatch = useContext(DispatchContext); 
+  // TEMP: check what the backend returns for the logged-in user
+  useEffect(() => {
+    async function checkMe() {
+      try {
+        const token = GlobalState.userToken || localStorage.getItem("theUserToken");
+
+        const response = await api.get("/api-auth-djoser/users/me/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+
+        GlobalDispatch({
+          type: "setUserFlags",
+          value: {
+            isStaff: response.data.is_staff,
+            isSuperuser: response.data.is_superuser,
+          },
+        });
+      } catch (error) {
+        console.log("Me endpoint error:", error.response?.data || error.message);
+      }
+    }
+
+    if (GlobalState.userIsLoggedIn) {
+      checkMe();
+    }
+  }, [GlobalState.userIsLoggedIn]);
   
   // Runs the actual logout request (no UI confirm here; the Dialog handles that)
   // Because function is marked async it knows it may need to pause somewhere
@@ -98,7 +125,7 @@ function Navigation() {
   try {
     // 2) Get the token. Prefer the one in global state,
     //    but fall back to localStorage if needed.
-    const token = GlobalState.userToken || localStorage.getItem("authToken");
+    const token = GlobalState.userToken || localStorage.getItem("theUserToken");
 
     // 3) If we have a token, TELL THE SERVER to invalidate it.
     //    (Djoser doesn't need a body → pass `null`.)
@@ -128,7 +155,7 @@ function Navigation() {
   } finally {
     // 5) The GUARANTEE: client is logged out no matter what.
     //    (This is the fix for being “stuck logged in”.)
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("theUserToken");
 
     // Also remove the default Authorization header from our Axios instance
     if (api?.defaults?.headers?.common?.Authorization) {
@@ -366,9 +393,11 @@ function Navigation() {
                   <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/dashboard"); }}>
                     <Typography textAlign="center">Dashboard</Typography>
                   </MenuItem>
-                  <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/users"); }}>
-                    <Typography textAlign="center">Users</Typography>
-                  </MenuItem>
+                  {(GlobalState.userIsStaff || GlobalState.userIsSuperuser) && (
+                    <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/users"); }}>
+                      <Typography textAlign="center">Users</Typography>
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={() => { handleCloseUserMenu(); openLogout(); }}>
                     <Typography textAlign="center">Logout</Typography>
                   </MenuItem>
