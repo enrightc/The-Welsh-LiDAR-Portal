@@ -1,32 +1,776 @@
-import React from 'react'
-import { Box, Typography, List, ListItem, ListItemText } from '@mui/material'
+import React, { useMemo, useState } from "react";
+import {
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+  Paper,
+  Stack,
+  Divider,
+  TextField,
+  Button,
+  Switch,
+  FormControlLabel,
+  Alert,
+  CircularProgress,
+  Snackbar,
+} from "@mui/material";
 
 import LidarFooter from "../Components/LidarFooter";
 
-function Account() {
+function TabPanel({ value, index, children }) {
+  if (value !== index) return null;
   return (
-    <>
-    <Box sx={{ p: 4, textAlign: 'center' }}>
-      <Typography variant="h4" gutterBottom>
-        Account Page – Under Construction
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        We're working on this page. In the future, you'll be able to manage:
-      </Typography>
-      <List sx={{ display: 'inline-block', textAlign: 'left' }}>
-        <ListItem><ListItemText primary="Update your email and password" /></ListItem>
-        <ListItem><ListItemText primary="Manage notification preferences" /></ListItem>
-        <ListItem><ListItemText primary="Control privacy and data export" /></ListItem>
-        <ListItem><ListItemText primary="Delete your account" /></ListItem>
-      </List>
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
+      {children}
     </Box>
-    
-    <LidarFooter />
-
-    </>
-    
-  )
+  );
 }
 
+function SectionCard({ title, description, children }) {
+  return (
+    <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 2 }}>
+      <Stack spacing={1.5}>
+        <Box>
+          <Typography variant="h6">{title}</Typography>
+          {description ? (
+            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              {description}
+            </Typography>
+          ) : null}
+        </Box>
+        <Divider />
+        {children}
+      </Stack>
+    </Paper>
+  );
+}
 
-export default Account;
+export default function Account() {
+  const [tab, setTab] = useState(0);
+
+  // Security form state (UI only for now)
+  const [email, setEmail] = useState("");
+  const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
+
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [emailSuccess, setEmailSuccess] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  // Delete account
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+
+  // Data export loading state
+  const [exportingCsv, setExportingCsv] = useState(false);
+  const [exportingGeoJson, setExportingGeoJson] = useState(false);
+
+  // Success snackbar (used for exports)
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  // Notifications state (email only)
+  const [notifyComments, setNotifyComments] = useState(true);
+  const [notifyMentions, setNotifyMentions] = useState(true);
+  const [notifyDigest, setNotifyDigest] = useState(false);
+
+  // Privacy state (no private finds yet, keep it simple)
+  const [showProfilePublicly, setShowProfilePublicly] = useState(true);
+  const [showLocationRegionOnly, setShowLocationRegionOnly] = useState(true);
+
+  const passwordMismatch = useMemo(() => {
+    if (!newPassword && !confirmNewPassword) return false;
+    return newPassword !== confirmNewPassword;
+  }, [newPassword, confirmNewPassword]);
+
+  // "Armed" check (So the button only works when user types DELETE)
+  const deleteArmed = useMemo(() => {
+    return deleteConfirmText.trim().toUpperCase() === "DELETE";
+  }, [deleteConfirmText]);
+    // trim() removes spaces (so " DELETE " still counts)
+    // toUpperCase() makes it case-insensitive (delete, Delete, etc.)
+    // deleteArmed becomes true only when they’ve typed it properly
+
+
+  // Base URL for the backend API.
+  // If you already have an axios helper (e.g. API.jsx), you can swap this fetch call to use it instead.
+  const API_BASE_URL = (import.meta?.env?.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
+
+  // ---------------//
+  // Data export
+  // ---------------//
+  const downloadBlob = (blob, filename) => {
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  };
+
+  const showDone = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (_, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbarOpen(false);
+  };
+
+
+  const handleExportRecordsCsv = async () => {
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      alert("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+    setExportingCsv(true);
+    try {
+      const url = `${API_BASE_URL}/api/records/export/csv/`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        alert("CSV export failed.");
+        return;
+      }
+
+      const blob = await res.blob();
+      downloadBlob(blob, "records.csv");
+      showDone("CSV downloaded.");
+    } catch {
+      alert("Network error — please try again.");
+    } finally {
+      setExportingCsv(false);
+    }
+  };
+
+  const handleExportRecordsGeoJson = async () => {
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      alert("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+    setExportingGeoJson(true);
+    try {
+      const url = `${API_BASE_URL}/api/records/export/geojson/`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        alert("GeoJSON export failed.");
+        return;
+      }
+
+      const blob = await res.blob();
+      downloadBlob(blob, "records.geojson");
+      showDone("GeoJSON downloaded.");
+    } catch {
+      alert("Network error — please try again.");
+    } finally {
+      setExportingGeoJson(false);
+    }
+  };
+
+  // ---------------//
+  // Change Password
+  // ---------------//
+  const handleSavePassword = async () => {
+    // Basic front-end checks
+    setPasswordSuccess("");
+    setPasswordError("");
+
+    if (!currentPassword || !newPassword) {
+      setPasswordError("Please enter your current password and a new password.");
+      return;
+    }
+
+    if (passwordMismatch) {
+      setPasswordError("Your new password and confirmation do not match.");
+      return;
+    }
+
+    // Djoser expects the token in the Authorization header: "Token <token>"
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      setPasswordError("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+
+    setSavingPassword(true);
+
+    try {
+      // Common Djoser endpoint when mounted at /auth/
+      // If your backend mounts Djoser under a different prefix, change this path.
+      const url = `${API_BASE_URL}/api-auth-djoser/users/set_password/`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!res.ok) {
+        // Djoser typically returns a JSON object with field errors
+        let message = "Sorry — your password could not be updated.";
+        try {
+          const data = await res.json();
+          // Examples: { current_password: ["Invalid password."] } or { new_password: ["..."] }
+          const firstKey = data && typeof data === "object" ? Object.keys(data)[0] : null;
+          if (firstKey && Array.isArray(data[firstKey]) && data[firstKey][0]) {
+            message = data[firstKey][0];
+          }
+        } catch {
+          // ignore JSON parse issues
+        }
+        setPasswordError(message);
+        return;
+      }
+
+      setPasswordSuccess("Password updated.");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    } catch (err) {
+      setPasswordError("Network error — please try again.");
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  // ---------------//
+  // Change Email
+  // ---------------//
+  const handleSaveEmail = async () => {
+    // Clear old messages
+    setEmailSuccess("");
+    setEmailError("");
+
+    // Basic check
+    if (!email) {
+      setEmailError("Please enter a new email address.");
+      return;
+    }
+    if (!currentPasswordForEmail) {
+    setEmailError("Please enter your current password to confirm the change.");
+    return;
+  }
+
+    // Get token (must be logged in)
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      setEmailError("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+
+    setSavingEmail(true);
+
+    try {
+      const url = `${API_BASE_URL}/api/users/set_email/`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          email,
+          current_password: currentPasswordForEmail,
+        }),
+      });
+
+      if (!res.ok) {
+        // Try to read the error message from the API response
+        let message = "Sorry — your email could not be updated.";
+        try {
+          const data = await res.json();
+          const firstKey = data && typeof data === "object" ? Object.keys(data)[0] : null;
+          if (firstKey && Array.isArray(data[firstKey]) && data[firstKey][0]) {
+            message = data[firstKey][0];
+          }
+        } catch {
+          // ignore JSON parse issues
+        }
+        setEmailError(message);
+        return;
+      }
+
+      // Success
+      setEmailSuccess("Email updated.");
+      setCurrentPasswordForEmail(""); // optional field, but nice to clear it
+      setEmail("");
+    } catch {
+      setEmailError("Network error — please try again.");
+    } finally {
+      setSavingEmail(false);
+    }
+  };
+
+  // ---------------//
+  // Delete account
+  // ---------------//
+  const handleDeleteAccount = async () => {
+    // Clear old messages
+    setDeleteSuccess("");
+    setDeleteError("");
+
+    if (!deleteArmed) {
+      setDeleteError('Please type "DELETE" to confirm.');
+      return;
+    }
+
+    if (!deletePassword) {
+      setDeleteError("Please enter your password to confirm the deletion.");
+      return;
+    }
+
+    const token = localStorage.getItem("theUserToken");
+    if (!token) {
+      setDeleteError("You are not signed in. Please sign in again and retry.");
+      return;
+    }
+
+    setDeletingAccount(true);
+
+    try {
+      const url = `${API_BASE_URL}/api-auth-djoser/users/me/`;
+
+      // Attempt 1: simple DELETE
+      let res = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      // Attempt 2 (fallback): DELETE with password payload (some setups require this)
+      if (!res.ok) {
+        res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+          body: JSON.stringify({ current_password: deletePassword }),
+        });
+      }
+
+      if (!res.ok) {
+        let message = "Sorry — your account could not be deleted.";
+        try {
+          const data = await res.json();
+          const firstKey = data && typeof data === "object" ? Object.keys(data)[0] : null;
+          if (firstKey && Array.isArray(data[firstKey]) && data[firstKey][0]) {
+            message = data[firstKey][0];
+          }
+        } catch {
+          // ignore JSON parse issues
+        }
+        setDeleteError(message);
+        return;
+      }
+
+      // Success
+      localStorage.removeItem("theUserToken");
+      localStorage.removeItem("theUserId");
+      localStorage.removeItem("theUserEmail");
+      localStorage.removeItem("theUserUsername");
+      setDeleteSuccess("Account deleted.");
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 800);
+    } catch {
+      setDeleteError("Network error — please try again.");
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
+  return (
+    <>
+      <Box
+        sx={{
+          maxWidth: 1100,
+          mx: "auto",
+          px: { xs: 2, md: 3 },
+          py: { xs: 3, md: 5 },
+        }}
+      >
+        <Stack spacing={2.5}>
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              Account settings
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.85 }}>
+              Manage sign-in and security, email notifications, privacy, and your data.
+            </Typography>
+          </Box>
+
+          <Paper variant="outlined" sx={{ borderRadius: 2 }}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "280px 1fr" },
+                minHeight: { md: 520 },
+              }}
+            >
+              {/* Left nav */}
+              <Box
+                sx={{
+                  borderRight: { md: "1px solid" },
+                  borderColor: "divider",
+                }}
+              >
+                <Tabs
+                  orientation="vertical"
+                  value={tab}
+                  onChange={(_, v) => {
+                    setTab(v);
+                    setDeleteError("");
+                    setDeleteSuccess("");
+                  }}
+                  variant="scrollable"
+                  sx={{
+                    "& .MuiTab-root": {
+                      alignItems: "flex-start",
+                      textTransform: "none",
+                      py: 2,
+                      px: 2.5,
+                    },
+                  }}
+                >
+                  <Tab label="Sign-in and security" />
+                  <Tab label="Notifications" disabled />
+                  <Tab label="Privacy" disabled />
+                  <Tab label="Data export" />
+                  <Tab label="Delete account" />
+                </Tabs>
+              </Box>
+
+              {/* Right content */}
+              <Box>
+                {/* 0: Security */}
+                <TabPanel value={tab} index={0}>
+                  <Stack spacing={2}>
+                    <SectionCard
+                      title="Change email"
+                      description="This is the email you use to sign in. You’ll typically need to confirm the new email address."
+                    >
+                      <Stack spacing={2}>
+                        <TextField
+                          label="New email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            setEmailError("");
+                            setEmailSuccess("");
+                          }}
+                          fullWidth
+                        />
+                        <TextField
+                          label="Current password"
+                          type="password"
+                          value={currentPasswordForEmail}
+                          onChange={(e) => {
+                            setCurrentPasswordForEmail(e.target.value);
+                            setEmailError("");
+                            setEmailSuccess("");
+                          }}
+                          fullWidth
+                        />
+                        {emailError ? <Alert severity="error">{emailError}</Alert> : null}
+                        {emailSuccess ? <Alert severity="success">{emailSuccess}</Alert> : null}
+                        <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                          <Button
+                            variant="contained"
+                            disabled={!email || savingEmail}
+                            onClick={handleSaveEmail}
+                          >
+                            {savingEmail ? "Saving…" : "Save email"}
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </SectionCard>
+
+                    <SectionCard
+                      title="Change password"
+                      description="Choose a strong password you don’t use anywhere else."
+                    >
+                      <Stack spacing={2}>
+                        <TextField
+                          label="Current password"
+                          type="password"
+                          value={currentPassword}
+                          onChange={(e) => { setCurrentPassword(e.target.value); setPasswordError(""); setPasswordSuccess(""); }}
+                          fullWidth
+                        />
+                        <TextField
+                          label="New password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => { setNewPassword(e.target.value); setPasswordError(""); setPasswordSuccess(""); }}
+                          fullWidth
+                        />
+                        <TextField
+                          label="Confirm new password"
+                          type="password"
+                          value={confirmNewPassword}
+                          onChange={(e) => { setConfirmNewPassword(e.target.value); setPasswordError(""); setPasswordSuccess(""); }}
+                          error={passwordMismatch}
+                          helperText={passwordMismatch ? "Passwords do not match." : " "}
+                          fullWidth
+                        />
+
+                        {passwordMismatch ? (
+                          <Alert severity="warning">
+                            Your new password and confirmation need to match before you can save.
+                          </Alert>
+                        ) : null}
+
+                        {passwordError ? (
+                          <Alert severity="error">{passwordError}</Alert>
+                        ) : null}
+
+                        {passwordSuccess ? (
+                          <Alert severity="success">{passwordSuccess}</Alert>
+                        ) : null}
+
+                        <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                          <Button
+                            variant="contained"
+                            disabled={!currentPassword || !newPassword || passwordMismatch || savingPassword}
+                            onClick={handleSavePassword}
+                          >
+                            {savingPassword ? "Saving…" : "Save password"}
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </SectionCard>
+                  </Stack>
+                </TabPanel>
+
+                {/* 1: Notifications */}
+                <TabPanel value={tab} index={1}>
+                  <Stack spacing={2}>
+                    <SectionCard
+                      title="Email notifications"
+                      description="Choose which emails you want to receive. You can change these at any time."
+                    >
+                      <Stack spacing={1}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={notifyComments}
+                              onChange={(e) => setNotifyComments(e.target.checked)}
+                            />
+                          }
+                          label="Comments or replies on my finds"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={notifyMentions}
+                              onChange={(e) => setNotifyMentions(e.target.checked)}
+                            />
+                          }
+                          label="Mentions (when someone tags me)"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={notifyDigest}
+                              onChange={(e) => setNotifyDigest(e.target.checked)}
+                            />
+                          }
+                          label="Weekly digest"
+                        />
+
+                        <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end", mt: 1 }}>
+                          <Button variant="contained" onClick={() => alert("Save preferences later")}>
+                            Save preferences
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </SectionCard>
+                  </Stack>
+                </TabPanel>
+
+                {/* 2: Privacy */}
+                <TabPanel value={tab} index={2}>
+                  <Stack spacing={2}>
+                    <SectionCard
+                      title="Profile visibility"
+                      description="Control what other users can see about you."
+                    >
+                      <Stack spacing={1}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={showProfilePublicly}
+                              onChange={(e) => setShowProfilePublicly(e.target.checked)}
+                            />
+                          }
+                          label="Show my profile publicly"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={showLocationRegionOnly}
+                              onChange={(e) => setShowLocationRegionOnly(e.target.checked)}
+                            />
+                          }
+                          label="Show my location as region only (not exact)"
+                        />
+
+                        <Alert severity="info" sx={{ mt: 1 }}>
+                          You don’t have private finds yet, so these settings only affect your profile details for now.
+                        </Alert>
+
+                        <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end", mt: 1 }}>
+                          <Button variant="contained" onClick={() => alert("Save privacy later")}>
+                            Save privacy
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </SectionCard>
+                  </Stack>
+                </TabPanel>
+
+                {/* 3: Data export */}
+                <TabPanel value={tab} index={3}>
+                  <Stack spacing={2}>
+                    <SectionCard
+                      title="Download your data"
+                      description="Export a copy of your account data and contributions."
+                    >
+                      <Stack spacing={2}>
+                        <Alert severity="info">
+                          Download your records as CSV for spreadsheets, or GeoJSON for QGIS and other mapping tools.
+                        </Alert>
+
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                          <Button
+                            variant="outlined"
+                            onClick={handleExportRecordsCsv}
+                            disabled={exportingCsv || exportingGeoJson}
+                            startIcon={exportingCsv ? <CircularProgress size={16} /> : null}
+                          >
+                            {exportingCsv ? "Exporting CSV…" : "Export records (CSV)"}
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            onClick={handleExportRecordsGeoJson}
+                            disabled={exportingCsv || exportingGeoJson}
+                            startIcon={exportingGeoJson ? <CircularProgress size={16} /> : null}
+                          >
+                            {exportingGeoJson ? "Exporting GeoJSON…" : "Export records (GeoJSON)"}
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </SectionCard>
+                  </Stack>
+                </TabPanel>
+
+                {/* 4: Delete account */}
+                <TabPanel value={tab} index={4}>
+                  <Stack spacing={2}>
+                    <SectionCard
+                      title="Danger zone"
+                      description="Deleting your account is permanent and cannot be undone."
+                    >
+                      <Stack spacing={2}>
+                        <Alert severity="warning">
+                          Before you implement this, decide what happens to any finds you’ve created:
+                          delete them, or anonymise them.
+                        </Alert>
+
+                        <TextField
+                          label='Type "DELETE" to confirm'
+                          placeholder="DELETE"
+                          value={deleteConfirmText}
+                          onChange={(e) => {
+                            setDeleteConfirmText(e.target.value);
+                            setDeleteError("");
+                            setDeleteSuccess("");
+                          }}
+                          fullWidth
+                        />
+                        <TextField
+                          label="Password"
+                          type="password"
+                          value={deletePassword}
+                          onChange={(e) => {
+                            setDeletePassword(e.target.value);
+                            setDeleteError("");
+                            setDeleteSuccess("");
+                          }}
+                          fullWidth
+                        />
+
+                        {deleteError ? <Alert severity="error">{deleteError}</Alert> : null}
+                        {deleteSuccess ? <Alert severity="success">{deleteSuccess}</Alert> : null}
+
+                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            disabled={!deleteArmed || !deletePassword || deletingAccount}
+                            onClick={handleDeleteAccount}
+                          >
+                            {deletingAccount ? "Deleting…" : "Delete my account"}
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </SectionCard>
+                  </Stack>
+                </TabPanel>
+              </Box>
+            </Box>
+          </Paper>
+        </Stack>
+      </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2500}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+      <LidarFooter />
+    </>
+  );
+}

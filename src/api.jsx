@@ -16,7 +16,7 @@ const api = axios.create({
 // === Re-attach token if user already logged in ===
 // When user logs in, you save a token in localStorage ("authToken").
 // This checks if it's there, and if yes, attaches it to every request automatically.
-const saved = localStorage.getItem("authToken");
+const saved = localStorage.getItem("theUserToken");
 if (saved) {
   api.defaults.headers.common["Authorization"] = `Token ${saved}`;
 }
@@ -31,7 +31,7 @@ api.interceptors.response.use(
     const status = err?.response?.status;
     if (status === 401) {
       // Remove bad/expired token from localStorage
-      localStorage.removeItem("authToken");
+      localStorage.removeItem("theUserToken");
       // Also remove it from Axios so future requests don’t include it
       delete api.defaults.headers.common["Authorization"];
     }

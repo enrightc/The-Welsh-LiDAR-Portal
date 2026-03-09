@@ -175,7 +175,6 @@ function Profile() {
         async function GetProfileInfo() {
             try {
                 const response = await Axios.get(`${BASE_URL}/api/profiles/${GlobalState.userId}/`);
-                console.log(response.data);
                 const expertiseRaw = response.data.expertise_level || "";
                 const expertiseFormatted = expertiseRaw.charAt(0).toUpperCase() + expertiseRaw.slice(1).toLowerCase();
 
