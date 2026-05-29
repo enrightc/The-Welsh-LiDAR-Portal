@@ -27,6 +27,11 @@ function Users() {
     const navigate = useNavigate();
     const GlobalState = useContext(StateContext);
 
+    useEffect(() => {
+      if (!GlobalState.userId) navigate('/login');
+      else if (!GlobalState.userIsAdmin) navigate('/');
+    }, [GlobalState.userId, GlobalState.userIsAdmin]);
+
     const initialstate = {
       dataIsLoading: true,
       profilesList: [],

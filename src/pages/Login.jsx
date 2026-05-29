@@ -161,11 +161,12 @@ function Login() {
             // If the request is successful, the response will contain the data
 
             GlobalDispatch({
-            type: 'userSignsIn', 
-            usernameInfo: response.data.username, 
-            emailInfo: response.data.email, 
+            type: 'userSignsIn',
+            usernameInfo: response.data.username,
+            emailInfo: response.data.email,
             IdInfo: response.data.id,
-            tokenInfo: state.token  // ✅ Use state.token here
+            tokenInfo: state.token,
+            isAdminInfo: response.data.is_staff || response.data.is_superuser || false,
         }); // Dispatch an action to update the username in the state
             setLoginComplete(true); // Set this after dispatch
             navigate("/LidarPortal"); // Redirect to the home page after successful registration

@@ -366,9 +366,11 @@ function Navigation() {
                   <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/dashboard"); }}>
                     <Typography textAlign="center">Dashboard</Typography>
                   </MenuItem>
-                  <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/users"); }}>
-                    <Typography textAlign="center">Users</Typography>
-                  </MenuItem>
+                  {GlobalState.userIsAdmin && (
+                    <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/users"); }}>
+                      <Typography textAlign="center">Users</Typography>
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={() => { handleCloseUserMenu(); openLogout(); }}>
                     <Typography textAlign="center">Logout</Typography>
                   </MenuItem>

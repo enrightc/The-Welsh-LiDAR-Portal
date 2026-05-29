@@ -44,8 +44,8 @@ function App() {
     userEmail: localStorage.getItem("theUserEmail"),  
     userId: localStorage.getItem("theUserId"),  
     userToken: localStorage.getItem("theUserToken"), 
-    userIsLoggedIn: localStorage.getItem('theUserUsername') ? true : false, // State to track if the user is logged in
-    // userIsAdmin: false, // State to track if the user is an admin
+    userIsLoggedIn: localStorage.getItem('theUserUsername') ? true : false,
+    userIsAdmin: localStorage.getItem('theUserIsAdmin') === 'true',
     // markerPosition: {
     //   latitudeValue: "52.1307",    
     //   longitudeValue: "-3.7837", 
@@ -59,11 +59,12 @@ function App() {
         draft.userToken = action.tokenValue; // Update the token in the state
         break; // This action will update the token state when the request is successful
       case "userSignsIn":
-        draft.userUsername = action.usernameInfo; // Update username in the state
-        draft.userEmail = action.emailInfo; // Update email in the state
-        draft.userId = action.IdInfo; // Update user ID in the state
-        draft.userToken = action.tokenInfo; 
-        draft.userIsLoggedIn = true; // Set userIsLoggedIn to true
+        draft.userUsername = action.usernameInfo;
+        draft.userEmail = action.emailInfo;
+        draft.userId = action.IdInfo;
+        draft.userToken = action.tokenInfo;
+        draft.userIsAdmin = action.isAdminInfo;
+        draft.userIsLoggedIn = true;
         break; // This action will update the user information in the state
       case "Logout":
         draft.userIsLoggedIn = false;
@@ -71,6 +72,7 @@ function App() {
         draft.userEmail = "";
         draft.userId = null;
         draft.userToken = "";
+        draft.userIsAdmin = false;
         break;
       // case "catchLatitudeChange":
       //   draft.markerPosition.latitudeValue = action.latitudeChosen;
@@ -91,13 +93,15 @@ useEffect(() => {
     localStorage.setItem("theUserUsername", state.userUsername);
     localStorage.setItem("theUserEmail", state.userEmail);
     localStorage.setItem("theUserId", state.userId);
-    localStorage.setItem("theUserToken", state.userToken);        
+    localStorage.setItem("theUserToken", state.userToken);
+    localStorage.setItem("theUserIsAdmin", state.userIsAdmin);
   }
   else {
     localStorage.removeItem("theUserUsername");
     localStorage.removeItem("theUserEmail");
     localStorage.removeItem("theUserId");
     localStorage.removeItem("theUserToken");
+    localStorage.removeItem("theUserIsAdmin");
   }
 }, [state.userIsLoggedIn]);
 
