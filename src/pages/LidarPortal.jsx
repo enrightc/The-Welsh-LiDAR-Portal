@@ -172,9 +172,15 @@ const LidarPortal = () => {
   const featureGroupRef = useRef();
 
   // Holds a reference to the active Leaflet.Draw polygon handler.
-  // This lets us call special methods like "undo last vertex" or "cancel"
-  // on the exact drawing session that's in progress.
   const activeDrawHandlerRef = useRef(null);
+
+  // --- Measure tool state ---
+  const [measuringMode, setMeasuringMode] = useState(false);
+  const measureHandlersRef  = useRef(null); // {click, mousemove} for map.off cleanup
+  const measurePointsRef    = useRef([]);   // committed latlng points
+  const measureLayerRef     = useRef(null); // committed line + label LayerGroup
+  const measureGhostRef     = useRef(null); // live preview line that follows the cursor
+  const measureClickTimer   = useRef(null); // debounce timer to separate click from dblclick
 
   // --- Data ---------------------------
   // Use the useState hook to create a state variable called allRecords
@@ -285,16 +291,97 @@ function handleDeletePolygon() {
   dispatch({ type: 'catchPolygonCoordinateChange', polygonChosen: [] });
 }
 
-const handleActivateRuler = () => {
-  const fg = featureGroupRef.current;
+function measureLabel(text) {
+  return L.divIcon({
+    html: `<div style="background:white;padding:2px 8px;border-radius:4px;border:1px solid #ccc;font-size:12px;font-weight:bold;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.2)">${text}</div>`,
+    className: '',
+    iconAnchor: [-8, 10],
+  });
+}
 
-  if (!fg || !fg._map) return;
+function calcDistance(points) {
+  let total = 0;
+  for (let i = 1; i < points.length; i++) total += points[i - 1].distanceTo(points[i]);
+  return total >= 1000 ? `${(total / 1000).toFixed(2)} km` : `${Math.round(total)} m`;
+}
 
-  const map = fg._map;
+function removeMeasureLayer(map, ref) {
+  if (ref.current) { map.removeLayer(ref.current); ref.current = null; }
+}
 
-  // Create a new ruler and add to map
-  L.control.ruler({ measureUnits: { length: 'metres' } }).addTo(map);
-};
+function stopMeasuring(map, keepLine = false) {
+  if (measureClickTimer.current) {
+    clearTimeout(measureClickTimer.current);
+    measureClickTimer.current = null;
+  }
+  if (measureHandlersRef.current) {
+    map.off('click',     measureHandlersRef.current.onClick);
+    map.off('mousemove', measureHandlersRef.current.onMouseMove);
+    measureHandlersRef.current = null;
+  }
+  map.getContainer().style.cursor = '';
+  setTimeout(() => map.doubleClickZoom.enable(), 0);
+  removeMeasureLayer(map, measureGhostRef);
+  measurePointsRef.current = [];
+  if (!keepLine) removeMeasureLayer(map, measureLayerRef);
+  setMeasuringMode(false);
+}
+
+function drawCommittedLine(map, points) {
+  removeMeasureLayer(map, measureLayerRef);
+  if (points.length < 2) return;
+  const line  = L.polyline(points, { color: '#e53e3e', weight: 3, dashArray: '6,4' });
+  const label = L.marker(points[points.length - 1], { icon: measureLabel(calcDistance(points)), interactive: false, zIndexOffset: 1000 });
+  measureLayerRef.current = L.layerGroup([line, label]).addTo(map);
+}
+
+function handleActivateMeasure() {
+  const map = featureGroupRef.current?._map;
+  if (!map) return;
+
+  if (measureHandlersRef.current) { stopMeasuring(map, false); return; }
+
+  removeMeasureLayer(map, measureLayerRef);
+  setMeasuringMode(true);
+  measurePointsRef.current = [];
+  map.doubleClickZoom.disable();
+  map.getContainer().style.cursor = 'crosshair';
+
+  const onClick = (e) => {
+    // If a click is already pending, this is the second click of a double-click — add
+    // the final point at this location then finish
+    if (measureClickTimer.current) {
+      clearTimeout(measureClickTimer.current);
+      measureClickTimer.current = null;
+      measurePointsRef.current.push(e.latlng);
+      const hasMeasurement = measurePointsRef.current.length >= 2;
+      drawCommittedLine(map, measurePointsRef.current);
+      stopMeasuring(map, hasMeasurement);
+      return;
+    }
+    // Otherwise wait 250 ms; if no second click arrives it's a single click — add the point
+    const latlng = e.latlng;
+    measureClickTimer.current = setTimeout(() => {
+      measureClickTimer.current = null;
+      measurePointsRef.current.push(latlng);
+      drawCommittedLine(map, measurePointsRef.current);
+    }, 250);
+  };
+
+  const onMouseMove = (e) => {
+    const pts = measurePointsRef.current;
+    if (pts.length === 0) return;
+    removeMeasureLayer(map, measureGhostRef);
+    const preview    = [...pts, e.latlng];
+    const ghostLine  = L.polyline(preview, { color: '#e53e3e', weight: 2, dashArray: '4,4', opacity: 0.5 });
+    const ghostLabel = L.marker(e.latlng, { icon: measureLabel(calcDistance(preview)), interactive: false, zIndexOffset: 1001 });
+    measureGhostRef.current = L.layerGroup([ghostLine, ghostLabel]).addTo(map);
+  };
+
+  measureHandlersRef.current = { onClick, onMouseMove };
+  map.on('click',     onClick);
+  map.on('mousemove', onMouseMove);
+}
 
 // Function to reset the polygon drawing state after form is submitted
 // This function will be passed to the Sidebar component
@@ -422,6 +509,18 @@ useEffect(() => {
           visible={isLoggedIn && !isHandheld && !sidebarOpen}
           onOpen={() => setSidebarOpen(true)}
         />
+
+        {/* Measure tool status hint */}
+        {measuringMode && (
+          <div style={{
+            position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)',
+            zIndex: 1200, background: 'rgba(0,0,0,0.65)', color: 'white',
+            padding: '5px 14px', borderRadius: 6, fontSize: 13,
+            pointerEvents: 'none', whiteSpace: 'nowrap',
+          }}>
+            Click to add points · Double-click to finish · Click ruler to cancel
+          </div>
+        )}
             
         {/* Mobile */}
         {/* Floating “Add Record” button on mobile */}
@@ -465,6 +564,8 @@ useEffect(() => {
           filterOpen={filterOpen}
           onFilterToggle={() => setFilterOpen(o => !o)}
           activeFilterCount={activeFilterCount}
+          measuringMode={measuringMode}
+          onMeasureToggle={handleActivateMeasure}
         />
 
         <MainLidarMap

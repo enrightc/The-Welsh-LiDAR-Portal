@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
 
-export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn, layersOpen, setLayersOpen, filterOpen, onFilterToggle, activeFilterCount }) {
+export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn, layersOpen, setLayersOpen, filterOpen, onFilterToggle, activeFilterCount, measuringMode, onMeasureToggle }) {
 
     const [openConfirm, setOpenConfirm] = React.useState(false);
 
@@ -104,18 +104,18 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                 
             </Tooltip>
 
-            <Tooltip title="Measure Distance (coming Soon)" arrow>
-                <span>
-                    <IconButton
-                    aria-label="Measure distance"
-                    color="black"
+            <Tooltip title={measuringMode ? 'Cancel measurement' : 'Measure distance'} arrow>
+                <IconButton
+                    aria-label={measuringMode ? 'Cancel measurement' : 'Measure distance'}
+                    aria-pressed={measuringMode}
+                    onClick={onMeasureToggle}
+                    color={measuringMode ? 'error' : 'default'}
                 >
-                    <StraightenIcon sx = {{
-                        fontSize: { xs: '1.25', sm: '1rem', md: '1.5rem' },
+                    <StraightenIcon sx={{
+                        color: measuringMode ? 'error.main' : 'inherit',
+                        fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' },
                     }} />
                 </IconButton>
-                </span>
-                
             </Tooltip>
 
 
