@@ -109,17 +109,20 @@ function buildBboxUrl(base, map) {
  * Keeps WFS layer code cleaner by avoiding repeated template strings.
  */
 function makePopup({ title, name, rows, className = '' }) {
-  const body = rows
+  const rowsHtml = rows
     .filter(Boolean)
-    .map((r) => `${r.label}: ${r.value}`)
-    .join('<br/>');
+    .map(r => `
+      <div class="popup-row">
+        <span class="popup-label">${r.label}</span>
+        <span class="popup-value">${r.value}</span>
+      </div>`)
+    .join('');
   return `
     <div class="custom-popup ${className}">
-      <strong>${title}</strong><br/>
-      <strong>${name}</strong><br/>
-      ${body}
-    </div>
-  `;
+      <span class="popup-type-badge">${title}</span>
+      <div class="popup-title">${name}</div>
+      ${rowsHtml}
+    </div>`;
 }
 
 // =============================================

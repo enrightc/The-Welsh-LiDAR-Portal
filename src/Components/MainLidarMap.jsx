@@ -51,62 +51,6 @@ function MapActionsRegistrar() {
   return null;
 }
 
-// This component defines what appears inside each map popup.
-// It displays the details of a single record (title, image, site info, etc.)
-// and includes a "View Full Record" button plus a clickable author name
-// that opens the user's mini profile when clicked.
-function RecordPopup({ record, onOpenMini, onOpenDetail }) {
-  return (
-    <div className="custom-popup record-popup">
-      <strong>LiDAR Feature</strong>
-      <strong>{record.title}</strong>
-
-      {record.picture1 && (
-        <img src={record.picture1} alt={record.title} />
-      )}
-
-      {record.prn && (
-        <p>
-          PRN:{record.prn}
-        </p>
-      )}
-
-      <p>
-        Site Type:{record.site_type_display}
-      </p>
-
-      <p>
-        <em>Monument Type: </em>{record.monument_type_display}
-      </p>
-
-      <p>
-        <em>Recorded By: </em>
-        <span
-          onClick={() => onOpenMini(record.recorded_by_user_id)}
-          className="recorded-by-link"
-        >
-          {record.recorded_by}
-        </span>
-      </p>
-
-      <p>
-        <em>Date Recorded: </em>{record.date_recorded}
-      </p>
-
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={(e) => {
-          e.currentTarget.blur();
-          onOpenDetail(record);
-        }}
-        sx={{ mt: 1 }}
-      >
-        View Full Record
-      </Button>
-    </div>
-  );
-}
 
 // This component creates a map layer that displays all community-submitted records.
 // It loops through each record, checks if it has polygon coordinates,
@@ -129,49 +73,55 @@ function CommunityLayer({ records, onOpenMini, onOpenDetail }) {
           >
             <Popup>
               <div className="custom-popup record-popup">
-                <strong>LiDAR Feature</strong>
-                <strong>{record.title}</strong>
+                <span className="popup-type-badge">LiDAR Feature</span>
+                <div className="popup-title">{record.title}</div>
 
                 {record.picture1 && (
                   <img src={record.picture1} alt={record.title} />
                 )}
 
                 {record.prn && (
-                  <p>
-                    PRN: {record.prn}
-                  </p>
+                  <div className="popup-row">
+                    <span className="popup-label">PRN</span>
+                    <span className="popup-value">{record.prn}</span>
+                  </div>
                 )}
 
-                <p>
-                  Site Type: {record.site_type_display}
-                </p>
+                <div className="popup-row">
+                  <span className="popup-label">Site type</span>
+                  <span className="popup-value">{record.site_type_display}</span>
+                </div>
 
-                <p>
-                  Monument Type: {record.monument_type_display}
-                </p>
+                <div className="popup-row">
+                  <span className="popup-label">Monument</span>
+                  <span className="popup-value">{record.monument_type_display}</span>
+                </div>
 
-                <p>
-                  Recorded By: 
+                <div className="popup-row">
+                  <span className="popup-label">Recorded by</span>
                   <span
+                    className="popup-value recorded-by-link"
                     onClick={() => onOpenMini(record.recorded_by_user_id)}
-                    className="recorded-by-link"
                   >
                     {record.recorded_by}
                   </span>
-                </p>
+                </div>
 
-                <p>
-                  Date Recorded: {record.date_recorded}
-                </p>
+                <div className="popup-row">
+                  <span className="popup-label">Date</span>
+                  <span className="popup-value">{record.date_recorded}</span>
+                </div>
 
                 <Button
-                  variant="outlined"
+                  variant="contained"
+                  color="primary"
                   size="small"
+                  fullWidth
                   onClick={(e) => {
                     e.currentTarget.blur();
                     onOpenDetail(record);
                   }}
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 1.5, textTransform: 'none' }}
                 >
                   View Full Record
                 </Button>

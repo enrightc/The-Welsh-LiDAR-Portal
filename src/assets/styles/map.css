@@ -1,73 +1,94 @@
-/* Modern styled popup for Scheduled Monuments */
+/* ---- Popup base ---- */
 .custom-popup {
   font-family: "Outfit", sans-serif;
-  font-size: 18px;
+  font-size: 13px;
   line-height: 1.4;
-  max-width: 300px;
+  max-width: 280px;
   background-color: #fff;
-  padding: 10px;
+  padding: 4px 2px;
   border-radius: 6px;
   font-style: normal;
   font-weight: 400;
   color: #555;
 }
 
-.record-popup strong {
-  color: #0E8890;
-  font-size: 16px;
-  display: block;
-  margin-bottom: 12px;
-}
-
-.record-popup img {
-  height: 10rem;
-  width: 100%;
-  object-fit: cover;
+/* Coloured type badge at the top */
+.popup-type-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 2px 8px;
+  border-radius: 3px;
   margin-bottom: 8px;
+  color: white;
+  background-color: #888;
+}
+
+.record-popup .popup-type-badge { background-color: #0E8890; }
+.cadw-popup   .popup-type-badge { background-color: #e60000; }
+.nmr-popup    .popup-type-badge { background-color: #ff2a6d; }
+.parks-popup  .popup-type-badge { background-color: #006d2c; }
+
+/* Feature name / title */
+.popup-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A2D3A;
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+/* Key–value rows */
+.popup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.popup-row:last-of-type { border-bottom: none; }
+
+.popup-label {
+  color: #888;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.popup-value {
+  color: #1A2D3A;
+  text-align: right;
+}
+
+/* Photo in record popup */
+.record-popup img {
+  width: 100%;
+  height: 9rem;
+  object-fit: cover;
+  margin-bottom: 10px;
   border-radius: 4px;
+  display: block;
 }
 
-.custom-popup.record-popup p {
-  margin: 0;
-}
-
-.custom-popup.record-popup .recorded-by-link {
+/* Clickable recorded-by link */
+.recorded-by-link {
   color: #0E8890;
   cursor: pointer;
   text-decoration: underline;
 }
 
-.cadw-popup strong {
-  display: block;
-  color: #b30000;  /* rich red for titles */
-  font-size: 16px;
-  margin-bottom: 1px;
-}
-
-.nmr-popup strong {
-  display: block;
-  color: #ff2a6d;
-  font-size: 16px;
-  margin-bottom: 1px;
-}
-
-.parks-popup strong {
-  display: block;
-  color: #006d2c;  /* deep green for titles */
-  font-size: 16px;
-  margin-bottom: 1px;
-}
-
+/* Links inside popups */
 .custom-popup a {
-  display: inline-block;
-  color: #0066cc;
+  color: #0E8890;
   text-decoration: none;
   font-weight: 500;
 }
 
-.custom-popup a:hover {
-  text-decoration: underline;
-}
+.custom-popup a:hover { text-decoration: underline; }
 
 .leaflet-div-icon {
   width: 9px !important;  
