@@ -202,7 +202,7 @@ function Account() {
 
   return (
     <>
-      <Grid container direction="column" sx={{ p: '4rem', backgroundColor: '#FCFCFB' }}>
+      <Grid container direction="column" sx={{ p: '4rem', backgroundColor: '#EEF3F4' }}>
 
         {/* Account Info */}
         <Card>
@@ -308,7 +308,7 @@ function Account() {
                   type="submit"
                   variant="contained"
                   disabled={emailSubmitting}
-                  sx={{ backgroundColor: '#FFD034', color: 'black', textTransform: 'none', '&:hover': { backgroundColor: '#e6bc2e' } }}
+                  sx={{ textTransform: 'none' }}
                 >
                   {emailSubmitting ? <CircularProgress size={20} /> : 'Update Email'}
                 </Button>
@@ -359,7 +359,7 @@ function Account() {
                   type="submit"
                   variant="contained"
                   disabled={passwordSubmitting}
-                  sx={{ backgroundColor: '#FFD034', color: 'black', textTransform: 'none', '&:hover': { backgroundColor: '#e6bc2e' } }}
+                  sx={{ textTransform: 'none' }}
                 >
                   {passwordSubmitting ? <CircularProgress size={20} /> : 'Change Password'}
                 </Button>

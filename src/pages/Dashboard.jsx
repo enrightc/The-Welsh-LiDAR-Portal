@@ -139,7 +139,7 @@ function Dashboard() {
 
   return (
     <>
-      <Grid container direction="column" sx={{ p: '4rem', backgroundColor: '#FCFCFB' }}>
+      <Grid container direction="column" sx={{ p: '4rem', backgroundColor: '#EEF3F4' }}>
 
         {/* Header */}
         <Card>
@@ -268,13 +268,7 @@ function Dashboard() {
               </Typography>
               <Button
                 variant="contained"
-                sx={{
-                  mt: 2,
-                  backgroundColor: '#FFD034',
-                  color: 'black',
-                  textTransform: 'none',
-                  '&:hover': { backgroundColor: '#e6bc2e' },
-                }}
+                sx={{ mt: 2, textTransform: 'none' }}
                 onClick={() => navigate('/LidarPortal')}
               >
                 Start Recording

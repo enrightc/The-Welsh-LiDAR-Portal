@@ -153,7 +153,7 @@ function Navigation() {
       width: "100%", 
       top: 0, 
       left: 0, 
-      backgroundColor: "#232138",
+      backgroundColor: "#1A2D3A",
     }}>
       <Container maxWidth={false} sx={{ maxWidth: 1296, mx: 'auto', px: { xs: 2, md: 3 } }}>
         <Toolbar disableGutters>
@@ -292,12 +292,12 @@ function Navigation() {
                   sx={{
                     textTransform: 'none',
                     alignItems: 'flex-start',
-                    backgroundColor: '#1976d2',
+                    backgroundColor: '#0E8890',
                     borderRadius: '8px',
                     color: '#fff',
                     border: '1px solid transparent',
                     '&:hover': {
-                      backgroundColor: '#1565c0',
+                      backgroundColor: '#0B6E74',
                     
                     },
                   }}
@@ -321,12 +321,12 @@ function Navigation() {
                   sx={{
                     textTransform: 'none',
                     alignItems: 'flex-start',
-                    backgroundColor: '#1976d2',
+                    backgroundColor: '#0E8890',
                     borderRadius: '8px',
                     color: '#fff',
                     border: '1px solid transparent',
                     '&:hover': {
-                      backgroundColor: '#1565c0',
+                      backgroundColor: '#0B6E74',
                       
                     },
                   }}

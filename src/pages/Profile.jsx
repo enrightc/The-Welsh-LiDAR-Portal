@@ -633,11 +633,9 @@ function Profile() {
                     marginRight: "auto",
                   }}
                   sx={{
-                    color: "black",
-                    border: "none",
                     fontSize: "0.9rem",
                     borderRadius: "5px",
-                    backgroundColor: "#FFD034",
+                    textTransform: "none",
                   }}
                   type="submit"
                 >
