@@ -166,12 +166,27 @@ The Welsh LiDAR Portal is designed to be inclusive and accessible for everyone �
 - [x] Frontend setup
 - [x] Map layers integration (LiDAR)
 - [x] Backend setup
-- [ ] Connecting Django and React
-- [ ] PostgreSQL/PostGIS setup
-- [ ] User authentication and profile system
-- [ ] Polygon drawing and submission form frontend
-- [ ] Deployment
-- [ ] Feature detail and editing
+- [x] Connecting Django and React
+- [x] PostgreSQL/PostGIS setup
+- [x] User authentication and profile system
+- [x] Polygon drawing and submission form frontend
+- [x] Deployment
+- [x] Feature detail and editing
+
+## 🚧 Bugs
+
+### Bug Fix: Map resets position after creating a record
+
+Symptom
+After drawing a polygon and submitting the create-record form, the map would visually "refresh" and snap back to the default/initial view, losing the area the user had navigated to.
+
+Root cause
+The fetchRecords function (called after a successful record submission to reload the map data) contained a setDataIsLoading(true) call at the top of its body. Because LidarPortal returns a full-page <LoadingScreen /> whenever dataIsLoading is true, this caused the entire <MapContainer> to unmount and then remount from scratch — resetting the Leaflet map to its starting position.
+
+The setDataIsLoading(true) line was only ever needed for the very first page load, which is already handled by the dataIsLoading state being initialised to true. Subsequent calls to fetchRecords (background refreshes) had no need to show the loading screen.
+
+Fix
+Removed the setDataIsLoading(true) call from inside fetchRecords. The initial loading screen continues to work as before (driven by useState(true)), but background refreshes after record creation now update the records silently without unmounting the map.
 
 ---
 
