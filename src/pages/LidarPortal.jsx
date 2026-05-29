@@ -5,9 +5,10 @@ import Axios from 'axios'; // Import Axios for making HTTP requests
 import '../assets/styles/map.css';
 import CornerHelpBox from "../Components/CornerHelpBox";
 import MapToolbar from "../Components/MapToolbar";
+import MapFilterPanel from "../Components/MapFilterPanel";
 import Sidebar from '../Components/Sidebar';
 import RecordDetail from '../Components/RecordDetail';
-import MiniProfile from '../Components/MiniProfile';  
+import MiniProfile from '../Components/MiniProfile';
 import MainLidarMap from '../Components/MainLidarMap';
 import CreateRecordMobile from '../Components/CreateRecordMobile';
 
@@ -147,10 +148,12 @@ const LidarPortal = () => {
   const handleWarningClose = () => setWarningOpen(false);
 
   // *Sidebar*
-  // State variable to control whether the sidebar is open or closed.
-  // 'sidebarOpen' is true if the sidebar is open, false if it is closed.
-  // Use 'setSidebarOpen' to change its value (for example, to open or close the sidebar).
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // --- Filter state ---
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [selectedPeriods, setSelectedPeriods] = useState([])
+  const [selectedSiteTypes, setSelectedSiteTypes] = useState([])
     
   // Profile view Modal
   const [selectedUser, setSelectedUser] = useState(null);
@@ -344,6 +347,32 @@ useEffect(() => {
 }
  
 
+  // --- Filter handlers ---
+  function togglePeriod(value) {
+    setSelectedPeriods(prev =>
+      prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+    )
+  }
+
+  function toggleSiteType(value) {
+    setSelectedSiteTypes(prev =>
+      prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+    )
+  }
+
+  function clearAllFilters() {
+    setSelectedPeriods([])
+    setSelectedSiteTypes([])
+  }
+
+  const filteredRecords = allRecords.filter(r => {
+    const periodMatch = selectedPeriods.length === 0 || selectedPeriods.includes(r.period)
+    const siteMatch = selectedSiteTypes.length === 0 || selectedSiteTypes.includes(r.site_type)
+    return periodMatch && siteMatch
+  })
+
+  const activeFilterCount = selectedPeriods.length + selectedSiteTypes.length
+
   const handleDrawCreate = (e) => {
     const { layerType, layer } = e;
     if (layerType === "polygon") {
@@ -412,7 +441,19 @@ useEffect(() => {
           isLoggedIn={isLoggedIn}
         />
 
-        <MapToolbar 
+        <MapFilterPanel
+          open={filterOpen}
+          onClose={() => setFilterOpen(false)}
+          selectedPeriods={selectedPeriods}
+          selectedSiteTypes={selectedSiteTypes}
+          onTogglePeriod={togglePeriod}
+          onToggleSiteType={toggleSiteType}
+          onClearAll={clearAllFilters}
+          totalCount={allRecords.length}
+          filteredCount={filteredRecords.length}
+        />
+
+        <MapToolbar
           handleStartPolygon={handleStartPolygon}
           handleDeletePolygon={handleDeletePolygon}
           isLoggedIn={isLoggedIn}
@@ -421,6 +462,9 @@ useEffect(() => {
           polygonDrawn={polygonDrawn}
           layersOpen={layersOpen}
           setLayersOpen={setLayersOpen}
+          filterOpen={filterOpen}
+          onFilterToggle={() => setFilterOpen(o => !o)}
+          activeFilterCount={activeFilterCount}
         />
 
         <MainLidarMap
@@ -428,7 +472,7 @@ useEffect(() => {
           featureGroupRef={featureGroupRef}
           dispatch={dispatch}
           setPolygonDrawn={setPolygonDrawn}
-          allRecords={allRecords}
+          allRecords={filteredRecords}
           handleOpenMiniProfile={handleOpenMiniProfile}
           setSelectedFeature={setSelectedFeature}
           setModalOpen={setModalOpen}

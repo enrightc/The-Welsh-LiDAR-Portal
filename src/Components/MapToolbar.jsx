@@ -1,12 +1,13 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-
+import Badge from '@mui/material/Badge';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import UndoIcon from '@mui/icons-material/Undo';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import LayersIcon from '@mui/icons-material/Layers';
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -16,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
 
-export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn, layersOpen, setLayersOpen }) {
+export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, isLoggedIn, isMobileDevice, isDrawing, polygonDrawn, layersOpen, setLayersOpen, filterOpen, onFilterToggle, activeFilterCount }) {
 
     const [openConfirm, setOpenConfirm] = React.useState(false);
 
@@ -52,6 +53,20 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             >
                 <LayersIcon />
             </IconButton>
+            </Tooltip>
+
+            {/* Filter button */}
+            <Tooltip title={filterOpen ? "Close filters" : "Filter records"} arrow>
+                <IconButton
+                    onClick={onFilterToggle}
+                    color={filterOpen || activeFilterCount > 0 ? "primary" : "default"}
+                    aria-label="Filter records"
+                    aria-pressed={filterOpen}
+                >
+                    <Badge badgeContent={activeFilterCount || 0} color="primary" invisible={activeFilterCount === 0}>
+                        <FilterListIcon sx={{ fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' } }} />
+                    </Badge>
+                </IconButton>
             </Tooltip>
 
 
