@@ -15,11 +15,13 @@ import CreateRecordMobile from '../Components/CreateRecordMobile';
 // MUI Imports ----------------------
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import StateContext from "../Contexts/StateContext";
 import DispatchContext from "../Contexts/DispatchContext";
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from '@mui/material/Typography';
@@ -52,33 +54,55 @@ function LoadingScreen() {
   );
 }
 
-// The rotated “Record Form” tab shown on desktop when sidebar is closed
+// Sidebar pull-tab shown on desktop when sidebar is closed
 function SidebarTab({ visible, onOpen }) {
   if (!visible) return null;
   return (
-    <Tooltip title="Click to open record form" arrow>
-      <Button
+    <Tooltip title="Open record form" arrow placement="right">
+      <Box
         onClick={onOpen}
-        variant="contained"
+        role="button"
+        aria-label="Open record form"
         sx={{
           position: 'absolute',
           top: '50%',
           left: 0,
-          transform: 'rotate(-90deg) translateX(-50%)',
-          transformOrigin: 'top left',
-          borderRadius: '0 0 4px 4px',
-          px: 2,
-          py: 1,
+          transform: 'translateY(-50%)',
           zIndex: 1300,
+          bgcolor: '#0E8890',
+          color: 'white',
+          borderRadius: '0 8px 8px 0',
+          px: 1,
+          py: 2.5,
+          cursor: 'pointer',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 1,
+          boxShadow: '2px 2px 10px rgba(0,0,0,0.25)',
+          '&:hover': { bgcolor: '#0B6E74' },
+          transition: 'background-color 0.2s',
+          userSelect: 'none',
         }}
       >
-        Record Form
-      </Button>
+        <ChevronRightIcon fontSize="small" />
+        <Typography sx={{
+          writingMode: 'vertical-rl',
+          transform: 'rotate(180deg)',
+          fontWeight: 700,
+          fontSize: '0.65rem',
+          letterSpacing: 1,
+          textTransform: 'uppercase',
+          color: 'white',
+        }}>
+          Record
+        </Typography>
+      </Box>
     </Tooltip>
   );
 }
 
-// Floating “Add Record” button on mobile
+// Floating "Add Record" button on mobile
 function MobileAddFab({ visible, onClick }) {
   if (!visible) return null;
   return (
@@ -217,7 +241,7 @@ const LidarPortal = () => {
   const fg = featureGroupRef.current;
   
   // Safety check: if the FeatureGroup or map isn't available yet, stop.
-  // This prevents errors from happening if the map hasn’t loaded.
+  // This prevents errors from happening if the map hasn't loaded.
   if (!fg || !fg._map) return;
 
   // Get the Leaflet map object that the FeatureGroup is attached to.
@@ -415,7 +439,7 @@ const fetchRecords = async () => {
     // save data into state
     setAllRecords(response.data);
   } catch (error) {
-    // if something goes wrong, log it (but don’t crash)
+    // if something goes wrong, log it (but don't crash)
     console.log("Error fetching records:", error?.response || error);
   } finally {
     // hide spinner once done (success or fail)
@@ -518,12 +542,36 @@ useEffect(() => {
             padding: '5px 14px', borderRadius: 6, fontSize: 13,
             pointerEvents: 'none', whiteSpace: 'nowrap',
           }}>
-            Click to add points · Double-click to finish · Click ruler to cancel
+            Click to add points &middot; Double-click to finish &middot; Click ruler to cancel
           </div>
+        )}
+
+        {/* Filter active indicator — slides down when measure hint is also showing */}
+        {activeFilterCount > 0 && (
+          <Box sx={{
+            position: 'absolute',
+            top: measuringMode ? 48 : 10,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1100,
+            bgcolor: 'rgba(14, 136, 144, 0.9)',
+            backdropFilter: 'blur(8px)',
+            color: 'white',
+            px: 2,
+            py: 0.75,
+            borderRadius: 2,
+            fontSize: 13,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            transition: 'top 0.2s',
+          }}>
+            Showing {filteredRecords.length} of {allRecords.length} records
+          </Box>
         )}
             
         {/* Mobile */}
-        {/* Floating “Add Record” button on mobile */}
+        {/* Floating "Add Record" button on mobile */}
         <MobileAddFab visible={isHandheld} onClick={openPanel} />
 
         <CreateRecordMobile

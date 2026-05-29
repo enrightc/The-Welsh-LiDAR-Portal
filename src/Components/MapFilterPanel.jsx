@@ -53,7 +53,7 @@ export default function MapFilterPanel({
       sx={{
         position: 'absolute',
         top: 10,
-        left: 10,
+        left: 50,
         zIndex: 1000,
         width: 280,
         maxHeight: 'calc(100% - 80px)',
