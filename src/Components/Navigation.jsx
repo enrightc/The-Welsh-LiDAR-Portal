@@ -98,7 +98,7 @@ function Navigation() {
   try {
     // 2) Get the token. Prefer the one in global state,
     //    but fall back to localStorage if needed.
-    const token = GlobalState.userToken || localStorage.getItem("authToken");
+    const token = GlobalState.userToken || localStorage.getItem("theUserToken");
 
     // 3) If we have a token, TELL THE SERVER to invalidate it.
     //    (Djoser doesn't need a body → pass `null`.)
@@ -128,7 +128,7 @@ function Navigation() {
   } finally {
     // 5) The GUARANTEE: client is logged out no matter what.
     //    (This is the fix for being “stuck logged in”.)
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("theUserToken");
 
     // Also remove the default Authorization header from our Axios instance
     if (api?.defaults?.headers?.common?.Authorization) {

@@ -1,5 +1,5 @@
 import React from 'react' // Import React library
-
+import { Link } from 'react-router-dom'
 
 // Importing CSS for styling and components
 import '../assets/styles/Home.css';
@@ -31,8 +31,8 @@ const Home = () => {
               <h1 className="hero__title">Discover the <span className="accent">Past, </span>Shape<span className="accent"> the Record</span></h1>
               <p className="hero__tagline">Search, explore and contribute to the map of Wales’ archaeological heritage.</p>
               <div className="hero__btns">
-                <a href="/lidarPortal" className="btn btn--primary">Start Exploring</a>
-                <a href="/Register" className="btn btn--secondary">Register</a>
+                <Link to="/LidarPortal" className="btn btn--primary">Start Exploring</Link>
+                <Link to="/register" className="btn btn--secondary">Register</Link>
                 
               </div> 
             </div>         
@@ -48,7 +48,7 @@ const Home = () => {
               <p>The Welsh LiDAR portal is a free, interactive tool that lets you discover the hidden archaeology across Wales using high resolution LiDAR data.</p>
               <p>This portal is designed for everyone: whether you're a local resident, a student, a heritage professional, or just curious about the past.</p>
               <p>You can explore the map, record new discoveries, and help improve our understanding of Wales' rich archaeological landscape.</p>
-              <a href="/About" className="btn btn--tertiary">Read More</a>
+              <Link to="/about" className="btn btn--tertiary">Read More</Link>
               
             </div>
             <div className="about-image">
@@ -98,7 +98,7 @@ const Home = () => {
               </li> 
             </ul>
           </div>
-          <a href="/howItWorks" className="btn btn--tertiary how-it-works-link">Read More</a>
+          <Link to="/HowItWorks" className="btn btn--tertiary how-it-works-link">Read More</Link>
         </section>
 
         <section className="what-is-lidar" aria-labelledby="what-is-lidar-title">
@@ -107,7 +107,7 @@ const Home = () => {
               <h2 id="what-is-lidar-title" className="what-is-lidar__text__title">What is LiDAR?</h2>
               <p><em>Light Detection and Ranging (LiDAR)</em> is a remote sensing method that uses laser pulses to measure the shape of the land. These pulses are usually sent from an aircraft, and by calculating the time it takes for the light to bounce back, LiDAR builds a highly detailed 3D map of the ground surface.</p>
               <p>What makes LiDAR especially useful for archaeology is its ability to ‘see through’ trees and vegetation, revealing bumps, ditches, and other subtle features that might be hard to spot in person or on aerial photos. This helps archaeologists and researchers find and record sites that might otherwise remain hidden.</p>
-              <a href="/whatIsLidar" className="btn btn--tertiary lidar-info">Read More</a>
+              <Link to="/what-is-lidar" className="btn btn--tertiary lidar-info">Read More</Link>
             </div>
             <div className="what-is-lidar__img">
               <img src={rhydBrownCamp} alt="Lidar view of Rudbaxton Rath" loading="lazy"/>
