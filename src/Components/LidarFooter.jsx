@@ -74,7 +74,7 @@ export default function LidarFooter() {
               <li><a href="/account">Account</a></li>
               <li><a href="/dashboard">Dashboard</a></li>
               <li><a href="/privacy">Privacy</a></li>
-              <li><a href="/contact">Contact</a></li>
+              <li><a href="/feedback">Contact</a></li>
             </ul>
           </div>
         </div>

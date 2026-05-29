@@ -27,6 +27,7 @@ import News from "./pages/News";
 import NewsArticle from "./pages/NewsArticle";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Privacy from "./pages/Privacy";
 
 // Contexts
 import DispatchContext from "./Contexts/DispatchContext";
@@ -125,6 +126,7 @@ useEffect(() => {
                 <Route path="/news/:id" element={<NewsArticle />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
+                <Route path="/privacy" element={<Privacy />} />
             </Routes>
             <ToastListener />
           </main>
