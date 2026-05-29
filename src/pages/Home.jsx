@@ -1,5 +1,6 @@
-import React from 'react' // Import React library
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import StateContext from '../Contexts/StateContext'
 
 // Importing CSS for styling and components
 import '../assets/styles/Home.css';
@@ -16,6 +17,8 @@ import speechIcon from '../Components/Assets/speech.svg';
 import lidarMapWales from '../Components/Assets/lidarMapWales.webp';
 
 const Home = () => {
+  const { userIsLoggedIn } = useContext(StateContext)
+
   return (
     <>
     <BetaNoticeModal
@@ -32,9 +35,11 @@ const Home = () => {
               <p className="hero__tagline">Search, explore and contribute to the map of Wales’ archaeological heritage.</p>
               <div className="hero__btns">
                 <Link to="/LidarPortal" className="btn btn--primary">Start Exploring</Link>
-                <Link to="/register" className="btn btn--secondary">Register</Link>
-                
-              </div> 
+                {userIsLoggedIn
+                  ? <Link to="/dashboard" className="btn btn--secondary">Go to Dashboard</Link>
+                  : <Link to="/register" className="btn btn--secondary">Register</Link>
+                }
+              </div>
             </div>         
           </div> 
         </div>
