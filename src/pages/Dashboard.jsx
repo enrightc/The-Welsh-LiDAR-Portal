@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Axios from 'axios'
 import { MapContainer, Polygon, useMap } from 'react-leaflet'
@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css'
 import StateContext from '../Contexts/StateContext'
 import LidarFooter from '../Components/LidarFooter'
 import RecordDetail from '../Components/RecordDetail'
+import EditRecordModal from '../Components/EditRecordModal'
 import CustomLayerControl from '../Components/CustomLayerControl'
 import defaultProfilePicture from '../Components/Assets/defaultProfilePicture.webp'
 
@@ -17,6 +18,11 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -55,27 +61,55 @@ function Dashboard() {
 
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState(null)
+
+  // View record modal
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState(null)
+
+  // Edit record modal
+  const [editOpen, setEditOpen] = useState(false)
+  const [editRecord, setEditRecord] = useState(null)
+
+  // Delete confirmation
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteRecord, setDeleteRecord] = useState(null)
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false)
 
   useEffect(() => {
     if (!GlobalState.userId) navigate('/login')
   }, [GlobalState.userId])
 
-  useEffect(() => {
+  const fetchProfile = useCallback(async () => {
     if (!GlobalState.userId) return
-    async function fetchProfile() {
-      try {
-        const res = await Axios.get(`${BASE_URL}/api/profiles/${GlobalState.userId}/`)
-        setProfile(res.data)
-      } catch (e) {
-        console.log(e)
-      } finally {
-        setLoading(false)
-      }
+    try {
+      const res = await Axios.get(`${BASE_URL}/api/profiles/${GlobalState.userId}/`)
+      setProfile(res.data)
+    } catch (e) {
+      console.log(e)
+    } finally {
+      setLoading(false)
     }
-    fetchProfile()
   }, [GlobalState.userId])
+
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
+
+  async function handleDeleteConfirm() {
+    setDeleteSubmitting(true)
+    try {
+      await Axios.delete(`${BASE_URL}/api/records/${deleteRecord.id}/`, {
+        headers: { Authorization: `Token ${localStorage.getItem('theUserToken')}` },
+      })
+      setDeleteOpen(false)
+      setDeleteRecord(null)
+      fetchProfile()
+    } catch (e) {
+      console.log(e)
+    } finally {
+      setDeleteSubmitting(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -268,17 +302,33 @@ function Dashboard() {
                       : record.description}
                   </Typography>
                 )}
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ mt: 1, textTransform: 'none' }}
-                  onClick={() => {
-                    setSelectedRecord(record)
-                    setModalOpen(true)
-                  }}
-                >
-                  View Full Record
-                </Button>
+                <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ textTransform: 'none' }}
+                    onClick={() => { setSelectedRecord(record); setModalOpen(true) }}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ textTransform: 'none' }}
+                    onClick={() => { setEditRecord(record); setEditOpen(true) }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="error"
+                    sx={{ textTransform: 'none' }}
+                    onClick={() => { setDeleteRecord(record); setDeleteOpen(true) }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
               </Box>
             ))
           )}
@@ -291,6 +341,37 @@ function Dashboard() {
         onClose={() => setModalOpen(false)}
         record={selectedRecord}
       />
+
+      <EditRecordModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        record={editRecord}
+        onSuccess={fetchProfile}
+      />
+
+      {/* Delete confirmation */}
+      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Delete this record?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <strong>{deleteRecord?.title}</strong> will be permanently removed. This cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteOpen(false)} sx={{ textTransform: 'none' }}>
+            Cancel
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={deleteSubmitting}
+            onClick={handleDeleteConfirm}
+            sx={{ textTransform: 'none' }}
+          >
+            {deleteSubmitting ? <CircularProgress size={20} color="inherit" /> : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <LidarFooter />
     </>
