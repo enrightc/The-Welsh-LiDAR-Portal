@@ -318,8 +318,7 @@ function resetPolygon() {
   // a function to fetch records from your backend
 const fetchRecords = async () => {
   try {
-    // show loading spinner while fetching
-    setDataIsLoading(true);
+    
 
     // make the API request
     const response = await Axios.get(`${BASE_URL}/api/records/`);
