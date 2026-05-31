@@ -47,7 +47,7 @@ function Navigation() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const desktopUp = useMediaQuery('(min-width:1296px)');
+  const desktopUp = useMediaQuery('(min-width:1024px)');
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -149,11 +149,10 @@ function Navigation() {
   }
 
   return (
-    <AppBar position="static" sx={{ 
-      width: "100%", 
-      top: 0, 
-      left: 0, 
+    <AppBar position="sticky" sx={{
+      top: 0,
       backgroundColor: "#1A2D3A",
+      zIndex: 1100,
     }}>
       <Container maxWidth={false} sx={{ maxWidth: 1296, mx: 'auto', px: { xs: 2, md: 3 } }}>
         <Toolbar disableGutters>
@@ -244,19 +243,18 @@ function Navigation() {
           <Box sx={{ flexGrow: 1, display: desktopUp ? 'flex' : 'none' }}>
             {pages.map((page) => (
               <Button
-                key={page.name} // ✅ Fixed key
-                component={Link} // ✅ Use React Router's <Link>
-                to={page.path} // ✅ Navigate correctly
-                sx={{ my: 2, color: "white", display: "block", px: 4}}
+                key={page.name}
+                component={Link}
+                to={page.path}
+                sx={{ my: 2, color: "white", display: "block", px: 2, textTransform: 'none', fontSize: '0.95rem' }}
               >
-                {page.name} {/* ✅ Ensure only "name" is displayed */}
+                {page.name}
               </Button>
             ))}
           </Box>
 
           <Button
             variant="contained"
-            color="warning"
             size="large"
             href="https://lnkd.in/esC9Heuy"
             target="_blank"
@@ -264,15 +262,18 @@ function Navigation() {
             sx={{
               display: desktopUp ? 'inline-flex' : 'none',
               fontWeight: 600,
-              color: 'black',
+              color: 'white',
               textTransform: 'none',
+              fontSize: '0.95rem',
               px: 2,
               py: 1,
               mr: 2,
               borderRadius: '8px',
-              backgroundColor: '#ffb74d',
+              backgroundColor: 'transparent',
+              border: '1px solid rgba(255,255,255,0.5)',
               '&:hover': {
-                backgroundColor: '#ffa726',
+                backgroundColor: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.8)',
               },
             }}
           >
@@ -280,10 +281,7 @@ function Navigation() {
           </Button>
 
           {/* User Profile Menu */}
-          <Box sx={{ flexGrow: 0,
-          mr: { xs: 0, sm: 0, md: 2, lg: 20 },
-            
-           }}>
+          <Box sx={{ flexGrow: 0, mr: { xs: 1, md: 2 } }}>
             <Tooltip title="Open settings">
               {GlobalState.userIsLoggedIn ?
                 <Button

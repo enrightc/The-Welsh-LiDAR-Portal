@@ -1,40 +1,64 @@
-/* ------Contribute------ */
-.contribute {
-  background-color: #102034;
+/* ------Support------ */
+.support {
+  background-color: var(--bg);
   color: var(--text-light);
-  padding-top: 4rem;
-}
-
-.contribute__text {
-  padding: 0 2rem;
   text-align: center;
+  padding: 5.5rem 0;
 }
 
-.contribute_title {
-  margin-bottom: 2rem;
+.support__title {
+  margin-bottom: 1.5rem;
+  color: var(--text-light);
 }
 
-.contribute__text p {
-  font-size: 1.125rem;
+.support__title::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background-color: var(--accent);
+  border-radius: 2px;
+  margin: 14px auto 0;
 }
 
-@media (min-width: 700px) {
-  .contribute__text {
-    max-width: 40%;
-    margin: 0 auto;
-  }
+.support__body {
+  max-width: 680px;
+  margin: 0 auto 1rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.05rem;
+}
+
+.btn--support {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 12px 32px;
+  border-radius: 56px;
+  background-color: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn--support:hover {
+  background-color: #3db5bc;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(90, 198, 205, 0.35);
 }
 
 /* ------Footer Art------ */
 .footer-art {
   width: 100%;
-  height: auto;   /* keeps the aspect ratio from the viewBox */
-  display: block; /* removes inline gap */
+  height: auto;
+  display: block;
 }
 
 .lidar-footer__content {
   position: relative;
-  margin-top: -4rem;              /* pull content slightly over illustration */
+  margin-top: -4rem;
   padding: clamp(1rem, 3vw, 2rem);
 }
 
@@ -43,10 +67,11 @@
   grid-template-columns: 1.2fr 1fr 1fr;
   gap: clamp(1rem, 3vw, 2rem);
   align-items: start;
-  background: white;
+  background: #ffffff;
   border-radius: 16px;
-  padding: clamp(1rem, 3vw, 2rem);
-  box-shadow: 0 8px 24px rgba(0,0,0,.06);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e2eaec;
 }
 
 
@@ -58,24 +83,42 @@
 }
 
 .brand {
+  font-family: "Outfit", sans-serif;
   font-weight: 700;
-  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--bg);
+  letter-spacing: -0.3px;
 }
 
-.muted { color: #4A5568; margin-top: .5rem; }
+.muted {
+  color: #4A5568;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
 
 .links { list-style: none; padding: 0; margin: 0; }
-.links li + li { margin-top: .5rem; }
+.links li + li { margin-top: 0.6rem; }
 .links a {
-  color: #0B1630;
+  color: #2d4a5a;
   text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
 }
-.links a:hover { text-decoration: underline; }
+.links a:hover { color: var(--accent); }
 
 .lidar-footer__bottom {
-  margin-top: 1rem;
-  color: #556;
+  margin-top: 1.25rem;
+  color: #6b7a8a;
   text-align: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.2px;
+}
+
+@media (max-width: 900px) {
+  .lidar-footer__content {
+    margin-top: -2rem;
+  }
 }
 
 .sr-only {
@@ -83,10 +126,5 @@
   overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
-@media (max-width: 900px) {
-    .lidar-footer__content {
-        margin-top: -2rem;
-    }
-}
 
 
