@@ -2,7 +2,13 @@
 import { useEffect } from "react";
 
 // Third-party libraries
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 import { useImmerReducer } from "use-immer";
 
 // App components
@@ -109,6 +115,7 @@ useEffect(() => {
     <>
       <StateContext.Provider value={state}>
         <DispatchContext.Provider value={dispatch}>
+          <ScrollToTop />
           <Navigation /> {/* Navbar appears on all pages */}
           <main className="page-content">
             <Routes>

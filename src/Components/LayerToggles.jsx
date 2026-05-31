@@ -39,7 +39,7 @@ export default function LayerToggles({
             onChange={(e) => setShowCommunity(e.target.checked)}
           />
         }
-        label="Community Finds"
+        label="LiDAR Portal Records"
         sx={labelSx}
       />
 

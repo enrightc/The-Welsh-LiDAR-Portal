@@ -69,7 +69,7 @@ export default function MapFilterPanel({
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-          Filter Records
+          Filter Portal Records
         </Typography>
         <IconButton size="small" onClick={onClose} aria-label="Close filter panel">
           <CloseIcon fontSize="small" />
@@ -77,10 +77,14 @@ export default function MapFilterPanel({
       </Box>
 
       {/* Record count */}
-      <Typography variant="caption" color={hasFilters ? 'primary' : 'text.secondary'} sx={{ display: 'block', mb: 1.5 }}>
+      <Typography variant="caption" color={hasFilters ? 'primary' : 'text.secondary'} sx={{ display: 'block', mb: 1 }}>
         {hasFilters
           ? `Showing ${filteredCount} of ${totalCount} records`
           : `${totalCount} records on map`}
+      </Typography>
+
+      <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', fontStyle: 'italic', mb: 1.5 }}>
+        Filters apply to LiDAR Portal Records only. To show or hide other layers, use the Layers panel.
       </Typography>
 
       <Divider sx={{ mb: 1.5 }} />
