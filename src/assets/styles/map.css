@@ -162,6 +162,85 @@
   background: #f0f0f0;
 }
 
+/* ------Branded loading screen------ */
+.map-loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  width: 100%;
+  background: #1A2D3A;
+  gap: 1.25rem;
+}
+
+.map-loading-screen__brand {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.map-loading-screen__sub {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 340px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.map-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(90, 198, 205, 0.2);
+  border-top-color: #5AC6CD;
+  border-radius: 50%;
+  animation: map-spin 0.75s linear infinite;
+}
+
+@keyframes map-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ------Measuring hint toast------ */
+.map-hint {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1200;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  color: #1A2D3A;
+  padding: 6px 18px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ------Toolbar button labels (desktop only)------ */
+.toolbar-label {
+  display: none;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #6b7a8a;
+  line-height: 1;
+  user-select: none;
+  letter-spacing: 0.3px;
+  margin-top: 1px;
+}
+
+@media (min-width: 600px) {
+  .toolbar-label {
+    display: block;
+  }
+}
+
 
 
 

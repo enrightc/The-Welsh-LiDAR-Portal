@@ -56,7 +56,8 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
             </Tooltip>
 
             {/* Filter button */}
-            <Tooltip title={filterOpen ? "Close filters" : "Filter records"} arrow>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Tooltip title={filterOpen ? "Close filters" : "Filter records"} arrow>
                 <IconButton
                     onClick={onFilterToggle}
                     color={filterOpen || activeFilterCount > 0 ? "primary" : "default"}
@@ -67,33 +68,40 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                         <FilterListIcon sx={{ fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' } }} />
                     </Badge>
                 </IconButton>
-            </Tooltip>
+              </Tooltip>
+              <span className="toolbar-label">Filter</span>
+            </Box>
 
-
-            <Tooltip title={isDrawing ? "Drawing… (click Clear to cancel)" : "Draw Polygon"} arrow>
+            {/* Draw button */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Tooltip title={isDrawing ? "Drawing… (click Clear to cancel)" : "Draw Polygon"} arrow>
                 <span>
                     <IconButton
                     aria-label={isDrawing ? 'Drawing in progress' : 'Draw polygon'}
                     color="black"
                     onClick={handleStartPolygon}
-                    disabled={!isLoggedIn || (polygonDrawn && !isDrawing)} //Disables when a polygon is already drawn (unless actively drawing)
+                    disabled={!isLoggedIn || (polygonDrawn && !isDrawing)}
                     aria-pressed={isDrawing}
                     >
-                    <EditIcon sx={{ 
+                    <EditIcon sx={{
                         color: isDrawing ? 'info.main' : 'inherit',
-                        fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' }, 
+                        fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' },
                     }} />
                     </IconButton>
                 </span>
-            </Tooltip>
+              </Tooltip>
+              <span className="toolbar-label">Draw</span>
+            </Box>
 
-            <Tooltip title={isDrawing ? 'Clear current drawing / Delete polygon' : 'Delete Polygon'} arrow>
+            {/* Clear/delete button */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Tooltip title={isDrawing ? 'Clear current drawing / Delete polygon' : 'Delete Polygon'} arrow>
                 <span>
                     <IconButton
                     aria-label="Delete polygon"
                     color="black"
                     onClick={() => setOpenConfirm(true)}
-                    disabled={!isLoggedIn || (!isDrawing && !polygonDrawn) } // enables if user is drawig or have already drawn a polygon
+                    disabled={!isLoggedIn || (!isDrawing && !polygonDrawn)}
                     aria-pressed={isDrawing && polygonDrawn}
                 >
                     <UndoIcon sx={{ color: isDrawing || polygonDrawn ? 'error.main' : 'inherit',
@@ -101,10 +109,13 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                      }} />
                 </IconButton>
                 </span>
-                
-            </Tooltip>
+              </Tooltip>
+              <span className="toolbar-label">Clear</span>
+            </Box>
 
-            <Tooltip title={measuringMode ? 'Cancel measurement' : 'Measure distance'} arrow>
+            {/* Measure button */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Tooltip title={measuringMode ? 'Cancel measurement' : 'Measure distance'} arrow>
                 <IconButton
                     aria-label={measuringMode ? 'Cancel measurement' : 'Measure distance'}
                     aria-pressed={measuringMode}
@@ -116,7 +127,9 @@ export default function MapToolbar({ handleStartPolygon, handleDeletePolygon, is
                         fontSize: { xs: '1.25rem', sm: '1rem', md: '1.5rem' },
                     }} />
                 </IconButton>
-            </Tooltip>
+              </Tooltip>
+              <span className="toolbar-label">Measure</span>
+            </Box>
 
 
             {/* Delete Confirmation dialogue box */}

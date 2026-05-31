@@ -13,8 +13,6 @@ import MainLidarMap from '../Components/MainLidarMap';
 import CreateRecordMobile from '../Components/CreateRecordMobile';
 
 // MUI Imports ----------------------
-import CircularProgress from '@mui/material/CircularProgress';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import StateContext from "../Contexts/StateContext";
@@ -22,7 +20,6 @@ import DispatchContext from "../Contexts/DispatchContext";
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
@@ -39,18 +36,13 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 // Small, reusable spinner screen shown while data loads
 function LoadingScreen() {
   return (
-    <Grid
-      container
-      direction="column"
-      justifyContent="center"
-      alignItems="center"
-      style={{ height: "100vh", width: "100vw" }}
-    >
-      <CircularProgress />
-      <Typography variant="body2" align="center" sx={{ mt: 2, maxWidth: 560, px: 2, opacity: 0.9 }}>
-        If this takes a while, the server might be waking up.
-      </Typography>
-    </Grid>
+    <div className="map-loading-screen">
+      <span className="map-loading-screen__brand">Welsh LiDAR Portal</span>
+      <div className="map-spinner" aria-hidden="true" />
+      <span className="map-loading-screen__sub">
+        Loading map data… if this takes a moment, the server may be waking up.
+      </span>
+    </div>
   );
 }
 
@@ -107,12 +99,25 @@ function MobileAddFab({ visible, onClick }) {
   if (!visible) return null;
   return (
     <Fab
-      color="primary"
+      variant="extended"
       aria-label="Add record"
       onClick={onClick}
-      sx={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1000 }}
+      sx={{
+        position: 'fixed',
+        right: 16,
+        bottom: 16,
+        zIndex: 1000,
+        backgroundColor: '#0E8890',
+        color: 'white',
+        fontWeight: 700,
+        textTransform: 'none',
+        fontSize: '0.875rem',
+        boxShadow: '0 4px 16px rgba(14, 136, 144, 0.35)',
+        '&:hover': { backgroundColor: '#0B6E74' },
+      }}
     >
-      <AddIcon />
+      <AddIcon sx={{ mr: 1 }} />
+      Add Record
     </Fab>
   );
 }
@@ -148,7 +153,6 @@ const LidarPortal = () => {
   const isLoggedIn = !!state.userId;
 
   // --- Screen / device -------------------
-  const theme = useTheme();
   const isSmallScreen = useMediaQuery('(max-width:1090px)'); // ≤1090px treated as handheld
   const isTouchDevice = (typeof window !== 'undefined') && (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
   const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Touch/.test(navigator.userAgent);
@@ -449,6 +453,7 @@ const fetchRecords = async () => {
 
 // This effect runs only once when the component first mounts
 useEffect(() => {
+  document.title = 'LiDAR Map | Welsh LiDAR Portal'
   fetchRecords();
 }, []);
 
@@ -506,8 +511,8 @@ useEffect(() => {
     <div
       style={{
         display: "flex",
-        height: "calc(100vh - 68.5px)",
-        width: "100vw",
+        height: "calc(100dvh - 68.5px)",
+        width: "100%",
         position: "relative",
         overflow: "hidden",
       }}
@@ -536,13 +541,8 @@ useEffect(() => {
 
         {/* Measure tool status hint */}
         {measuringMode && (
-          <div style={{
-            position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)',
-            zIndex: 1200, background: 'rgba(0,0,0,0.65)', color: 'white',
-            padding: '5px 14px', borderRadius: 6, fontSize: 13,
-            pointerEvents: 'none', whiteSpace: 'nowrap',
-          }}>
-            Click to add points &middot; Double-click to finish &middot; Click ruler to cancel
+          <div className="map-hint">
+            Click to add points · Double-click to finish · Click ruler to cancel
           </div>
         )}
 
