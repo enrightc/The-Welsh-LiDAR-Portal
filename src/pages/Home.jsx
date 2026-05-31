@@ -11,9 +11,6 @@ import BetaNoticeModal from "../Components/BetaNoticeModal";
 // Image Imports
 import mapScreenImage from '../Components/Assets/MapScreenImage.webp';
 import rhydBrownCamp from '../Components/Assets/RhydBrownCamp.webp';
-import mapMarkerIcon from '../Components/Assets/map_marker.svg';
-import addIcon from '../Components/Assets/add.svg';
-import speechIcon from '../Components/Assets/speech.svg';
 import lidarMapWales from '../Components/Assets/lidarMapWales.webp';
 
 const Home = () => {
@@ -80,23 +77,22 @@ const Home = () => {
             <h2 id="how-it-works-title" className="how-it-works__title">How it works</h2>
             <ul className="cards content">
               <li>
-                <article className="card explore">
-                  <img className="card-icon" src={mapMarkerIcon} alt="" aria-hidden="true"
-                  />
+                <article className="card">
+                  <span className="card-step">01</span>
                   <h3>Explore the map</h3>
                   <p>View the LiDAR map of Wales and find hidden archaeological sites.</p>
                 </article>
               </li>
               <li>
-                <article className="card add">
-                  <img className="card-icon" src={addIcon} alt="" aria-hidden="true"/>
+                <article className="card">
+                  <span className="card-step">02</span>
                   <h3>Add a discovery</h3>
                   <p>Record your finds directly on the interactive map.</p>
                 </article>
               </li>
               <li>
-                <article className="card community">
-                  <img className="card-icon" src={speechIcon} alt="" aria-hidden="true"/>
+                <article className="card">
+                  <span className="card-step">03</span>
                   <h3>Help the Community</h3>
                   <p>Your finds help to build a better picture of Wales' past.</p>
                 </article>
