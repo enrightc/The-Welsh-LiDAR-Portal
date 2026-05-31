@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import StateContext from '../Contexts/StateContext'
 
@@ -15,6 +15,10 @@ import lidarMapWales from '../Components/Assets/lidarMapWales.webp';
 
 const Home = () => {
   const { userIsLoggedIn } = useContext(StateContext)
+
+  useEffect(() => {
+    document.title = 'Mapping the Past | Welsh LiDAR Portal'
+  }, [])
 
   return (
     <>
@@ -75,7 +79,7 @@ const Home = () => {
         <section className="how-it-works" aria-labelledby="how-it-works-title">
           <div className="container">
             <h2 id="how-it-works-title" className="how-it-works__title">How it works</h2>
-            <ul className="cards content">
+            <ul className="cards">
               <li>
                 <article className="card">
                   <span className="card-step">01</span>

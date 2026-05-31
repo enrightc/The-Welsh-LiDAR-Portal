@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import profileIconUrl from '../assets/icons/profileIcon.svg'
@@ -52,6 +52,10 @@ const steps = [
 ]
 
 function HowItWorks() {
+  useEffect(() => {
+    document.title = 'How It Works | Welsh LiDAR Portal'
+  }, [])
+
   return (
     <>
       <header className="hero">

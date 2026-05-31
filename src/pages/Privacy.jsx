@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -27,6 +27,10 @@ function P({ children, sx = {} }) {
 }
 
 export default function Privacy() {
+  useEffect(() => {
+    document.title = 'Privacy Policy | Welsh LiDAR Portal'
+  }, [])
+
   return (
     <>
       <header className="hero">
@@ -53,7 +57,7 @@ export default function Privacy() {
               The Welsh LiDAR Portal ("we", "us", "our") is committed to protecting your personal
               information. This policy explains what data we collect, how we use it, and your rights
               in relation to it. Please read it alongside our site's{' '}
-              <a href="/feedback" style={{ color: 'inherit' }}>feedback and contact form</a>.
+              <a href="/feedback" style={{ color: '#0B6E74' }}>feedback and contact form</a>.
             </P>
 
             <Divider sx={{ mt: 5 }} />
@@ -66,7 +70,7 @@ export default function Privacy() {
               </P>
               <P>
                 If you have questions about this policy or how your data is handled, please use the{' '}
-                <a href="/feedback" style={{ color: 'inherit' }}>contact form</a>.
+                <a href="/feedback" style={{ color: '#0B6E74' }}>contact form</a>.
               </P>
             </Section>
 
@@ -161,7 +165,7 @@ export default function Privacy() {
               </Typography>
               <P>
                 If you need help exercising any of these rights, please use the{' '}
-                <a href="/feedback" style={{ color: 'inherit' }}>contact form</a>.
+                <a href="/feedback" style={{ color: '#0B6E74' }}>contact form</a>.
               </P>
             </Section>
 
@@ -209,7 +213,7 @@ export default function Privacy() {
               <P>
                 If you have any questions or concerns about this privacy policy or how your data
                 is handled, please get in touch using the{' '}
-                <a href="/feedback" style={{ color: 'inherit' }}>contact / feedback form</a>.
+                <a href="/feedback" style={{ color: '#0B6E74' }}>contact / feedback form</a>.
               </P>
             </Section>
 

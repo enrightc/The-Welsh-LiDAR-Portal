@@ -1,0 +1,291 @@
+/* ------News------ */
+
+/* Article hero title — scaled down so long titles don't overflow */
+.hero__title--article {
+  font-size: clamp(1.4rem, 3.5vw, 2.6rem);
+}
+
+/* ------Tag pills (used on cards and article page)------ */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(90, 198, 205, 0.1);
+  border: 1px solid rgba(90, 198, 205, 0.3);
+  color: #0B6E74;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+/* ------Tag filter bar------ */
+.tag-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+  align-items: center;
+}
+
+.tag-filter-btn {
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid #d1d9e0;
+  background: white;
+  color: var(--text-dark);
+  font-family: "Roboto", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.tag-filter-btn:hover {
+  border-color: var(--accent);
+  color: #0B6E74;
+}
+
+.tag-filter-btn--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.tag-filter-btn--active:hover {
+  background: #3db5bc;
+  border-color: #3db5bc;
+  color: var(--bg);
+}
+
+/* ------News listing section------ */
+.news-section {
+  padding: 5.5rem 0;
+  background-color: var(--section-slate);
+}
+
+/* ------News grid------ */
+.news-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ------News card (whole card is a link)------ */
+.news-card {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #e8ecee;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+
+.news-card:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+}
+
+.news-card__img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
+.news-card__body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.news-card__title {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  line-height: 1.3;
+  margin: 0 0 0.4rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.news-card__date {
+  font-size: 0.82rem;
+  color: #6b7a8a;
+  margin: 0 0 0.75rem;
+}
+
+.news-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.news-card__excerpt {
+  font-size: 0.9rem;
+  color: #4A5568;
+  line-height: 1.65;
+  margin: 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.news-card__read-more {
+  display: inline-block;
+  margin-top: 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0B6E74;
+  transition: color 0.2s;
+}
+
+.news-card:hover .news-card__read-more {
+  color: var(--accent);
+}
+
+/* ------Loading / empty states------ */
+.news-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 5rem 0;
+  color: #6b7a8a;
+}
+
+.news-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(90, 198, 205, 0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: news-spin 0.75s linear infinite;
+}
+
+@keyframes news-spin {
+  to { transform: rotate(360deg); }
+}
+
+.news-empty,
+.news-no-results {
+  text-align: center;
+  color: #6b7a8a;
+  padding: 4rem 0;
+}
+
+.news-no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ------Article page------ */
+.article-section {
+  padding: 4rem 0 5.5rem;
+  background: white;
+}
+
+.article-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #0B6E74;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  transition: color 0.2s;
+}
+
+.article-back:hover {
+  color: var(--accent);
+}
+
+.article-header {
+  max-width: 720px;
+  margin-bottom: 2rem;
+}
+
+.article-title {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--text-dark);
+  line-height: 1.25;
+  margin: 0 0 0.75rem;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.article-date {
+  font-size: 0.88rem;
+  color: #6b7a8a;
+}
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.article-img {
+  width: 100%;
+  max-height: 440px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 2.5rem;
+  display: block;
+}
+
+.article-content {
+  max-width: 720px;
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--text-dark);
+  white-space: pre-wrap;
+}
+
+/* ------Article loading/error states------ */
+.article-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 5rem 0;
+  color: #6b7a8a;
+}
+
+.article-not-found {
+  padding: 4rem 0;
+  color: #6b7a8a;
+}
+
+.article-not-found p {
+  margin-bottom: 1.5rem;
+}

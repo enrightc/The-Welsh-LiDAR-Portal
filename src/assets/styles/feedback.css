@@ -1,0 +1,131 @@
+/* ------Feedback Page------ */
+.feedback-section {
+  background-color: var(--section-slate);
+  padding: 5.5rem 0;
+}
+
+.feedback-section__title {
+  margin-bottom: 0.75rem;
+  color: var(--text-dark);
+}
+
+.feedback-section__title::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background-color: var(--accent);
+  border-radius: 2px;
+  margin: 14px 0 0;
+}
+
+.feedback-section__intro {
+  color: #4A5568;
+  font-size: 1.05rem;
+  max-width: 560px;
+  margin: 0 0 2.5rem;
+}
+
+.feedback-card {
+  background: white;
+  border: 1px solid #e8ecee;
+  border-radius: 16px;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  max-width: 640px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #d1d9e0;
+  border-radius: 8px;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  background: #fafbfc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(90, 198, 205, 0.18);
+  background: white;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.form-hint {
+  font-size: 0.82rem;
+  color: #6b7a8a;
+  margin: 0;
+}
+
+.feedback-submit {
+  align-self: flex-start;
+  padding: 11px 28px;
+  background-color: #0E8890;
+  color: white;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 56px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.feedback-submit:hover:not(:disabled) {
+  background-color: #0B6E74;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(11, 110, 116, 0.3);
+}
+
+.feedback-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.feedback-status {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.feedback-status--success {
+  background: #e8f7ee;
+  color: #1a6b3a;
+  border: 1px solid #b8e6cc;
+}
+
+.feedback-status--error {
+  background: #fdecea;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}

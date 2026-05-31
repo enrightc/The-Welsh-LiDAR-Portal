@@ -1,67 +1,114 @@
-import { useEffect, useState } from "react";
-import { useParams, Link as RouterLink } from "react-router-dom";
-import { Box, Typography, Link, Card, CardContent, CardMedia } from "@mui/material";
+import { useEffect, useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import LidarFooter from '../Components/LidarFooter'
+import Support from '../Components/Support'
+import '../assets/styles/Home.css'
+import '../assets/styles/news.css'
+
+function formatDate(str) {
+  return new Date(str).toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  })
+}
 
 export default function NewsArticle() {
-  const { id } = useParams();
-  const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams()
+  const [item, setItem] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-
+    document.title = 'News | Welsh LiDAR Portal'
+    const BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
     fetch(`${BASE}/api/news/${id}/`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
       })
-      .then((data) => setItem(data))
-      .catch((err) => {
-        console.error("Failed to load article:", err);
-        setItem(null);
+      .then(data => {
+        setItem(data)
+        document.title = `${data.title} | Welsh LiDAR Portal`
       })
-      .finally(() => setLoading(false));
-  }, [id]);
+      .catch(err => {
+        console.error('Failed to load article:', err)
+        setItem(null)
+      })
+      .finally(() => setLoading(false))
+  }, [id])
 
-  if (loading) return <Typography sx={{ p: 2 }}>Loading…</Typography>;
-  if (!item) return <Typography sx={{ p: 2 }}>Article not found.</Typography>;
+  const heroTitle = loading ? 'Loading…' : item ? item.title : 'Article not found'
+  const heroTagline = !loading && item?.published_at ? formatDate(item.published_at) : null
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto", px: 2, py: 4 }}>
-      <Link component={RouterLink} to="/news" underline="hover">
-        ← Back to news
-      </Link>
-      <Card sx={{ mt: 3, boxShadow: 3, borderRadius: 2 }}>
-        {item.image && (
-          <CardMedia
-            component="img"
-            height="360"
-            image={item.image}
-            alt={item.title}
-            sx={{
-              objectFit: "cover",
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-            }}
-          />
-        )}
+    <>
+      <header className="hero">
+        <div className="container">
+          <div className="hero-content">
+            <div className="hero__text">
+              <p className="eyebrow-text">News</p>
+              <h1 className="hero__title hero__title--article">{heroTitle}</h1>
+              {heroTagline && <p className="hero__tagline">{heroTagline}</p>}
+            </div>
+          </div>
+        </div>
+      </header>
 
-        <CardContent>
-          <Typography variant="h3" sx={{ mt: 0, fontWeight: 700 }}>
-            {item.title}
-          </Typography>
+      <main>
+        <section className="article-section">
+          <div className="container">
 
-          {item.published_at && (
-            <Typography sx={{ mt: 1, color: "text.secondary" }}>
-              {new Date(item.published_at).toLocaleDateString("en-GB")}
-            </Typography>
-          )}
+            {loading && (
+              <div className="article-loading">
+                <div className="news-spinner" aria-hidden="true" />
+                <p>Loading article…</p>
+              </div>
+            )}
 
-          <Typography sx={{ mt: 3, whiteSpace: "pre-wrap" }}>
-            {item.content}
-          </Typography>
-        </CardContent>
-      </Card>
-    </Box>
-  );
+            {!loading && !item && (
+              <div className="article-not-found">
+                <p>This article could not be found.</p>
+                <Link to="/news" className="article-back">← Back to news</Link>
+              </div>
+            )}
+
+            {!loading && item && (
+              <>
+                <Link to="/news" className="article-back">← Back to news</Link>
+
+                {item.image && (
+                  <img
+                    className="article-img"
+                    src={item.image}
+                    alt={item.title}
+                  />
+                )}
+
+                <header className="article-header">
+                  <div className="article-meta">
+                    {item.published_at && (
+                      <span className="article-date">{formatDate(item.published_at)}</span>
+                    )}
+                    {item.tags?.length > 0 && (
+                      <div className="article-tags">
+                        {item.tags.map(tag => (
+                          <span key={tag.id} className="tag-pill">{tag.name}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </header>
+
+                <div className="article-content">
+                  {item.content}
+                </div>
+              </>
+            )}
+
+          </div>
+        </section>
+      </main>
+
+      <Support />
+      <LidarFooter />
+    </>
+  )
 }
